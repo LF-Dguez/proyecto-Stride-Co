@@ -4,7 +4,7 @@
 
 | ID     | Nombre                        | Rol          |
 |--------|-------------------------------|--------------|
-| 385540 | Alexander Chacon Ramirez      | Product Owner |
+| 385540 | Alexander Chacon Ramirez      | Product Owner|
 | 385500 | Luis Felipe Domínguez Chávez  | Scrum Master |
 | 385660 | Diego Flores Verdad Grijalva  | Developer    |
 | 385596 | Danna Karely Lopez Rea        | Developer    |
