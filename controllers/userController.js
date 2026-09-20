@@ -1,6 +1,7 @@
 let users = [
     { id: 1, first_name: "Ana", last_name: "López", email: "ana@stride.com", role_id: 1, active: true },
-    { id: 2, first_name: "Luis", last_name: "Pérez", email: "luis@stride.com", role_id: 2, active: true }
+    { id: 2, first_name: "Luis", last_name: "Pérez", email: "luis@stride.com", role_id: 2, active: true },
+    { id: 2, first_name: "Karen", last_name: "Gonzalez", email: "karen@stride.com", role_id: 3, active: true }
 ];
 let nextId = 2;
 
