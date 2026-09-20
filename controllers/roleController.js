@@ -1,9 +1,9 @@
 exports.getAll = (req, res) => {
   res.status(200).json({
-    message: 'GET inventario obtenido exitosamente',
+    message: 'GET roles obtenido exitosamente',
     data: [
-      { id: 1, variant_id: 1, stock: 50 },
-      { id: 2, variant_id: 2, stock: 30 }
+      { id: 1, name: 'ADMIN', description: 'Administrador del sistema' },
+      { id: 2, name: 'SALES', description: 'Vendedor' }
     ]
   });
 };
@@ -11,14 +11,14 @@ exports.getAll = (req, res) => {
 exports.getById = (req, res) => {
   const { id } = req.params;
   res.status(200).json({
-    message: `GET inventario con ID ${id}`,
-    data: { id: Number(id), variant_id: 1, stock: 50 }
+    message: `GET rol con ID ${id}`,
+    data: { id: Number(id), name: 'ADMIN', description: 'Administrador del sistema' }
   });
 };
 
 exports.create = (req, res) => {
   res.status(201).json({
-    message: 'Registro de inventario creado exitosamente',
+    message: 'Rol creado exitosamente',
     data: { id: 3, ...req.body }
   });
 };
@@ -26,7 +26,7 @@ exports.create = (req, res) => {
 exports.update = (req, res) => {
   const { id } = req.params;
   res.status(200).json({
-    message: `Inventario con ID ${id} actualizado exitosamente`,
+    message: `Rol con ID ${id} actualizado exitosamente`,
     data: { id: Number(id), ...req.body }
   });
 };
@@ -34,6 +34,6 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const { id } = req.params;
   res.status(200).json({
-    message: `Registro de inventario con ID ${id} eliminado exitosamente`
+    message: `Rol con ID ${id} eliminado exitosamente`
   });
 };
