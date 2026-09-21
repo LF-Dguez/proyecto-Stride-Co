@@ -33,7 +33,7 @@ Este sistema busca resolver esa brecha proporcionando una plataforma centralizad
 
 ## Requisitos
 
-- Node.js 18 o superior
+- Node.js 20.19 o superior
 - npm
 
 ## Instalación
