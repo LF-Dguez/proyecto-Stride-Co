@@ -8,3 +8,12 @@ describe('Manejo de rutas inexistentes', () => {
     expect(response.body).toHaveProperty('error');
   });
 });
+
+describe('GET /health', () => {
+  it('debe responder 200 con status UP', async () => {
+    const res = await request(app).get('/health');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ status: 'UP' });
+  });
+});
+
