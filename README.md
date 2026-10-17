@@ -123,7 +123,7 @@ stride-co/
 
 ## API
 
-Todos los endpoints responden con `{ "message": "...", "data": ... }`. La mayoría de los recursos siguen usando datos mock; `orders` ya usa persistencia real (MongoDB) para resolver a quién pertenece cada orden. Siete de los ocho recursos están protegidos con RBAC (ver abajo); `/api/customers` todavía no. La autenticación (JWT) y las reglas de negocio completas se agregan en las siguientes etapas.
+Todos los endpoints responden con `{ "message": "...", "data": ... }`. La mayoría de los recursos siguen usando datos mock; `customers` y `orders` ya usan persistencia real (MongoDB), incluyendo el alcance `own`. Los ocho recursos están protegidos con RBAC (ver abajo). La autenticación (JWT) y las reglas de negocio completas se agregan en las siguientes etapas.
 
 | Recurso | Modelo | Base |
 |---------|--------|------|
@@ -212,7 +212,7 @@ La definición vive en `seeders/rbacMatrix.js` y se siembra en la base de datos 
 | `/api/variants` | Sí | `any` |
 | `/api/inventory` | Sí | `any` |
 | `/api/orders` | Sí | `own` en lectura/actualización, `any` en creación/eliminación |
-| `/api/customers` | No todavía | — |
+| `/api/customers` | Sí | `own` en lectura/actualización, `any` en creación/eliminación |
 
 ### Ejemplo de permiso `any`
 
