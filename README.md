@@ -242,6 +242,27 @@ Role → Role_Permission → Permission  →  services/rbac.js (loadAccessContro
 
 El middleware `middlewares/authorize(resource, action, possession, ownerResolver?)` usa esa instancia en cada petición: si el usuario autenticado no tiene el permiso, responde `403 Forbidden`; si no hay usuario autenticado, `401 Unauthorized`.
 
+### Contrato de `req.user` (mientras no exista JWT)
+
+La Tarea 6 (RBAC) da por hecho que la autenticación ya existe, pero la Actividad 4 (JWT) todavía no está implementada en este repositorio ([issue #45](https://github.com/LF-Dguez/proyecto-Stride-Co/issues/45)). Mientras tanto, `authorize()` y los controllers esperan que `req.user` tenga esta forma:
+
+```js
+req.user = { id: 1, role_id: 2 } // igual que el modelo User (Sequelize)
+```
+
+`services/rbac.js#getRoleName()` también acepta `{ id, role: 'admin' }` (el nombre del rol directo) como atajo, que es lo que usan las pruebas.
+
+En la aplicación real, **nada llena `req.user` todavía**: no hay middleware de autenticación en `app.js`. Por eso las pruebas no le pegan directo a la app real para los recursos protegidos; usan `test/helpers/rbacApp.js`, que simula ese contrato con un header (`x-test-user`) sobre una app mínima, montando los routers reales:
+
+```js
+const { buildApp, users } = require('./helpers/rbacApp');
+const app = buildApp((a) => a.use('/api/orders', ordersRouter));
+
+await request(app).get('/api/orders').set(users.admin); // { id: 1, role: 'admin' }
+```
+
+Cuando se implemente JWT (Actividad 4), el middleware `authenticate` deberá poblar `req.user` con este mismo contrato a partir del token, y entonces las pruebas podrán dejar de depender del helper y usar la app real directamente.
+
 ## Control de cambios
 
 - Los commits siguen la especificación [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `chore:`.
