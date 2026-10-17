@@ -1,17 +1,19 @@
 const request = require('supertest');
-const app = require('../app');
+const { buildApp, users } = require('./helpers/rbacApp');
+const variantsRouter = require('../routes/variants');
+
+const app = buildApp((a) => a.use('/api/variants', variantsRouter));
 
 describe('API de Variants', () => {
-
   it('GET /api/variants debe responder 200 con un arreglo de productos', async () => {
-    const response = await request(app).get('/api/variants');
+    const response = await request(app).get('/api/variants').set(users.admin);
     expect(response.statusCode).toBe(200);
     expect(Array.isArray(response.body.data)).toBe(true);
     expect(response.body.data[0]).toHaveProperty('sku');
   });
 
   it('GET /api/variants/:id debe responder 200 con la variante correcta', async () => {
-    const response = await request(app).get('/api/variants/1');
+    const response = await request(app).get('/api/variants/1').set(users.admin);
     expect(response.statusCode).toBe(200);
     expect(response.body.data.id).toBe(1);
     expect(typeof response.body.data.sku).toBe('string');
@@ -26,6 +28,7 @@ describe('API de Variants', () => {
     };
     const response = await request(app)
       .post('/api/variants')
+      .set(users.admin)
       .send(nuevaVariante);
 
     expect(response.statusCode).toBe(201);
@@ -37,6 +40,7 @@ describe('API de Variants', () => {
     const datosActualizados = { sku: 'STR-RUN-PNK-26' };
     const response = await request(app)
       .put('/api/variants/1')
+      .set(users.admin)
       .send(datosActualizados);
 
     expect(response.statusCode).toBe(200);
@@ -44,8 +48,7 @@ describe('API de Variants', () => {
   });
 
   it('DELETE /api/variants/:id debe eliminar y responder 200', async () => {
-    const response = await request(app).delete('/api/variants/1');
+    const response = await request(app).delete('/api/variants/1').set(users.admin);
     expect(response.statusCode).toBe(200);
   });
-
 });
