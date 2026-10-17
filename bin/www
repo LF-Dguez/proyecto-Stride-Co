@@ -11,6 +11,7 @@ var debug = require('debug')('proyecto-stride-co:server');
 var http = require('http');
 var { sequelize } = require('../models/relationals');
 var connectMongo = require('../config/mongoose');
+var { loadAccessControl } = require('../services/rbac');
 
 /**
  * Get port from environment and store in Express.
@@ -34,6 +35,9 @@ async function start() {
     await sequelize.authenticate();
     await sequelize.sync(); // crea las tablas que no existan
     console.log('Conexión a MySQL correcta');
+
+    await loadAccessControl(); // permisos Role -> Permission desde la BD
+    console.log('Permisos RBAC cargados desde la base de datos');
 
     await connectMongo();
     console.log('Conexión a MongoDB correcta');
