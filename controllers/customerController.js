@@ -1,50 +1,74 @@
-exports.getAll = (req, res) => {
-  res.status(200).json({
-    message: 'GET clientes obtenido exitosamente (Modelo Documental MongoDB)',
-    data: [
-      {
-        _id: '65f1a2b3c4d5e6f7a8b9c0d1',
-        userId: 1,
-        phone: '6141234567',
-        email: 'cliente1@gmail.com',
-        addresses: [{ type: 'shipping', street: 'Av. Universidad', number: '100', city: 'Chihuahua', state: 'Chihuahua', postalCode: '31000', country: 'México' }]
-      }
-    ]
-  });
-};
+const createError = require('http-errors');
+const Customer = require('../models/documents/Customer');
 
-exports.getById = (req, res) => {
-  const { id } = req.params;
-  res.status(200).json({
-    message: `GET cliente con ID ${id}`,
-    data: {
-      _id: id,
-      userId: 1,
-      phone: '6141234567',
-      email: 'cliente1@gmail.com',
-      addresses: [{ type: 'shipping', street: 'Av. Universidad', number: '100', city: 'Chihuahua', state: 'Chihuahua', postalCode: '31000', country: 'México' }]
+// Mongoose rechaza un id mal formado o datos que no pasan el schema; se traducen
+// a errores HTTP en vez de dejarlos caer como 500.
+function toHttpError(err) {
+  if (err.name === 'CastError') return createError(400, 'Id de cliente inválido');
+  if (err.name === 'ValidationError') return createError(400, err.message);
+  return err;
+}
+
+// Resolver de propiedad: un cliente es del usuario autenticado si su userId
+// coincide con req.user.id. Lo usa authorize() en las rutas con alcance own.
+async function resolveOwner(req) {
+  const customer = await Customer.findById(req.params.id).lean();
+  if (!customer) throw createError(404, 'Cliente no encontrado');
+  return customer.userId;
+}
+
+exports.resolveOwner = resolveOwner;
+
+exports.getAll = async (req, res, next) => {
+  try {
+    const filter = {};
+    // authorize() deja el alcance concedido en req.rbac.possession: 'own' acota
+    // la lista al propio usuario autenticado; 'any' no filtra nada.
+    if (req.rbac && req.rbac.possession === 'own') {
+      filter.userId = req.user.id;
     }
-  });
+    const customers = await Customer.find(filter).lean();
+    res.status(200).json({ message: 'GET clientes obtenido exitosamente (Modelo Documental MongoDB)', data: customers });
+  } catch (err) {
+    next(toHttpError(err));
+  }
 };
 
-exports.create = (req, res) => {
-  res.status(201).json({
-    message: 'Cliente creado exitosamente',
-    data: { _id: '65f1a2b3c4d5e6f7a8b9c0d2', ...req.body }
-  });
+exports.getById = async (req, res, next) => {
+  try {
+    const customer = await Customer.findById(req.params.id).lean();
+    if (!customer) return next(createError(404, 'Cliente no encontrado'));
+    res.status(200).json({ message: `GET cliente con ID ${req.params.id}`, data: customer });
+  } catch (err) {
+    next(toHttpError(err));
+  }
 };
 
-exports.update = (req, res) => {
-  const { id } = req.params;
-  res.status(200).json({
-    message: `Cliente con ID ${id} actualizado exitosamente`,
-    data: { _id: id, ...req.body }
-  });
+exports.create = async (req, res, next) => {
+  try {
+    const customer = await Customer.create(req.body);
+    res.status(201).json({ message: 'Cliente creado exitosamente', data: customer });
+  } catch (err) {
+    next(toHttpError(err));
+  }
 };
 
-exports.delete = (req, res) => {
-  const { id } = req.params;
-  res.status(200).json({
-    message: `Cliente con ID ${id} eliminado exitosamente`
-  });
+exports.update = async (req, res, next) => {
+  try {
+    const customer = await Customer.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }).lean();
+    if (!customer) return next(createError(404, 'Cliente no encontrado'));
+    res.status(200).json({ message: `Cliente con ID ${req.params.id} actualizado exitosamente`, data: customer });
+  } catch (err) {
+    next(toHttpError(err));
+  }
+};
+
+exports.delete = async (req, res, next) => {
+  try {
+    const customer = await Customer.findByIdAndDelete(req.params.id).lean();
+    if (!customer) return next(createError(404, 'Cliente no encontrado'));
+    res.status(200).json({ message: `Cliente con ID ${req.params.id} eliminado exitosamente` });
+  } catch (err) {
+    next(toHttpError(err));
+  }
 };
