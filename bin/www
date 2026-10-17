@@ -4,9 +4,13 @@
  * Module dependencies.
  */
 
+require('dotenv').config({ quiet: true });
+
 var app = require('../app');
 var debug = require('debug')('proyecto-stride-co:server');
 var http = require('http');
+var { sequelize } = require('../models/relationals');
+var connectMongo = require('../config/mongoose');
 
 /**
  * Get port from environment and store in Express.
@@ -22,12 +26,28 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Connect to MySQL and MongoDB, then listen on provided port.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+async function start() {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync(); // crea las tablas que no existan
+    console.log('Conexión a MySQL correcta');
+
+    await connectMongo();
+    console.log('Conexión a MongoDB correcta');
+
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  } catch (error) {
+    console.error('No se pudo conectar a la base de datos:', error.message);
+    process.exit(1);
+  }
+}
+
+start();
 
 /**
  * Normalize a port into a number, string, or false.
