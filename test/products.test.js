@@ -1,17 +1,19 @@
 const request = require('supertest');
-const app = require('../app');
+const { buildApp, users } = require('./helpers/rbacApp');
+const productsRouter = require('../routes/products');
+
+const app = buildApp((a) => a.use('/api/products', productsRouter));
 
 describe('API de Products', () => {
-
   it('GET /api/products debe responder 200 con un arreglo de productos', async () => {
-    const response = await request(app).get('/api/products');
+    const response = await request(app).get('/api/products').set(users.admin);
     expect(response.statusCode).toBe(200);
     expect(Array.isArray(response.body.data)).toBe(true);
     expect(response.body.data[0]).toHaveProperty('name');
   });
 
   it('GET /api/products/:id debe responder 200 con el producto correcto', async () => {
-    const response = await request(app).get('/api/products/1');
+    const response = await request(app).get('/api/products/1').set(users.admin);
     expect(response.statusCode).toBe(200);
     expect(response.body.data.id).toBe(1);
     expect(typeof response.body.data.price).toBe('number');
@@ -26,6 +28,7 @@ describe('API de Products', () => {
     };
     const response = await request(app)
       .post('/api/products')
+      .set(users.admin)
       .send(nuevoProducto);
 
     expect(response.statusCode).toBe(201);
@@ -37,6 +40,7 @@ describe('API de Products', () => {
     const datosActualizados = { name: 'Tenis Rail Z' };
     const response = await request(app)
       .put('/api/products/1')
+      .set(users.admin)
       .send(datosActualizados);
 
     expect(response.statusCode).toBe(200);
@@ -44,9 +48,7 @@ describe('API de Products', () => {
   });
 
   it('DELETE /api/products/:id debe eliminar y responder 200', async () => {
-    const response = await request(app).delete('/api/products/1');
+    const response = await request(app).delete('/api/products/1').set(users.admin);
     expect(response.statusCode).toBe(200);
   });
-
-
 });
