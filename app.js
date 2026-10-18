@@ -50,10 +50,13 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (req.originalUrl.startsWith('/api')) {
-    return res.status(err.status || 500).json({
+    const status = err.status || 500;
+    // En un error 500 no se expone el detalle interno (consultas, rutas, librerías)
+    if (status >= 500) console.error(err);
+    return res.status(status).json({
       error: {
-        message: err.message,
-        status: err.status || 500
+        message: status >= 500 ? 'Error interno del servidor' : err.message,
+        status
       }
     });
   }
