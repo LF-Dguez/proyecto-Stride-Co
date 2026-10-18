@@ -7,6 +7,7 @@ const productsRouter = require('../routes/products');
 const ordersRouter = require('../routes/orders');
 const Order = require('../models/documents/Order');
 const Customer = require('../models/documents/Customer');
+const { Product } = require('../models/relationals');
 const { buildApp, users } = require('./helpers/rbacApp');
 
 afterEach(() => {
@@ -17,8 +18,12 @@ afterEach(() => {
 describe('11.1 Acceso permitido (ADMIN, products:delete:any)', () => {
   it('admin elimina cualquier producto', async () => {
     const app = buildApp((a) => a.use('/api/products', productsRouter));
+    const destroy = jest.fn(async () => {});
+    jest.spyOn(Product, 'findByPk').mockResolvedValue({ id: 1, destroy });
+
     const response = await request(app).delete('/api/products/1').set(users.admin);
     expect(response.statusCode).toBe(200);
+    expect(destroy).toHaveBeenCalled();
   });
 });
 
@@ -26,8 +31,11 @@ describe('11.1 Acceso permitido (ADMIN, products:delete:any)', () => {
 describe('11.2 Acceso denegado (SALES, products:delete:any)', () => {
   it('sales no puede eliminar productos', async () => {
     const app = buildApp((a) => a.use('/api/products', productsRouter));
+    const findSpy = jest.spyOn(Product, 'findByPk');
+
     const response = await request(app).delete('/api/products/1').set(users.sales);
     expect(response.statusCode).toBe(403);
+    expect(findSpy).not.toHaveBeenCalled();
     expect(response.body.error.status).toBe(403);
   });
 });

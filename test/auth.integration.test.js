@@ -4,9 +4,10 @@
 const request = require('supertest');
 
 jest.mock('../models/relationals', () => ({
-  User: { findOne: jest.fn(), findByPk: jest.fn() }
+  User: { findOne: jest.fn(), findByPk: jest.fn() },
+  Product: { findAll: jest.fn(), findByPk: jest.fn() }
 }));
-const { User } = require('../models/relationals');
+const { User, Product } = require('../models/relationals');
 const { hashPassword } = require('../services/password');
 const { buildAccessControl, setAccessControl } = require('../services/rbac');
 const { ROLE_PERMISSIONS } = require('../seeders/rbacMatrix');
@@ -57,9 +58,11 @@ describe('Flujo completo: login -> token -> recurso protegido', () => {
     const token = await login(admin);
     User.findByPk.mockResolvedValue(admin);
 
+    Product.findAll.mockResolvedValue([]);
     const response = await request(app).get('/api/products').set('Authorization', `Bearer ${token}`);
 
     expect(response.statusCode).toBe(200);
+    expect(Product.findAll).toHaveBeenCalled();
   });
 
   it('SALES: login, luego DELETE /api/products/:id (sin permiso) => 403', async () => {
@@ -70,6 +73,7 @@ describe('Flujo completo: login -> token -> recurso protegido', () => {
     const response = await request(app).delete('/api/products/1').set('Authorization', `Bearer ${token}`);
 
     expect(response.statusCode).toBe(403);
+    expect(Product.findByPk).not.toHaveBeenCalled();
   });
 
   it('sin token => 401, nunca llega a authorize', async () => {
