@@ -133,7 +133,8 @@ describe('POST /api/users (como admin)', () => {
   });
 
   it('responde 400 si falta el password', async () => {
-    const { password, ...sinPassword } = nuevoUsuario;
+    const sinPassword = { ...nuevoUsuario };
+    delete sinPassword.password;
     const response = await request(protectedApp).post('/api/users').set(users.admin).send(sinPassword);
     expect(response.statusCode).toBe(400);
     expect(User.create).not.toHaveBeenCalled();
