@@ -6,6 +6,16 @@
 
 require('dotenv').config({ quiet: true });
 
+// Sin JWT_SECRET, JWT_EXPIRES_IN, JWT_ISSUER y JWT_AUDIENCE la API no puede firmar
+// ni verificar tokens: se detiene el arranque con un mensaje claro en lugar del
+// RangeError que lanzaría express-jwt al cargar middlewares/authenticate.js.
+try {
+  require('../services/token').getJwtConfig();
+} catch (error) {
+  console.error(error.message + '. Revisa tu archivo .env (ver .env.example).');
+  process.exit(1);
+}
+
 var app = require('../app');
 var debug = require('debug')('proyecto-stride-co:server');
 var http = require('http');

@@ -9,7 +9,9 @@ const INVALID_CREDENTIALS = { message: 'Invalid credentials' };
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body || {};
-    if (!email || !password) {
+    // Ambos deben ser texto no vacío: un objeto o un número en el body responde 400,
+    // no llega a la consulta de Sequelize (que lo rechazaría con un 500).
+    if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
       return res.status(400).json({ message: 'email y password son obligatorios' });
     }
 

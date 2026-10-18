@@ -71,6 +71,29 @@ describe('POST /api/auth/login', () => {
     expect(User.findOne).not.toHaveBeenCalled();
   });
 
+  it('400: email que no es texto (por ejemplo un objeto) no llega a la base de datos', async () => {
+    const response = await request(app).post('/api/auth/login').send({ email: { $ne: null }, password: 'Secret123' });
+    expect(response.statusCode).toBe(400);
+    expect(User.findOne).not.toHaveBeenCalled();
+  });
+
+  it('400: password que no es texto', async () => {
+    const response = await request(app).post('/api/auth/login').send({ email: 'ana@stride.co', password: 12345678 });
+    expect(response.statusCode).toBe(400);
+    expect(User.findOne).not.toHaveBeenCalled();
+  });
+
+  it('500: un error interno no expone su detalle en la respuesta', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    User.findOne.mockRejectedValue(new Error('connect ECONNREFUSED 127.0.0.1:3306'));
+
+    const response = await request(app).post('/api/auth/login').send({ email: 'ana@stride.co', password: 'Secret123' });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: { message: 'Error interno del servidor', status: 500 } });
+    console.error.mockRestore();
+  });
+
   it('401: email inexistente responde con el mensaje genérico', async () => {
     User.findOne.mockResolvedValue(null);
 
