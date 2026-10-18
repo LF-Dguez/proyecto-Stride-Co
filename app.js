@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 
+const authenticate = require('./middlewares/authenticate');
+
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
@@ -28,16 +30,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+// /health (en indexRouter) y /api/auth/login son públicos; todo lo demás bajo
+// /api exige un Bearer token válido antes de pasar por authorize() en cada router.
 app.use('/', indexRouter);
 app.use('/api/auth', authRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/roles', rolesRouter);
-app.use('/api/permissions', permissionsRouter);
-app.use('/api/products', productsRouter);
-app.use('/api/variants', variantsRouter);
-app.use('/api/inventory', inventoryRouter);
-app.use('/api/customers', customersRouter);
-app.use('/api/orders', ordersRouter);
+app.use('/api/users', authenticate, usersRouter);
+app.use('/api/roles', authenticate, rolesRouter);
+app.use('/api/permissions', authenticate, permissionsRouter);
+app.use('/api/products', authenticate, productsRouter);
+app.use('/api/variants', authenticate, variantsRouter);
+app.use('/api/inventory', authenticate, inventoryRouter);
+app.use('/api/customers', authenticate, customersRouter);
+app.use('/api/orders', authenticate, ordersRouter);
 
 
 app.use((req, res, next) => {

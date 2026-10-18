@@ -278,10 +278,11 @@ describe('DELETE /api/users/:id (como admin)', () => {
 });
 
 describe('Rutas inexistentes', () => {
-  it('GET a una subruta inexistente de /api/users debe responder 404', async () => {
-    // No llega al middleware de autorización: Express no encuentra la ruta.
+  it('GET a una subruta inexistente de /api/users, sin token, responde 401', async () => {
+    // authenticate (issue #75) protege todo el prefijo /api/users: una petición
+    // sin token nunca llega a que Express intente resolver la ruta.
     const response = await request(app).get('/api/users/1/inexistente');
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(401);
     expect(response.body).toHaveProperty('error');
   });
 });
