@@ -26,3 +26,9 @@ exports.login = async (req, res, next) => {
     next(err);
   }
 };
+
+// req.user ya lo deja listo el middleware authenticate (ver middlewares/authenticate.js).
+// Se responde con la instancia tal cual: toJSON() oculta password_hash y salt_key.
+exports.me = (req, res) => {
+  res.status(200).json(req.user);
+};
