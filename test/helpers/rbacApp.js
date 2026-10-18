@@ -1,12 +1,10 @@
 // Utilidades de prueba RBAC. No requieren MySQL ni MongoDB.
 //
-// Contrato de req.user (issue #45): mientras no exista JWT (Actividad 4),
-// authorize() y los controllers esperan req.user = { id, role_id } (igual
-// que el modelo User de Sequelize) o, como atajo en pruebas, { id, role }
-// con el nombre del rol directo. services/rbac.js#getRoleName() acepta
-// cualquiera de las dos formas. Este helper simula ese contrato con un
-// header (x-test-user) para no depender de un middleware de autenticación
-// real todavía.
+// Simulan lo que en la app real hace el middleware authenticate (JWT): dejar al
+// usuario en req.user = { id, role_id } o, como atajo en pruebas, { id, role }
+// con el nombre del rol directo (services/rbac.js#getRoleName acepta ambos).
+// Así cada prueba elige el rol con un header (x-test-user) sin firmar tokens.
+// El flujo con JWT real está cubierto en test/auth.integration.test.js.
 const express = require('express');
 const { ROLE_PERMISSIONS } = require('../../seeders/rbacMatrix');
 const { buildAccessControl, setAccessControl } = require('../../services/rbac');
