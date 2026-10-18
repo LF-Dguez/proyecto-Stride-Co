@@ -80,4 +80,13 @@ describe('11.5 Permiso any no asignado (USER, orders:read:any)', () => {
     const response = await request(app).get('/orders-any').set(users.user);
     expect(response.statusCode).toBe(403);
   });
+
+  it('en un endpoint real que exige any (DELETE /api/orders/:id), user recibe 403 y no se borra nada', async () => {
+    const app = buildApp((a) => a.use('/api/orders', ordersRouter));
+    const deleteSpy = jest.spyOn(Order, 'findByIdAndDelete');
+
+    const response = await request(app).delete('/api/orders/o00000000000000000000b1').set(users.user);
+    expect(response.statusCode).toBe(403);
+    expect(deleteSpy).not.toHaveBeenCalled();
+  });
 });
