@@ -161,3 +161,43 @@ describe('Ruta inexistente', () => {
     expect(response.body).toHaveProperty('error');
   });
 });
+
+describe('ID mal formado con alcance own', () => {
+  it('user con un id que no es ObjectId recibe 400, no 500', async () => {
+    const castError = Object.assign(new Error('Cast to ObjectId failed'), { name: 'CastError' });
+    jest.spyOn(Customer, 'findById').mockReturnValue({ lean: () => Promise.reject(castError) });
+
+    const response = await request(protectedApp).get('/api/customers/abc').set(users.user);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error.message).toBe('Id de cliente inválido');
+  });
+});
+
+describe('PUT /api/customers/:id no cambia al dueño', () => {
+  it('own: userId en el body se ignora y solo se actualizan los campos permitidos', async () => {
+    jest.spyOn(Customer, 'findById').mockReturnValue(mockLean(customerOfUser));
+    const updateSpy = jest.spyOn(Customer, 'findByIdAndUpdate').mockReturnValue(mockLean({ ...customerOfUser, phone: '6140000000' }));
+
+    const response = await request(protectedApp)
+      .put(`/api/customers/${customerOfUser._id}`)
+      .set(users.user)
+      .send({ phone: '6140000000', userId: 20 });
+
+    expect(response.statusCode).toBe(200);
+    expect(updateSpy.mock.calls[0][1]).toEqual({ phone: '6140000000' });
+  });
+
+  it('own: un body que solo intenta cambiar userId responde 400', async () => {
+    jest.spyOn(Customer, 'findById').mockReturnValue(mockLean(customerOfUser));
+    const updateSpy = jest.spyOn(Customer, 'findByIdAndUpdate');
+
+    const response = await request(protectedApp)
+      .put(`/api/customers/${customerOfUser._id}`)
+      .set(users.user)
+      .send({ userId: 20 });
+
+    expect(response.statusCode).toBe(400);
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+});

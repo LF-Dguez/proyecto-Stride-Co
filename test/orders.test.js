@@ -169,3 +169,31 @@ describe('Ruta inexistente', () => {
     expect(response.body).toHaveProperty('error');
   });
 });
+
+describe('ID mal formado con alcance own', () => {
+  it('user con un id que no es ObjectId recibe 400, no 500', async () => {
+    const castError = Object.assign(new Error('Cast to ObjectId failed'), { name: 'CastError' });
+    jest.spyOn(Order, 'findById').mockReturnValue({ lean: () => Promise.reject(castError) });
+
+    const response = await request(protectedApp).get('/api/orders/abc').set(users.user);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error.message).toBe('Id de orden inválido');
+  });
+});
+
+describe('PUT /api/orders/:id no cambia al dueño', () => {
+  it('own: customerId en el body se ignora y la orden sigue siendo del mismo cliente', async () => {
+    jest.spyOn(Order, 'findById').mockReturnValue(mockLean(orderOfUser));
+    jest.spyOn(Customer, 'findById').mockReturnValue(mockLean(customerOfUser));
+    const updateSpy = jest.spyOn(Order, 'findByIdAndUpdate').mockReturnValue(mockLean({ ...orderOfUser, paymentMethod: 'CASH' }));
+
+    const response = await request(protectedApp)
+      .put(`/api/orders/${orderOfUser._id}`)
+      .set(users.user)
+      .send({ paymentMethod: 'CASH', customerId: customerOfOther._id });
+
+    expect(response.statusCode).toBe(200);
+    expect(updateSpy.mock.calls[0][1]).toEqual({ paymentMethod: 'CASH' });
+  });
+});
