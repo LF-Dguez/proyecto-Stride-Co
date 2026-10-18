@@ -162,9 +162,10 @@ describe('DELETE /api/orders/:id', () => {
 });
 
 describe('Ruta inexistente', () => {
-  it('GET a una subruta inexistente de /api/orders debe responder 404', async () => {
+  it('GET a una subruta inexistente de /api/orders, sin token, responde 401', async () => {
+    // authenticate (issue #75) protege todo el prefijo /api/orders.
     const response = await request(app).get('/api/orders/1/inexistente');
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(401);
     expect(response.body).toHaveProperty('error');
   });
 });

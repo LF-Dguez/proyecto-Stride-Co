@@ -64,9 +64,10 @@ describe('API de Roles (como admin)', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('GET a una subruta inexistente de /api/roles debe responder 404', async () => {
+  it('GET a una subruta inexistente de /api/roles, sin token, responde 401', async () => {
+    // authenticate (issue #75) protege todo el prefijo /api/roles.
     const response = await request(app).get('/api/roles/1/inexistente');
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(401);
     expect(response.body).toHaveProperty('error');
   });
 
