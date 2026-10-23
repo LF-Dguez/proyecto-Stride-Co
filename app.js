@@ -3,6 +3,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+//const {expressjwt}
+
+const i18n = require('./config/i18n');
 
 
 const authenticate = require('./middlewares/authenticate');
@@ -28,6 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(i18n.init);
 
 
 // /health (en indexRouter) y /api/auth/login son públicos; todo lo demás bajo

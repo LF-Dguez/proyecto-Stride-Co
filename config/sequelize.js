@@ -1,14 +1,20 @@
 require('dotenv').config({ quiet: true });
 const { Sequelize } = require('sequelize');
+const config = require('config');
 
-// Conexión a MySQL. Los datos salen del archivo .env (ver .env.example).
+const mysqlConfig = config.get("mysql");
+
+// Conexión a MySQL. El .env (ver .env.example) tiene prioridad; si no, se usa
+// config/<NODE_ENV>.json (con config/default.json como base).
+const database = process.env.DB_NAME || mysqlConfig.database;
+
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'stride_co',
-  process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || '',
+  database,
+  process.env.DB_USER || mysqlConfig.user,
+  process.env.DB_PASSWORD ?? mysqlConfig.password,
   {
-    host: process.env.DB_HOST || 'localhost',
-    port: Number(process.env.DB_PORT) || 3306,
+    host: process.env.DB_HOST || mysqlConfig.host,
+    port: Number(process.env.DB_PORT) || mysqlConfig.port,
     dialect: 'mysql',
     logging: false,
     define: {
@@ -17,5 +23,7 @@ const sequelize = new Sequelize(
     }
   }
 );
+
+console.log("app conectada a " + database);
 
 module.exports = sequelize;
