@@ -50,32 +50,41 @@ cd proyecto-Stride-Co
 npm install
 ```
 
-Crea un archivo `.env` a partir de `.env.example` y llena tus datos locales:
+### Configuración y secretos
+
+La configuración se lee con la librería [config](https://www.npmjs.com/package/config) (`config.get('clave')`); el código no lee `process.env`. Solo dos variables de entorno existen: `NODE_ENV` (modo: `development` por defecto, `test` o `production`) y `PORT` (se enlaza con `server.port`).
+
+| Dónde | Qué contiene | ¿Va en git? |
+|---|---|---|
+| `config/default.json`, `development.json`, `test.json`, `production.json` | Configuración no secreta (expiración del JWT, costo de bcrypt, SSL, etc.) | Sí |
+| `config/custom-environment-variables.json` | `PORT` -> `server.port` | Sí |
+| `config/local-<entorno>.example.json` | Plantillas de secretos | Sí |
+| `config/local-development.json`, `config/local-production.json` | Secretos: `jwt.secret`, `postgres.uri` y `mongo.uri` | **No** (`.gitignore` y `.dockerignore`) |
+
+Para trabajar en local, crea tu archivo de secretos a partir de la plantilla y llénalo:
 
 ```bash
-cp .env.example .env
+cp config/local-development.example.json config/local-development.json
 ```
 
-| Variable | Uso |
-|---|---|
-| `PORT` | Puerto del servidor (por defecto `3000`) |
-| `MONGO_URI` | Conexión a MongoDB (Mongoose) |
-| `JWT_SECRET`, `JWT_EXPIRES_IN`, `JWT_ISSUER`, `JWT_AUDIENCE`, `BCRYPT_SALT_ROUNDS` | Autenticación (ver [Autenticación](#autenticación)) |
-| `SEED_USER_PASSWORD` | Contraseña de los usuarios de prueba que crea el seed |
+Genera un `jwt.secret` propio con `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`. Si falta `jwt.secret` o alguna URI, el servidor no arranca y muestra qué falta. `npm test` no necesita secretos reales: usa `config/test.json`.
 
-Si falta alguna variable de JWT, el servidor no arranca y muestra cuál falta.
+```bash
+npm start                                  # development, puerto 3000
+NODE_ENV=production PORT=8080 npm start    # production, puerto 8080
+```
 
-**PostgreSQL:** la conexión ya no usa las variables `DB_*`. Se configura con `postgres.uri` en `config/local-development.json` (cópialo desde `config/local-development.example.json`; ese archivo está en `.gitignore` y nunca se sube). Para tener PostgreSQL local con Docker:
+**PostgreSQL:** la URI se define en `postgres.uri` de `config/local-development.json`. Para tener PostgreSQL local con Docker:
 
 ```bash
 docker run -d --name stride-pg -e POSTGRES_PASSWORD=CAMBIAR -e POSTGRES_DB=stride_co -p 5432:5432 postgres:16
 ```
 
-Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/stride_co`. Para la External Database URL de Render PostgreSQL se necesita SSL: `postgres.ssl` es `true` en `config/production.json`.
+Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/stride_co`. Para la External Database URL de Render PostgreSQL se necesita SSL: `postgres.ssl` es `true` en `config/production.json`. **MongoDB:** `mongo.uri` (por ejemplo `mongodb://localhost:27017/stride_co`).
 
 `npm start` y `npm run dev` necesitan PostgreSQL y MongoDB corriendo: al arrancar, el servidor se conecta a ambas, sincroniza las tablas y carga los permisos RBAC antes de aceptar peticiones. `npm test` no los necesita: las pruebas simulan las consultas a la base de datos.
 
-Para poblar roles, permisos y usuarios de prueba (`admin@stride.co`, `sales@stride.co` y `user@stride.co`, con la contraseña de `SEED_USER_PASSWORD`):
+Para poblar roles, permisos y usuarios de prueba (`admin@stride.co`, `sales@stride.co` y `user@stride.co`, con la contraseña de demostración `seed.demoPassword`, definida en `config/default.json`; es un dato ficticio exclusivo de esas cuentas):
 
 ```bash
 npm run seed
@@ -130,7 +139,6 @@ stride-co/
 ├── views/               vistas Pug
 ├── app.js               configuración de Express, logging y manejo de errores
 ├── eslint.config.js     configuración de ESLint
-├── .env.example         variables de entorno requeridas
 └── package.json
 ```
 
@@ -213,10 +221,10 @@ La contraseña nunca se guarda ni se devuelve en texto plano. `services/password
 
 | Función | Qué hace |
 |---|---|
-| `hashPassword(password)` | `bcrypt.genSalt(BCRYPT_SALT_ROUNDS)` genera el `salt_key` y `bcrypt.hash(password, salt_key)` el `password_hash` |
+| `hashPassword(password)` | `bcrypt.genSalt(bcrypt.saltRounds)` genera el `salt_key` y `bcrypt.hash(password, salt_key)` el `password_hash` |
 | `verifyPassword(password, passwordHash)` | Compara con `bcrypt.compare` (nunca recalcula el hash para compararlo con `===`) |
 
-- **Factor de costo:** se lee de `BCRYPT_SALT_ROUNDS` (por defecto `10`).
+- **Factor de costo:** se lee de `bcrypt.saltRounds` (por defecto `10`).
 - **Campos:** `salt_key` y `password_hash` en la tabla `users`. Se guardan juntos y se regeneran juntos: al crear un usuario y cada vez que cambia su contraseña (`POST /api/users` y `PUT /api/users/:id` con `password`) se genera un salt nuevo y un hash nuevo.
 - **Datos sensibles:** `User.toJSON()` elimina `password`, `password_hash` y `salt_key`, así que no aparecen en ninguna respuesta de la API. Tampoco van dentro del JWT.
 
@@ -235,7 +243,7 @@ Público. Busca al usuario por email, valida que exista y esté activo, verifica
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@stride.co","password":"<tu SEED_USER_PASSWORD>"}'
+  -d '{"email":"admin@stride.co","password":"Stride-Dev-123"}'
 ```
 
 ```json
@@ -252,7 +260,7 @@ Si el email no existe, la contraseña es incorrecta o el usuario está inactivo,
 { "message": "Invalid credentials" }
 ```
 
-El token se firma con `jwt.sign()` usando `HS256`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `JWT_ISSUER` y `JWT_AUDIENCE`. Su payload lleva **solo** `sub` (el id del usuario), además de los campos estándar `iat`, `exp`, `iss` y `aud`:
+El token se firma con `jwt.sign()` usando `HS256`, `jwt.secret`, `jwt.expiresIn`, `jwt.issuer` y `jwt.audience`. Su payload lleva **solo** `sub` (el id del usuario), además de los campos estándar `iat`, `exp`, `iss` y `aud`:
 
 ```json
 { "sub": "1", "iat": 1792356802, "exp": 1792357702, "iss": "stride-co", "aud": "stride-co-api" }
@@ -292,19 +300,19 @@ curl http://localhost:3000/api/auth/me -H "Authorization: Bearer <token>"
 
 ### Expiración
 
-El token expira según `JWT_EXPIRES_IN`, configurado en **15 minutos** (`15m`). Después hay que volver a hacer login.
+El token expira según `jwt.expiresIn`, configurado en **15 minutos** (`15m`). Después hay que volver a hacer login.
 
-### Variables de entorno
+### Configuración
 
-| Variable | Ejemplo | Descripción |
+| Clave de `config` | Valor | Descripción |
 |---|---|---|
-| `JWT_SECRET` | (sin valor en el repositorio) | Clave para firmar y verificar los tokens |
-| `JWT_EXPIRES_IN` | `15m` | Tiempo de expiración del token |
-| `JWT_ISSUER` | `stride-co` | Emisor (`iss`) que se firma y se valida |
-| `JWT_AUDIENCE` | `stride-co-api` | Audiencia (`aud`) que se firma y se valida |
-| `BCRYPT_SALT_ROUNDS` | `10` | Factor de costo de bcrypt |
+| `jwt.secret` | (en `config/local-<entorno>.json`; sin valor en el repositorio) | Clave para firmar y verificar los tokens |
+| `jwt.expiresIn` | `15m` | Tiempo de expiración del token |
+| `jwt.issuer` | `stride-co` | Emisor (`iss`) que se firma y se valida |
+| `jwt.audience` | `stride-co-api` | Audiencia (`aud`) que se firma y se valida |
+| `bcrypt.saltRounds` | `10` | Factor de costo de bcrypt |
 
-El valor real de `JWT_SECRET` nunca se sube al repositorio: `.env` está en `.gitignore` y `.env.example` lo deja vacío. Para generar uno local:
+El valor real de `jwt.secret` nunca se sube al repositorio: vive en `config/local-<entorno>.json`, que está en `.gitignore` y `.dockerignore`, y la plantilla `config/local-development.example.json` lo deja vacío. Para generar uno local:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
@@ -449,4 +457,4 @@ Además, cada recurso tiene pruebas de acceso permitido y denegado (`test/*.rbac
 - Los commits siguen la especificación [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `chore:`.
 - El trabajo se hace en ramas por funcionalidad (por ejemplo `feat/...`, `test/...`) y se integra a `main` mediante Pull Request con merge commit.
 - Cada actividad conserva su rama en el remoto después del merge: `feat/jwt-authentication` (Actividad 4) y `feat/rbac-authorization` (Tarea 6).
-- No se suben `node_modules/` ni archivos `.env`; están incluidos en `.gitignore`.
+- No se suben `node_modules/` ni los archivos `config/local*.json` (secretos); están incluidos en `.gitignore`.
