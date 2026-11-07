@@ -353,22 +353,41 @@ Cada permiso sigue el formato `recurso:accion:alcance`, por ejemplo `orders:read
 ### Matriz RBAC
 
 | Recurso · operación | ADMIN | SALES | USER |
-|---|---|---|---|
-| users, roles, permissions · create/read/update/delete | any | — | — |
+|---|:---:|:---:|:---:|
+| users · create | any | — | — |
+| users · read | any | — | — |
+| users · update | any | — | — |
+| users · delete | any | — | — |
+| roles · create | any | — | — |
+| roles · read | any | — | — |
+| roles · update | any | — | — |
+| roles · delete | any | — | — |
+| permissions · create | any | — | — |
+| permissions · read | any | — | — |
+| permissions · update | any | — | — |
+| permissions · delete | any | — | — |
+| products · create | any | — | — |
 | products · read | any | any | any |
-| products · create/update/delete | any | — | — |
+| products · update | any | — | — |
+| products · delete | any | — | — |
+| variants · create | any | — | — |
 | variants · read | any | any | any |
-| variants · create/update/delete | any | — | — |
-| inventory · read, update | any | any | — |
-| inventory · create, delete | any | — | — |
+| variants · update | any | — | — |
+| variants · delete | any | — | — |
+| inventory · create | any | — | — |
+| inventory · read | any | any | — |
+| inventory · update | any | any | — |
+| inventory · delete | any | — | — |
 | customers · create | any | any | — |
-| customers · read, update | any | any | own |
+| customers · read | any | any | own |
+| customers · update | any | any | own |
 | customers · delete | any | — | — |
 | orders · create | any | any | any |
-| orders · read, update | any | any | own |
+| orders · read | any | any | own |
+| orders · update | any | any | own |
 | orders · delete | any | — | — |
 
-Esta matriz coincide con los registros de `roles`, `permissions` y `role_permission` que siembra `npm run seed` (definidos en `seeders/rbacMatrix.js`) y con el comportamiento de la API: `GET /api/roles` la devuelve tal como está en la base de datos.
+Esta matriz se genera con `npm run matrix` desde `seeders/rbacMatrix.js` (la misma fuente del seed) y coincide con los registros de `roles`, `permissions` y `role_permission` que siembra `npm run seed` (definidos en `seeders/rbacMatrix.js`) y con el comportamiento de la API: `GET /api/roles` la devuelve tal como está en la base de datos.
 
 ### Endpoints protegidos
 
