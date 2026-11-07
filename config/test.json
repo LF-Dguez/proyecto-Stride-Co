@@ -1,0 +1,14 @@
+{
+    "jwt": {
+        "secret": "secreto-solo-para-pruebas-jest-no-usar-en-produccion"
+    },
+    "bcrypt": {
+        "saltRounds": 4
+    },
+    "postgres": {
+        "uri": "postgres://postgres@localhost:5432/stride_co_test"
+    },
+    "mongo": {
+        "uri": "mongodb://localhost:27017/stride_co_test"
+    }
+}

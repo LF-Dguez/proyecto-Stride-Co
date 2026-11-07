@@ -1,4 +1,7 @@
 {
+    "postgres": {
+        "ssl": true
+    },
     "mysql": {
         "host": "localhost",
         "port": 3306,
