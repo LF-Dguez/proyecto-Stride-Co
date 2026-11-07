@@ -23,12 +23,15 @@ function toHttpError(err) {
       return createError(400, err.errors?.[0]?.message || 'Datos inválidos');
     case 'SequelizeUniqueConstraintError':
       return createError(409, 'El registro ya existe');
-    case 'SequelizeForeignKeyConstraintError':
-      // Al insertar/actualizar: el registro relacionado no existe.
-      // Al eliminar: otros registros todavía dependen de este.
-      return err.parent?.code === 'ER_ROW_IS_REFERENCED_2'
+    case 'SequelizeForeignKeyConstraintError': {
+      // PostgreSQL usa el código 23503 tanto al insertar/actualizar (el registro relacionado
+      // no existe) como al eliminar (otros registros todavía dependen de este). Se distinguen
+      // por el detalle: "... is still referenced from table ...".
+      const detail = err.parent?.detail || '';
+      return /still referenced/i.test(detail)
         ? createError(409, 'El registro está en uso por otros registros')
         : createError(400, 'El registro relacionado no existe');
+    }
     case 'SequelizeDatabaseError':
       return createError(400, 'Datos inválidos');
     default:

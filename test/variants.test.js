@@ -17,7 +17,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-describe('API de Variants (MySQL con Sequelize)', () => {
+describe('API de Variants (PostgreSQL con Sequelize)', () => {
   it('GET /api/variants responde 200 con las variantes de la base de datos', async () => {
     ProductVariant.findAll.mockResolvedValue([variante]);
     const response = await request(app).get('/api/variants').set(users.admin);
@@ -89,7 +89,7 @@ describe('API de Variants (MySQL con Sequelize)', () => {
   it('DELETE /api/variants/:id con inventario asociado responde 409', async () => {
     const instancia = mockInstance(variante);
     instancia.destroy.mockRejectedValue(sequelizeError('SequelizeForeignKeyConstraintError', {
-      parent: { code: 'ER_ROW_IS_REFERENCED_2' }
+      parent: { code: '23503', detail: 'Key (id)=(1) is still referenced from table "inventory".' }
     }));
     ProductVariant.findByPk.mockResolvedValue(instancia);
     const response = await request(app).delete('/api/variants/1').set(users.admin);
