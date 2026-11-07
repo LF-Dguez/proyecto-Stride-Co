@@ -1,0 +1,11 @@
+{
+    "jwt": {
+        "secret": ""
+    },
+    "postgres": {
+        "uri": "postgres://USUARIO:CONTRASENA@HOST:5432/BASE"
+    },
+    "mongo": {
+        "uri": "mongodb+srv://USUARIO:CONTRASENA@CLUSTER.mongodb.net/stride_co?retryWrites=true&w=majority"
+    }
+}

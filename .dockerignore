@@ -3,3 +3,7 @@ npm-debug.log
 .git
 .gitignore
 .env
+
+# Los secretos de config/ nunca deben entrar en la imagen
+config/local*.json
+!config/local*.example.json

@@ -1,0 +1,11 @@
+{
+    "jwt": {
+        "secret": ""
+    },
+    "postgres": {
+        "uri": "postgres://postgres:CAMBIAR@localhost:5432/stride_co"
+    },
+    "mongo": {
+        "uri": "mongodb://localhost:27017/stride_co"
+    }
+}
