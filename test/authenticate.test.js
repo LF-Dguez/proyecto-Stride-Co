@@ -1,6 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const config = require('config');
 
 jest.mock('../models/sql', () => ({
   User: { findByPk: jest.fn() }
@@ -25,10 +26,10 @@ function buildApp() {
 const app = buildApp();
 
 function sign(payload, overrides = {}) {
-  return jwt.sign(payload, overrides.secret || process.env.JWT_SECRET, {
-    expiresIn: overrides.expiresIn || process.env.JWT_EXPIRES_IN,
-    issuer: overrides.issuer || process.env.JWT_ISSUER,
-    audience: overrides.audience || process.env.JWT_AUDIENCE,
+  return jwt.sign(payload, overrides.secret || config.get('jwt.secret'), {
+    expiresIn: overrides.expiresIn || config.get('jwt.expiresIn'),
+    issuer: overrides.issuer || config.get('jwt.issuer'),
+    audience: overrides.audience || config.get('jwt.audience'),
     algorithm: 'HS256'
   });
 }

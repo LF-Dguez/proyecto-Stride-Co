@@ -1,4 +1,3 @@
-process.env.BCRYPT_SALT_ROUNDS = '4';
 
 const request = require('supertest');
 const app = require('../app');

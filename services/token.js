@@ -1,18 +1,19 @@
 const jwt = require('jsonwebtoken');
+const config = require('config');
 
-const REQUIRED = ['JWT_SECRET', 'JWT_EXPIRES_IN', 'JWT_ISSUER', 'JWT_AUDIENCE'];
+const REQUIRED = ['jwt.secret', 'jwt.expiresIn', 'jwt.issuer', 'jwt.audience'];
 
-// Toda la configuración sale de variables de entorno; si falta alguna no se firma el token
+// Toda la configuración sale de config (jwt.secret en config/local-<entorno>.json); si falta alguna no se firma el token
 function getJwtConfig() {
-  const missing = REQUIRED.filter((name) => !process.env[name]);
+  const missing = REQUIRED.filter((key) => !config.has(key) || !config.get(key));
   if (missing.length > 0) {
     throw new Error(`Configuración JWT incompleta, faltan: ${missing.join(', ')}`);
   }
   return {
-    secret: process.env.JWT_SECRET,
-    expiresIn: process.env.JWT_EXPIRES_IN,
-    issuer: process.env.JWT_ISSUER,
-    audience: process.env.JWT_AUDIENCE
+    secret: config.get('jwt.secret'),
+    expiresIn: config.get('jwt.expiresIn'),
+    issuer: config.get('jwt.issuer'),
+    audience: config.get('jwt.audience')
   };
 }
 

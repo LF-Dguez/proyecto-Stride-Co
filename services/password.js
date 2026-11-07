@@ -1,10 +1,12 @@
 const bcrypt = require('bcrypt');
+const config = require('config');
 
 const DEFAULT_SALT_ROUNDS = 10;
 
-// Factor de costo desde BCRYPT_SALT_ROUNDS; si falta o es inválido se usa un valor seguro por defecto
+// Factor de costo desde config (bcrypt.saltRounds); si falta o es inválido se usa un valor seguro por defecto
 function getSaltRounds() {
-  const rounds = Number.parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
+  const configured = config.has('bcrypt.saltRounds') ? config.get('bcrypt.saltRounds') : undefined;
+  const rounds = Number.parseInt(configured, 10);
   return Number.isInteger(rounds) && rounds >= 4 && rounds <= 31 ? rounds : DEFAULT_SALT_ROUNDS;
 }
 
