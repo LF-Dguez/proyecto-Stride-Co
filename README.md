@@ -28,7 +28,7 @@ Este sistema busca resolver esa brecha proporcionando una plataforma centralizad
 - Node.js y Express (estructura generada con Express Generator)
 - Pug para las vistas
 - Morgan para el logging de solicitudes HTTP
-- Sequelize + MySQL para el modelo relacional (users, roles, permissions, products, variants, inventory)
+- Sequelize + PostgreSQL para el modelo relacional (users, roles, permissions, products, variants, inventory)
 - Mongoose + MongoDB para el modelo documental (customers, orders)
 - bcrypt para almacenar contraseñas de forma segura
 - jsonwebtoken (emitir) y express-jwt (verificar) para la autenticación con JWT
@@ -40,7 +40,7 @@ Este sistema busca resolver esa brecha proporcionando una plataforma centralizad
 
 - Node.js 20.19 o superior
 - npm
-- MySQL 8 (o MariaDB) y MongoDB en ejecución para `npm start`
+- PostgreSQL 16 y MongoDB en ejecución para `npm start`
 
 ## Instalación
 
@@ -59,14 +59,21 @@ cp .env.example .env
 | Variable | Uso |
 |---|---|
 | `PORT` | Puerto del servidor (por defecto `3000`) |
-| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Conexión a MySQL (Sequelize) |
 | `MONGO_URI` | Conexión a MongoDB (Mongoose) |
 | `JWT_SECRET`, `JWT_EXPIRES_IN`, `JWT_ISSUER`, `JWT_AUDIENCE`, `BCRYPT_SALT_ROUNDS` | Autenticación (ver [Autenticación](#autenticación)) |
 | `SEED_USER_PASSWORD` | Contraseña de los usuarios de prueba que crea el seed |
 
 Si falta alguna variable de JWT, el servidor no arranca y muestra cuál falta.
 
-`npm start` y `npm run dev` necesitan MySQL y MongoDB corriendo: al arrancar, el servidor se conecta a ambas, sincroniza las tablas y carga los permisos RBAC antes de aceptar peticiones. `npm test` no los necesita: las pruebas simulan las consultas a la base de datos.
+**PostgreSQL:** la conexión ya no usa las variables `DB_*`. Se configura con `postgres.uri` en `config/local-development.json` (cópialo desde `config/local-development.example.json`; ese archivo está en `.gitignore` y nunca se sube). Para tener PostgreSQL local con Docker:
+
+```bash
+docker run -d --name stride-pg -e POSTGRES_PASSWORD=CAMBIAR -e POSTGRES_DB=stride_co -p 5432:5432 postgres:16
+```
+
+Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/stride_co`. Para la External Database URL de Render PostgreSQL se necesita SSL: `postgres.ssl` es `true` en `config/production.json`.
+
+`npm start` y `npm run dev` necesitan PostgreSQL y MongoDB corriendo: al arrancar, el servidor se conecta a ambas, sincroniza las tablas y carga los permisos RBAC antes de aceptar peticiones. `npm test` no los necesita: las pruebas simulan las consultas a la base de datos.
 
 Para poblar roles, permisos y usuarios de prueba (`admin@stride.co`, `sales@stride.co` y `user@stride.co`, con la contraseña de `SEED_USER_PASSWORD`):
 
@@ -93,7 +100,7 @@ npm run lint
 npm test
 ```
 
-Las pruebas están en la carpeta `test/` (un archivo por recurso) y verifican el código HTTP, la estructura de la respuesta, los errores (400, 404, 409), la autenticación (login, token y `/api/auth/me`) y los escenarios de autorización (ver [Control de acceso basado en roles](#control-de-acceso-basado-en-roles)). Ninguna prueba depende de que MySQL o MongoDB estén corriendo: las consultas a la base de datos se simulan con `jest.mock` y `jest.spyOn` (`test/helpers/`).
+Las pruebas están en la carpeta `test/` (un archivo por recurso) y verifican el código HTTP, la estructura de la respuesta, los errores (400, 404, 409), la autenticación (login, token y `/api/auth/me`) y los escenarios de autorización (ver [Control de acceso basado en roles](#control-de-acceso-basado-en-roles)). Ninguna prueba depende de que PostgreSQL o MongoDB estén corriendo: las consultas a la base de datos se simulan con `jest.mock` y `jest.spyOn` (`test/helpers/`).
 
 ## Arquitectura
 
@@ -107,8 +114,8 @@ HTTP Request → Express → authenticate (JWT) → Route → authorize (RBAC) �
 
 ```
 stride-co/
-├── bin/www              arranque del servidor: conecta MySQL/MongoDB y carga RBAC
-├── config/              conexión a MySQL (sequelize.js) y MongoDB (mongoose.js)
+├── bin/www              arranque del servidor: conecta PostgreSQL/MongoDB y carga RBAC
+├── config/              conexión a PostgreSQL (sequelize.js) y MongoDB (mongoose.js)
 ├── models/
 │   ├── sql/             modelos Sequelize (users, roles, permissions, products, variants, inventory)
 │   └── mongo/           modelos Mongoose (customers, orders)
@@ -132,7 +139,7 @@ stride-co/
 
 ## API
 
-Todos los endpoints responden con `{ "message": "...", "data": ... }` y leen o escriben en la base de datos: MySQL para los recursos relacionales y MongoDB para `customers` y `orders`. Todos los recursos bajo `/api` requieren un token JWT (ver [Autenticación](#autenticación)) y están protegidos con RBAC (ver [Control de acceso basado en roles](#control-de-acceso-basado-en-roles)).
+Todos los endpoints responden con `{ "message": "...", "data": ... }` y leen o escriben en la base de datos: PostgreSQL para los recursos relacionales y MongoDB para `customers` y `orders`. Todos los recursos bajo `/api` requieren un token JWT (ver [Autenticación](#autenticación)) y están protegidos con RBAC (ver [Control de acceso basado en roles](#control-de-acceso-basado-en-roles)).
 
 | Recurso | Modelo | Base |
 |---------|--------|------|

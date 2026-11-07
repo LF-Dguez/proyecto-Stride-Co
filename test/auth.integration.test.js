@@ -1,6 +1,6 @@
 // Prueba de integración del flujo completo (issue #75): login real -> JWT real
 // -> authenticate llena req.user -> authorize decide con el rol real. Los modelos
-// se simulan (no requiere MySQL), pero authenticate y authorize corren tal cual.
+// se simulan (no requiere PostgreSQL), pero authenticate y authorize corren tal cual.
 const request = require('supertest');
 
 jest.mock('../models/sql', () => ({
@@ -44,7 +44,7 @@ async function login(user) {
 }
 
 beforeAll(() => {
-  // Misma matriz que sembraría seedRbac.js, cargada en memoria (sin MySQL).
+  // Misma matriz que sembraría seedRbac.js, cargada en memoria (sin PostgreSQL).
   const permissionRows = Object.entries(ROLE_PERMISSIONS)
     .flatMap(([role, keys]) => keys.map((key) => ({ role, key })));
   setAccessControl(buildAccessControl(permissionRows), { 1: 'admin', 2: 'sales', 3: 'user' });

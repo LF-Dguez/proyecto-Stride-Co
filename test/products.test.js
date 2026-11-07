@@ -17,7 +17,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-describe('API de Products (MySQL con Sequelize)', () => {
+describe('API de Products (PostgreSQL con Sequelize)', () => {
   it('GET /api/products responde 200 con los productos de la base de datos', async () => {
     Product.findAll.mockResolvedValue([producto]);
     const response = await request(app).get('/api/products').set(users.admin);

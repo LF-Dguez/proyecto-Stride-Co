@@ -17,7 +17,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-describe('API de Inventory (MySQL con Sequelize)', () => {
+describe('API de Inventory (PostgreSQL con Sequelize)', () => {
   it('GET /api/inventory responde 200 con el inventario de la base de datos', async () => {
     Inventory.findAll.mockResolvedValue([registro]);
     const response = await request(app).get('/api/inventory').set(users.admin);

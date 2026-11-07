@@ -37,14 +37,14 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
- * Connect to MySQL and MongoDB, then listen on provided port.
+ * Connect to PostgreSQL and MongoDB, then listen on provided port.
  */
 
 async function start() {
   try {
     await sequelize.authenticate();
     await sequelize.sync(); // crea las tablas que no existan
-    console.log('Conexión a MySQL correcta');
+    console.log('Conexión a PostgreSQL correcta');
 
     await loadAccessControl(); // permisos Role -> Permission desde la BD
     console.log('Permisos RBAC cargados desde la base de datos');

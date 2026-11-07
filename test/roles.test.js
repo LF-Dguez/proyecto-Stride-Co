@@ -52,7 +52,7 @@ describe('Autorización de /api/roles', () => {
   });
 });
 
-describe('API de Roles (como admin, MySQL con Sequelize)', () => {
+describe('API de Roles (como admin, PostgreSQL con Sequelize)', () => {
   it('GET /api/roles responde 200 con los roles y sus permisos', async () => {
     Role.findAll.mockResolvedValue([{ ...rol, permissions: permisos }]);
     const response = await request(protectedApp).get('/api/roles').set(users.admin);

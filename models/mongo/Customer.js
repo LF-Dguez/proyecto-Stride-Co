@@ -12,7 +12,7 @@ const addressSchema = new mongoose.Schema({
 }, { _id: false });
 
 const customerSchema = new mongoose.Schema({
-  userId: Number, // id del usuario en MySQL
+  userId: Number, // id del usuario en PostgreSQL
   phone: String,
   email: { type: String, lowercase: true, trim: true },
   addresses: [addressSchema]
