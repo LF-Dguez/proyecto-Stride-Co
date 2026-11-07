@@ -19,7 +19,7 @@ try {
 var app = require('../app');
 var debug = require('debug')('proyecto-stride-co:server');
 var http = require('http');
-var { sequelize } = require('../models/relationals');
+var { sequelize } = require('../models/sql');
 var connectMongo = require('../config/mongoose');
 var { loadAccessControl } = require('../services/rbac');
 

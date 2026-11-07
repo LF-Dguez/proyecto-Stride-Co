@@ -1,10 +1,10 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 
-jest.mock('../models/relationals', () => ({
+jest.mock('../models/sql', () => ({
   User: { findOne: jest.fn() }
 }));
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 const { hashPassword } = require('../services/password');
 
 const app = require('../app');
@@ -12,7 +12,7 @@ const app = require('../app');
 const SENSITIVE_FIELDS = ['password', 'password_hash', 'salt_key'];
 
 // Simula una instancia de Sequelize: igual que el modelo real, toJSON() oculta
-// los campos sensibles al serializar (ver models/relationals/User.js).
+// los campos sensibles al serializar (ver models/sql/User.js).
 async function fakeUser({ password, ...overrides } = {}) {
   const { password_hash, salt_key } = await hashPassword(password || 'Secret123');
   const data = {

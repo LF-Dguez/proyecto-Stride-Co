@@ -1,11 +1,11 @@
 const request = require('supertest');
 const { buildApp, users } = require('./helpers/rbacApp');
 
-jest.mock('../models/relationals', () => {
+jest.mock('../models/sql', () => {
   const { mockModel } = require('./helpers/sequelizeMocks');
   return { Product: mockModel(), ProductVariant: {}, Inventory: {} };
 });
-const { Product } = require('../models/relationals');
+const { Product } = require('../models/sql');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
 const productsRouter = require('../routes/products');
 

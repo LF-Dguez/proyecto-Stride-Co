@@ -1,10 +1,10 @@
 const request = require('supertest');
 
-jest.mock('../models/relationals', () => {
+jest.mock('../models/sql', () => {
   const { mockModel } = require('./helpers/sequelizeMocks');
   return { Permission: mockModel() };
 });
-const { Permission } = require('../models/relationals');
+const { Permission } = require('../models/sql');
 const rbac = require('../services/rbac');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
 const app = require('../app');

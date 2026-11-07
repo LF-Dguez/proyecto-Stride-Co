@@ -110,8 +110,8 @@ stride-co/
 ├── bin/www              arranque del servidor: conecta MySQL/MongoDB y carga RBAC
 ├── config/              conexión a MySQL (sequelize.js) y MongoDB (mongoose.js)
 ├── models/
-│   ├── relationals/     modelos Sequelize (users, roles, permissions, products, variants, inventory)
-│   └── documents/       modelos Mongoose (customers, orders)
+│   ├── sql/             modelos Sequelize (users, roles, permissions, products, variants, inventory)
+│   └── mongo/           modelos Mongoose (customers, orders)
 ├── controllers/         lógica de cada recurso
 ├── routes/              endpoints de cada recurso
 ├── middlewares/         authenticate.js (JWT) y authorize.js (RBAC)

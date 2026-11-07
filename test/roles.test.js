@@ -1,10 +1,10 @@
 const request = require('supertest');
 
-jest.mock('../models/relationals', () => {
+jest.mock('../models/sql', () => {
   const { mockModel } = require('./helpers/sequelizeMocks');
   return { Role: mockModel(), Permission: mockModel(), User: { count: jest.fn() } };
 });
-const { Role, Permission, User } = require('../models/relationals');
+const { Role, Permission, User } = require('../models/sql');
 const rbac = require('../services/rbac');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
 const app = require('../app');

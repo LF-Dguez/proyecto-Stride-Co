@@ -1,5 +1,5 @@
 require('dotenv').config({ quiet: true });
-const { sequelize, User, Role, Permission } = require('../models/relationals');
+const { sequelize, User, Role, Permission } = require('../models/sql');
 const { ROLES, ROLE_PERMISSIONS, PERMISSION_KEYS, USERS } = require('./rbacMatrix');
 const { hashPassword, verifyPassword } = require('../services/password');
 

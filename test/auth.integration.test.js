@@ -3,16 +3,16 @@
 // se simulan (no requiere MySQL), pero authenticate y authorize corren tal cual.
 const request = require('supertest');
 
-jest.mock('../models/relationals', () => ({
+jest.mock('../models/sql', () => ({
   User: { findOne: jest.fn(), findByPk: jest.fn() },
   Product: { findAll: jest.fn(), findByPk: jest.fn() }
 }));
-const { User, Product } = require('../models/relationals');
+const { User, Product } = require('../models/sql');
 const { hashPassword } = require('../services/password');
 const { buildAccessControl, setAccessControl } = require('../services/rbac');
 const { ROLE_PERMISSIONS } = require('../seeders/rbacMatrix');
-const Order = require('../models/documents/Order');
-const Customer = require('../models/documents/Customer');
+const Order = require('../models/mongo/Order');
+const Customer = require('../models/mongo/Customer');
 
 const app = require('../app');
 

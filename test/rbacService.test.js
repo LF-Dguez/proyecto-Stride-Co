@@ -1,4 +1,4 @@
-const { Role } = require('../models/relationals');
+const { Role } = require('../models/sql');
 const { parsePermissionKey, buildAccessControl, loadAccessControl, getAccessControl, getRoleName } = require('../services/rbac');
 
 afterEach(() => jest.restoreAllMocks());

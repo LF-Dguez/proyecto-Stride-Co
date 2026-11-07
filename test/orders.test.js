@@ -1,8 +1,8 @@
 const request = require('supertest');
 const app = require('../app');
 const ordersRouter = require('../routes/orders');
-const Order = require('../models/documents/Order');
-const Customer = require('../models/documents/Customer');
+const Order = require('../models/mongo/Order');
+const Customer = require('../models/mongo/Customer');
 const { buildApp, users } = require('./helpers/rbacApp');
 
 // Orders está protegido con RBAC y alcance real de propiedad (issue #51):

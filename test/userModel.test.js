@@ -1,4 +1,4 @@
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 
 const buildUser = () => User.build({
   id: 1,

@@ -1,10 +1,10 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 
-jest.mock('../models/relationals', () => ({
+jest.mock('../models/sql', () => ({
   User: { findByPk: jest.fn() }
 }));
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 
 const app = require('../app');
 

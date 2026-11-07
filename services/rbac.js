@@ -27,7 +27,7 @@ function buildAccessControl(rows) {
 
 // Fuente de verdad: Role -> role_permission -> Permission (MySQL)
 async function loadAccessControl() {
-  const { Role, Permission } = require('../models/relationals');
+  const { Role, Permission } = require('../models/sql');
   const roles = await Role.findAll({ include: [{ model: Permission, as: 'permissions' }] });
 
   const rows = [];

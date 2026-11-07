@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('../app');
 const customersRouter = require('../routes/customers');
-const Customer = require('../models/documents/Customer');
+const Customer = require('../models/mongo/Customer');
 const { buildApp, users } = require('./helpers/rbacApp');
 
 // Customers está protegido con RBAC (propiedad real: Customer.userId == req.user.id).
