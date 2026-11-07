@@ -3,7 +3,6 @@
         "host": "localhost",
         "port": 3306,
         "database": "stride_co",
-        "user": "root",
-        "password": "abdc1234"
+        "user": "root"
     }
 }
