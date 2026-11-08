@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/userController');
+const controller = require('../controllers/users');
 const authorize = require('../middlewares/authorize');
 
 router.get('/', authorize('users', 'read', 'any'), controller.getAll);

@@ -1,10 +1,10 @@
 const request = require('supertest');
 
-jest.mock('../models/relationals', () => {
+jest.mock('../models/sql', () => {
   const { mockModel } = require('./helpers/sequelizeMocks');
   return { Permission: mockModel() };
 });
-const { Permission } = require('../models/relationals');
+const { Permission } = require('../models/sql');
 const rbac = require('../services/rbac');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
 const app = require('../app');
@@ -44,7 +44,7 @@ describe('Autorización de /api/permissions', () => {
   });
 });
 
-describe('API de Permissions (como admin, MySQL con Sequelize)', () => {
+describe('API de Permissions (como admin, PostgreSQL con Sequelize)', () => {
   it('GET /api/permissions responde 200 con los permisos de la base de datos', async () => {
     Permission.findAll.mockResolvedValue([permiso]);
     const response = await request(protectedApp).get('/api/permissions').set(users.admin);

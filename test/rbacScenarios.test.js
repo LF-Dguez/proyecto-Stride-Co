@@ -5,9 +5,9 @@ const request = require('supertest');
 const authorize = require('../middlewares/authorize');
 const productsRouter = require('../routes/products');
 const ordersRouter = require('../routes/orders');
-const Order = require('../models/documents/Order');
-const Customer = require('../models/documents/Customer');
-const { Product } = require('../models/relationals');
+const Order = require('../models/mongo/Order');
+const Customer = require('../models/mongo/Customer');
+const { Product } = require('../models/sql');
 const { buildApp, users } = require('./helpers/rbacApp');
 
 afterEach(() => {

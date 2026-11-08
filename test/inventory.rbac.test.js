@@ -1,7 +1,7 @@
 const request = require('supertest');
 const { buildApp, users } = require('./helpers/rbacApp');
 
-jest.mock('../controllers/inventoryController', () => ({
+jest.mock('../controllers/inventory', () => ({
   getAll: (req, res) => res.status(200).json({ message: 'ok' }),
   getById: (req, res) => res.status(200).json({ message: 'ok' }),
   create: (req, res) => res.status(201).json({ message: 'ok' }),

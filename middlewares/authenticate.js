@@ -1,6 +1,7 @@
 const { expressjwt } = require('express-jwt');
+const config = require('config');
 const createError = require('http-errors');
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 
 // Verifica la firma, expiración, issuer y audience del Bearer token; deja el
 // payload decodificado en req.auth (req.auth.sub = id del usuario, ver
@@ -8,10 +9,10 @@ const { User } = require('../models/relationals');
 // con un UnauthorizedError (status 401) que atrapa el manejador de errores
 // genérico de app.js.
 const checkToken = expressjwt({
-  secret: process.env.JWT_SECRET,
+  secret: config.get('jwt.secret'),
   algorithms: ['HS256'],
-  issuer: process.env.JWT_ISSUER,
-  audience: process.env.JWT_AUDIENCE
+  issuer: config.get('jwt.issuer'),
+  audience: config.get('jwt.audience')
 });
 
 // Carga al usuario real a partir de req.auth.sub y lo deja en req.user con el

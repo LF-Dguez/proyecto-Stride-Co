@@ -1,4 +1,4 @@
-// Simulaciones de Sequelize para probar controllers sin MySQL.
+// Simulaciones de Sequelize para probar controllers sin PostgreSQL.
 // Este archivo no termina en .test.js, así que Jest no lo ejecuta como prueba.
 
 // Modelo con los métodos estáticos que usan los controllers

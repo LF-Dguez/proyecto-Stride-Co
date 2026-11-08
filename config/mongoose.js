@@ -1,10 +1,10 @@
-require('dotenv').config({ quiet: true });
 const mongoose = require('mongoose');
+const config = require('config');
 
-// Conexión a MongoDB. La URI sale del archivo .env (ver .env.example).
+// Conexión a MongoDB. La URI (con usuario y contraseña en Atlas) es un secreto: sale de
+// config/local-<entorno>.json, que no está en git.
 function connectMongo() {
-  const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/stride_co';
-  return mongoose.connect(uri);
+  return mongoose.connect(config.get('mongo.uri'));
 }
 
 module.exports = connectMongo;

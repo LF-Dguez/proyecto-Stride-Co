@@ -1,11 +1,11 @@
 const request = require('supertest');
 const { buildApp, users } = require('./helpers/rbacApp');
 
-jest.mock('../models/relationals', () => {
+jest.mock('../models/sql', () => {
   const { mockModel } = require('./helpers/sequelizeMocks');
   return { Inventory: mockModel(), ProductVariant: {} };
 });
-const { Inventory } = require('../models/relationals');
+const { Inventory } = require('../models/sql');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
 const inventoryRouter = require('../routes/inventory');
 
@@ -17,7 +17,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-describe('API de Inventory (MySQL con Sequelize)', () => {
+describe('API de Inventory (PostgreSQL con Sequelize)', () => {
   it('GET /api/inventory responde 200 con el inventario de la base de datos', async () => {
     Inventory.findAll.mockResolvedValue([registro]);
     const response = await request(app).get('/api/inventory').set(users.admin);

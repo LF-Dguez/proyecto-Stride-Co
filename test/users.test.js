@@ -1,4 +1,3 @@
-process.env.BCRYPT_SALT_ROUNDS = '4';
 
 const request = require('supertest');
 const app = require('../app');
@@ -6,14 +5,14 @@ const usersRouter = require('../routes/users');
 const { buildApp, users } = require('./helpers/rbacApp');
 const { verifyPassword } = require('../services/password');
 
-jest.mock('../models/relationals', () => ({
+jest.mock('../models/sql', () => ({
   User: {
     findAll: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn()
   }
 }));
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 
 const protectedApp = buildApp((a) => a.use('/api/users', usersRouter));
 

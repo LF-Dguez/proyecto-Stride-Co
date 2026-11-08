@@ -1,17 +1,12 @@
-require('dotenv').config({ quiet: true });
-const { sequelize, User, Role, Permission } = require('../models/relationals');
+const config = require('config');
+const { sequelize, User, Role, Permission } = require('../models/sql');
 const { ROLES, ROLE_PERMISSIONS, PERMISSION_KEYS, USERS } = require('./rbacMatrix');
 const { hashPassword, verifyPassword } = require('../services/password');
 
-const DEV_DEFAULT_PASSWORD = 'Stride-Dev-123';
-
+// Contraseña de los usuarios de demostración (seed.demoPassword). Es un dato ficticio que se
+// documenta en el README y no debe reutilizarse en ninguna otra cuenta.
 function getSeedPassword() {
-  const fromEnv = process.env.SEED_USER_PASSWORD;
-  if (fromEnv) return fromEnv;
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('SEED_USER_PASSWORD es obligatoria en producción');
-  }
-  return DEV_DEFAULT_PASSWORD;
+  return config.get('seed.demoPassword');
 }
 
 async function seedRbac() {

@@ -1,10 +1,10 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 
-jest.mock('../models/relationals', () => ({
+jest.mock('../models/sql', () => ({
   User: { findOne: jest.fn() }
 }));
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 const { hashPassword } = require('../services/password');
 
 const app = require('../app');
@@ -12,7 +12,7 @@ const app = require('../app');
 const SENSITIVE_FIELDS = ['password', 'password_hash', 'salt_key'];
 
 // Simula una instancia de Sequelize: igual que el modelo real, toJSON() oculta
-// los campos sensibles al serializar (ver models/relationals/User.js).
+// los campos sensibles al serializar (ver models/sql/User.js).
 async function fakeUser({ password, ...overrides } = {}) {
   const { password_hash, salt_key } = await hashPassword(password || 'Secret123');
   const data = {
@@ -99,29 +99,42 @@ describe('POST /api/auth/login', () => {
 
     const response = await request(app)
       .post('/api/auth/login')
+      .set('Accept-Language', 'en')
       .send({ email: 'no-existe@stride.co', password: 'cualquiera' });
 
     expect(response.statusCode).toBe(401);
-    expect(response.body).toEqual({ message: 'Invalid credentials' });
+    expect(response.body).toEqual({ message: 'Invalid Credentials' });
   });
 
   it('401: contraseña incorrecta responde con el mismo mensaje genérico', async () => {
     const user = await fakeUser({ password: 'Secret123' });
     User.findOne.mockResolvedValue(user);
 
-    const response = await request(app).post('/api/auth/login').send({ email: user.email, password: 'incorrecta' });
+    const response = await request(app).post('/api/auth/login').set('Accept-Language', 'en').send({ email: user.email, password: 'incorrecta' });
 
     expect(response.statusCode).toBe(401);
-    expect(response.body).toEqual({ message: 'Invalid credentials' });
+    expect(response.body).toEqual({ message: 'Invalid Credentials' });
   });
 
   it('401: usuario inactivo responde con el mismo mensaje genérico', async () => {
     const user = await fakeUser({ password: 'Secret123', active: false });
     User.findOne.mockResolvedValue(user);
 
-    const response = await request(app).post('/api/auth/login').send({ email: user.email, password: 'Secret123' });
+    const response = await request(app).post('/api/auth/login').set('Accept-Language', 'en').send({ email: user.email, password: 'Secret123' });
 
     expect(response.statusCode).toBe(401);
-    expect(response.body).toEqual({ message: 'Invalid credentials' });
+    expect(response.body).toEqual({ message: 'Invalid Credentials' });
+  });
+
+  it('401: el mismo mensaje genérico sale en español con Accept-Language: es', async () => {
+    User.findOne.mockResolvedValue(null);
+
+    const response = await request(app)
+      .post('/api/auth/login')
+      .set('Accept-Language', 'es')
+      .send({ email: 'no-existe@stride.co', password: 'cualquiera' });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toEqual({ message: 'Credenciales Inválidas' });
   });
 });

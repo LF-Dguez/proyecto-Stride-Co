@@ -15,7 +15,7 @@ const { getAccessControl, getRoleName } = require('../services/rbac');
  * 401: no hay usuario autenticado (lo resuelve la autenticación existente).  403: sin permiso.
  */
 function authorize(resource, action, possession = 'any', ownerResolver) {
-  return async (req, res, next) => {
+  const middleware = async (req, res, next) => {
     try {
       if (!req.user) return next(createError(401, 'No autenticado'));
 
@@ -46,6 +46,11 @@ function authorize(resource, action, possession = 'any', ownerResolver) {
       return next(err);
     }
   };
+
+  // Metadatos del permiso exigido: permiten auditar (en las pruebas) que cada ruta está protegida
+  // con el permiso correcto sin leer el código de las rutas.
+  middleware.rbac = { resource, action, possession };
+  return middleware;
 }
 
 module.exports = authorize;

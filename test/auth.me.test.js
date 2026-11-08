@@ -1,10 +1,11 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
+const config = require('config');
 
-jest.mock('../models/relationals', () => ({
+jest.mock('../models/sql', () => ({
   User: { findByPk: jest.fn() }
 }));
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 
 const app = require('../app');
 
@@ -29,10 +30,10 @@ function fakeUser(overrides = {}) {
 }
 
 function sign(sub) {
-  return jwt.sign({ sub: String(sub) }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-    issuer: process.env.JWT_ISSUER,
-    audience: process.env.JWT_AUDIENCE,
+  return jwt.sign({ sub: String(sub) }, config.get('jwt.secret'), {
+    expiresIn: config.get('jwt.expiresIn'),
+    issuer: config.get('jwt.issuer'),
+    audience: config.get('jwt.audience'),
     algorithm: 'HS256'
   });
 }

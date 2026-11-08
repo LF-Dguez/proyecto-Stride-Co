@@ -1,5 +1,5 @@
 const createError = require('http-errors');
-const { Permission } = require('../models/relationals');
+const { Permission } = require('../models/sql');
 const rbac = require('../services/rbac');
 const { parseId, pickFields, toHttpError } = require('../utils/sequelizeHelpers');
 

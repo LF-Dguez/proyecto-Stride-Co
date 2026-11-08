@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/variantController');
+const controller = require('../controllers/variants');
 const authorize = require('../middlewares/authorize');
 
 router.get('/', authorize('variants', 'read', 'any'), controller.getAll);

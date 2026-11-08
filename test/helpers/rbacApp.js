@@ -1,4 +1,4 @@
-// Utilidades de prueba RBAC. No requieren MySQL ni MongoDB.
+// Utilidades de prueba RBAC. No requieren PostgreSQL ni MongoDB.
 //
 // Simulan lo que en la app real hace el middleware authenticate (JWT): dejar al
 // usuario en req.user = { id, role_id } o, como atajo en pruebas, { id, role }

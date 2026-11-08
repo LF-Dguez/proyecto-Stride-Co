@@ -1,29 +1,20 @@
-require('dotenv').config({ quiet: true });
 const { Sequelize } = require('sequelize');
 const config = require('config');
 
-const mysqlConfig = config.get("mysql");
+// Conexión a PostgreSQL. La URI (con usuario y contraseña) es un secreto: sale de
+// config/local-<entorno>.json (fuera de git). Render PostgreSQL pide SSL cuando se usa
+// la External Database URL: se activa con postgres.ssl = true.
+const uri = config.get('postgres.uri');
+const useSsl = config.get('postgres.ssl');
 
-// Conexión a MySQL. El .env (ver .env.example) tiene prioridad; si no, se usa
-// config/<NODE_ENV>.json (con config/default.json como base).
-const database = process.env.DB_NAME || mysqlConfig.database;
-
-const sequelize = new Sequelize(
-  database,
-  process.env.DB_USER || mysqlConfig.user,
-  process.env.DB_PASSWORD ?? mysqlConfig.password,
-  {
-    host: process.env.DB_HOST || mysqlConfig.host,
-    port: Number(process.env.DB_PORT) || mysqlConfig.port,
-    dialect: 'mysql',
-    logging: false,
-    define: {
-      // createdAt -> created_at, roleId -> role_id
-      underscored: true
-    }
-  }
-);
-
-console.log("app conectada a " + database);
+const sequelize = new Sequelize(uri, {
+  dialect: 'postgres',
+  logging: false,
+  define: {
+    // createdAt -> created_at, roleId -> role_id
+    underscored: true
+  },
+  dialectOptions: useSsl ? { ssl: { require: true, rejectUnauthorized: false } } : {}
+});
 
 module.exports = sequelize;

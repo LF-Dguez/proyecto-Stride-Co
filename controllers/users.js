@@ -1,5 +1,5 @@
 const createError = require('http-errors');
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 const { hashPassword } = require('../services/password');
 
 const MIN_PASSWORD_LENGTH = 8;

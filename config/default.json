@@ -1,9 +1,22 @@
 {
-    "mysql": {
-        "host": "localhost",
-        "port": 3306,
-        "database": "stride_co",
-        "user": "root",
-        "password": "abdc1234"
+    "server": {
+        "port": 3000
+    },
+    "jwt": {
+        "expiresIn": "15m",
+        "issuer": "stride-co",
+        "audience": "stride-co-api"
+    },
+    "bcrypt": {
+        "saltRounds": 10
+    },
+    "postgres": {
+        "ssl": false
+    },
+    "e2e": {
+        "baseUrl": "http://localhost:3000"
+    },
+    "seed": {
+        "demoPassword": "Stride-Dev-123"
     }
 }
