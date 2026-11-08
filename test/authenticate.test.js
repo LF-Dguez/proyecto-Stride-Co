@@ -2,10 +2,10 @@ const request = require('supertest');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 
-jest.mock('../models/relationals', () => ({
+jest.mock('../models/sql', () => ({
   User: { findByPk: jest.fn() }
 }));
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 const authenticate = require('../middlewares/authenticate');
 
 // App mínima: monta authenticate sobre una ruta de prueba y usa el mismo

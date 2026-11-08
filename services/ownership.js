@@ -1,6 +1,6 @@
 const createError = require('http-errors');
-const Customer = require('../models/documents/Customer');
-const Order = require('../models/documents/Order');
+const Customer = require('../models/mongo/Customer');
+const Order = require('../models/mongo/Order');
 
 // Propiedad real de los recursos con alcance `own` (Tarea 6, sección 8).
 // Estas funciones las usa el middleware authorize(); los controllers no deciden

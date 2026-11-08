@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/authController');
+const controller = require('../controllers/auth');
 const authenticate = require('../middlewares/authenticate');
 
 // Público: no lleva authenticate ni authorize.

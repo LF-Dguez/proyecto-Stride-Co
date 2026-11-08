@@ -1,6 +1,6 @@
 const { expressjwt } = require('express-jwt');
 const createError = require('http-errors');
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 
 // Verifica la firma, expiración, issuer y audience del Bearer token; deja el
 // payload decodificado en req.auth (req.auth.sub = id del usuario, ver

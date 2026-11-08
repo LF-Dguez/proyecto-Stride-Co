@@ -1,4 +1,4 @@
-const { User } = require('../models/relationals');
+const { User } = require('../models/sql');
 const { verifyPassword } = require('../services/password');
 const { signToken } = require('../services/token');
 

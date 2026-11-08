@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/customerController');
+const controller = require('../controllers/customers');
 const authorize = require('../middlewares/authorize');
 const { customerOwner } = require('../services/ownership');
 

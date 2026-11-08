@@ -1,11 +1,11 @@
 const request = require('supertest');
 const { buildApp, users } = require('./helpers/rbacApp');
 
-jest.mock('../models/relationals', () => {
+jest.mock('../models/sql', () => {
   const { mockModel } = require('./helpers/sequelizeMocks');
   return { Product: mockModel(), ProductVariant: {}, Inventory: {} };
 });
-const { Product } = require('../models/relationals');
+const { Product } = require('../models/sql');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
 const productsRouter = require('../routes/products');
 
@@ -17,7 +17,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-describe('API de Products (MySQL con Sequelize)', () => {
+describe('API de Products (PostgreSQL con Sequelize)', () => {
   it('GET /api/products responde 200 con los productos de la base de datos', async () => {
     Product.findAll.mockResolvedValue([producto]);
     const response = await request(app).get('/api/products').set(users.admin);
