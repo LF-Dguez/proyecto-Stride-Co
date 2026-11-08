@@ -51,11 +51,11 @@ describe('API de Variants (PostgreSQL con Sequelize)', () => {
     expect(response.body.data.sku).toBe(nuevaVariante.sku);
   });
 
-  it('POST /api/variants con un SKU repetido responde 409', async () => {
+  it('POST /api/variants con un SKU repetido responde 400', async () => {
     ProductVariant.create.mockRejectedValue(sequelizeError('SequelizeUniqueConstraintError'));
     const response = await request(app).post('/api/variants').set(users.admin).send({ product_id: 1, sku: 'STR-RUN-BLK-27' });
 
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
   });
 
   it('POST /api/variants con un producto inexistente responde 400', async () => {

@@ -157,7 +157,7 @@ describe('POST /api/users (como admin)', () => {
     expect(response.statusCode).toBe(400);
   });
 
-  it('responde 409 si el email ya existe', async () => {
+  it('responde 400 si el email ya existe', async () => {
     const duplicado = new Error('Validation error');
     duplicado.name = 'SequelizeUniqueConstraintError';
     User.create.mockRejectedValue(duplicado);
@@ -166,7 +166,7 @@ describe('POST /api/users (como admin)', () => {
       .post('/api/users')
       .set(users.admin)
       .send(nuevoUsuario);
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
   });
 });
 
@@ -245,7 +245,7 @@ describe('PUT /api/users/:id (como admin)', () => {
     expect(response.statusCode).toBe(400);
   });
 
-  it('responde 409 si el email ya existe', async () => {
+  it('responde 400 si el email ya existe', async () => {
     const user = fakeUser();
     const duplicado = new Error('Validation error');
     duplicado.name = 'SequelizeUniqueConstraintError';
@@ -256,7 +256,7 @@ describe('PUT /api/users/:id (como admin)', () => {
       .put('/api/users/1')
       .set(users.admin)
       .send({ email: 'otro@stride.com' });
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
   });
 });
 

@@ -25,7 +25,7 @@ function parseId(value) {
 
 function handleError(err, next) {
   if (err.name === 'SequelizeUniqueConstraintError') {
-    return next(createError(409, 'El email ya está registrado'));
+    return next(createError(400, 'El email ya está registrado'));
   }
   if (err.name === 'SequelizeValidationError') {
     return next(createError(400, err.errors?.[0]?.message || 'Datos inválidos'));
