@@ -111,6 +111,31 @@ npm test
 
 Las pruebas están en la carpeta `test/` (un archivo por recurso) y verifican el código HTTP, la estructura de la respuesta, los errores (400, 404, 409), la autenticación (login, token y `/api/auth/me`) y los escenarios de autorización (ver [Control de acceso basado en roles](#control-de-acceso-basado-en-roles)). Ninguna prueba depende de que PostgreSQL o MongoDB estén corriendo: las consultas a la base de datos se simulan con `jest.mock` y `jest.spyOn` (`test/helpers/`).
 
+### Pruebas E2E (end-to-end)
+
+Las pruebas E2E viven en `test/e2e/` y **no usan mocks**: se ejecutan con Jest + Supertest contra la API en ejecución y con PostgreSQL y MongoDB reales. Por eso están separadas: `npm test` las ignora y sigue funcionando sin bases de datos.
+
+| Comando | Qué ejecuta |
+|---|---|
+| `npm test` | Solo las pruebas con mocks (ignora `test/e2e/`) |
+| `npm run test:e2e` | Solo las pruebas E2E, contra la API en ejecución |
+
+Para correrlas en local:
+
+```bash
+npm run seed       # roles, permisos y usuarios de demostración (admin, sales y user)
+npm start          # API en http://localhost:3000, con PostgreSQL y MongoDB corriendo
+npm run test:e2e   # en otra terminal
+```
+
+La URL de la API sale de `e2e.baseUrl` (por defecto `http://localhost:3000`). Para ejecutar la misma suite contra el despliegue se permite `E2E_BASE_URL`, solo para este runner:
+
+```bash
+E2E_BASE_URL=https://<servicio>.onrender.com npm run test:e2e
+```
+
+Antes de empezar, las pruebas esperan hasta 90 segundos a que `GET /health` responda (el plan gratuito de Render tarda cerca de un minuto en despertar). `test/e2e/helpers.js` ofrece `login(rol)` (JWT de los usuarios de demostración), `authHeader(rol)` y `createCleanup()`, que elimina al terminar los datos que cada prueba creó para poder repetir la suite.
+
 ## Arquitectura
 
 El flujo de cada solicitud es:
