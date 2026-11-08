@@ -65,3 +65,8 @@ typings/
 
 # Permitir la plantilla de variables de entorno
 !.env.example
+
+# Secretos de la configuración (jwt.secret y URIs de las bases de datos).
+# Las plantillas *.example.json sí van en git.
+config/local*.json
+!config/local*.example.json
