@@ -2,8 +2,8 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/sequelize');
 
 const User = sequelize.define('User', {
-  first_name: { type: DataTypes.STRING(100), allowNull: false },
-  last_name: { type: DataTypes.STRING(100), allowNull: false },
+  first_name: { type: DataTypes.STRING(100), allowNull: false, validate: { notEmpty: true } },
+  last_name: { type: DataTypes.STRING(100), allowNull: false, validate: { notEmpty: true } },
   email: {
     type: DataTypes.STRING(150),
     allowNull: false,
@@ -12,8 +12,8 @@ const User = sequelize.define('User', {
   },
   active: { type: DataTypes.BOOLEAN, defaultValue: true },
   // Contraseña protegida con bcrypt: el hash incluye el costo y el salt; salt_key guarda el salt generado
-  password_hash: { type: DataTypes.STRING(100), allowNull: false },
-  salt_key: { type: DataTypes.STRING(100), allowNull: false }
+  password_hash: { type: DataTypes.STRING(255), allowNull: false },
+  salt_key: { type: DataTypes.STRING(255), allowNull: false }
 }, {
   tableName: 'users',
   timestamps: true // created_at, updated_at

@@ -85,10 +85,10 @@ describe('API de Permissions (como admin, PostgreSQL con Sequelize)', () => {
     expect(response.statusCode).toBe(400);
   });
 
-  it('POST /api/permissions con una key repetida responde 409', async () => {
+  it('POST /api/permissions con una key repetida responde 400', async () => {
     Permission.create.mockRejectedValue(sequelizeError('SequelizeUniqueConstraintError'));
     const response = await request(protectedApp).post('/api/permissions').set(users.admin).send({ key: 'products:read:any' });
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
   });
 
   it('PUT /api/permissions/:id actualiza y recarga los permisos en memoria', async () => {

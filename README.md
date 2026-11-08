@@ -199,11 +199,11 @@ Códigos de error:
 
 | Código | Cuándo ocurre |
 |---|---|
-| `400` | Datos inválidos, ID mal formado, registro relacionado inexistente o body sin campos editables |
+| `400` | Datos inválidos, id mal formado o valor único repetido (email, sku, nombre de rol, key de permiso) |
 | `401` | Sin token, token inválido o expirado, o usuario inactivo |
 | `403` | El rol del usuario no tiene el permiso requerido (RBAC) |
 | `404` | El registro o la ruta no existe |
-| `409` | Valor único repetido (email, sku, nombre de rol, key de permiso), registro en uso o rol con usuarios asignados |
+| `409` | Registro en uso por otros registros o rol con usuarios asignados  |
 | `500` | Error interno del servidor |
 
 Notas:

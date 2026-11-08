@@ -4,7 +4,8 @@ const sequelize = require('../../config/sequelize');
 const Product = sequelize.define('Product', {
   // Aún no existe el modelo Category; se guarda solo el id
   category_id: { type: DataTypes.INTEGER, allowNull: true },
-  name: { type: DataTypes.STRING(150), allowNull: false },
+  name: { type: DataTypes.STRING(150), allowNull: false, validate: { notEmpty: true } },
+  description: { type: DataTypes.TEXT },
   brand: { type: DataTypes.STRING(100) },
   price: {
     type: DataTypes.DECIMAL(10, 2),

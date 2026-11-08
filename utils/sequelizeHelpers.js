@@ -22,7 +22,7 @@ function toHttpError(err) {
     case 'SequelizeValidationError':
       return createError(400, err.errors?.[0]?.message || 'Datos inválidos');
     case 'SequelizeUniqueConstraintError':
-      return createError(409, 'El registro ya existe');
+      return createError(400, 'El registro ya existe');
     case 'SequelizeForeignKeyConstraintError': {
       // PostgreSQL usa el código 23503 tanto al insertar/actualizar (el registro relacionado
       // no existe) como al eliminar (otros registros todavía dependen de este). Se distinguen

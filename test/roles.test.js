@@ -95,10 +95,10 @@ describe('API de Roles (como admin, PostgreSQL con Sequelize)', () => {
     expect(Role.create).not.toHaveBeenCalled();
   });
 
-  it('POST /api/roles con un nombre repetido responde 409', async () => {
+  it('POST /api/roles con un nombre repetido responde 400', async () => {
     Role.create.mockRejectedValue(sequelizeError('SequelizeUniqueConstraintError'));
     const response = await request(protectedApp).post('/api/roles').set(users.admin).send({ name: 'admin' });
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
   });
 
   it('PUT /api/roles/:id actualiza la descripción y recarga los permisos', async () => {
