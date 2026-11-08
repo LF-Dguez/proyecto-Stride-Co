@@ -1,10 +1,22 @@
+// La configuración se simula para poder cambiar bcrypt.saltRounds en cada prueba
+jest.mock('config', () => {
+  const values = {};
+  return {
+    __values: values,
+    has: (key) => values[key] !== undefined,
+    get: (key) => values[key]
+  };
+});
+
+const config = require('config');
 const { hashPassword, verifyPassword, getSaltRounds } = require('../services/password');
 
 describe('services/password', () => {
-  const original = process.env.BCRYPT_SALT_ROUNDS;
+  beforeEach(() => {
+    config.__values['bcrypt.saltRounds'] = 4; // costo bajo para que las pruebas sean rápidas
+  });
   afterEach(() => {
-    if (original === undefined) delete process.env.BCRYPT_SALT_ROUNDS;
-    else process.env.BCRYPT_SALT_ROUNDS = original;
+    delete config.__values['bcrypt.saltRounds'];
   });
 
   it('hashPassword devuelve password_hash y salt_key', async () => {
@@ -49,18 +61,18 @@ describe('services/password', () => {
     await expect(hashPassword(12345)).rejects.toThrow(TypeError);
   });
 
-  it('respeta el factor de costo de BCRYPT_SALT_ROUNDS', async () => {
-    process.env.BCRYPT_SALT_ROUNDS = '5';
+  it('respeta el factor de costo de bcrypt.saltRounds', async () => {
+    config.__values['bcrypt.saltRounds'] = 5;
     const { password_hash } = await hashPassword('Secret123');
     expect(password_hash.startsWith('$2b$05$')).toBe(true);
   });
 
-  it('usa un costo por defecto de 10 si la variable falta o es inválida', () => {
-    delete process.env.BCRYPT_SALT_ROUNDS;
+  it('usa un costo por defecto de 10 si bcrypt.saltRounds falta o es inválido', () => {
+    delete config.__values['bcrypt.saltRounds'];
     expect(getSaltRounds()).toBe(10);
-    process.env.BCRYPT_SALT_ROUNDS = 'abc';
+    config.__values['bcrypt.saltRounds'] = 'abc';
     expect(getSaltRounds()).toBe(10);
-    process.env.BCRYPT_SALT_ROUNDS = '2';
+    config.__values['bcrypt.saltRounds'] = 2;
     expect(getSaltRounds()).toBe(10);
   });
 });

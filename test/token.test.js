@@ -1,4 +1,18 @@
+// La configuración se simula para poder cambiarla en cada prueba (config es inmutable)
+jest.mock('config', () => {
+  const values = {};
+  return {
+    __values: values,
+    has: (key) => values[key] !== undefined,
+    get: (key) => {
+      if (values[key] === undefined) throw new Error(`Configuration property "${key}" is not defined`);
+      return values[key];
+    }
+  };
+});
+
 const jwt = require('jsonwebtoken');
+const config = require('config');
 const { signToken } = require('../services/token');
 
 const user = {
@@ -10,15 +24,22 @@ const user = {
 };
 
 describe('services/token', () => {
-  const saved = { ...process.env };
+  beforeEach(() => {
+    Object.assign(config.__values, {
+      'jwt.secret': 'secreto-de-prueba',
+      'jwt.expiresIn': '15m',
+      'jwt.issuer': 'stride-co',
+      'jwt.audience': 'stride-co-api'
+    });
+  });
   afterEach(() => {
-    process.env = { ...saved };
+    Object.keys(config.__values).forEach((key) => delete config.__values[key]);
   });
 
-  const verify = (token) => jwt.verify(token, process.env.JWT_SECRET, {
+  const verify = (token) => jwt.verify(token, config.get('jwt.secret'), {
     algorithms: ['HS256'],
-    issuer: process.env.JWT_ISSUER,
-    audience: process.env.JWT_AUDIENCE
+    issuer: config.get('jwt.issuer'),
+    audience: config.get('jwt.audience')
   });
 
   it('firma un JWT válido con sub, iss, aud y exp', () => {
@@ -41,12 +62,11 @@ describe('services/token', () => {
     expect(raw).not.toMatch(/password|salt_key|\$2b\$|email|role/);
   });
 
-  it('la expiración depende de JWT_EXPIRES_IN', () => {
-    process.env.JWT_EXPIRES_IN = '15m';
+  it('la expiración depende de jwt.expiresIn', () => {
     let payload = verify(signToken(user));
     expect(payload.exp - payload.iat).toBe(15 * 60);
 
-    process.env.JWT_EXPIRES_IN = '1h';
+    config.__values['jwt.expiresIn'] = '1h';
     payload = verify(signToken(user));
     expect(payload.exp - payload.iat).toBe(60 * 60);
   });
@@ -56,10 +76,15 @@ describe('services/token', () => {
     expect(() => jwt.verify(token, 'otra-clave', { algorithms: ['HS256'] })).toThrow();
   });
 
-  it.each(['JWT_SECRET', 'JWT_EXPIRES_IN', 'JWT_ISSUER', 'JWT_AUDIENCE'])(
-    'no firma el token si falta %s', (name) => {
-      delete process.env[name];
-      expect(() => signToken(user)).toThrow(new RegExp(name));
+  it.each(['jwt.secret', 'jwt.expiresIn', 'jwt.issuer', 'jwt.audience'])(
+    'no firma el token si falta %s', (key) => {
+      delete config.__values[key];
+      expect(() => signToken(user)).toThrow(new RegExp(key.replace('.', '\\.')));
     }
   );
+
+  it('no firma el token si jwt.secret está vacío', () => {
+    config.__values['jwt.secret'] = '';
+    expect(() => signToken(user)).toThrow(/jwt\.secret/);
+  });
 });
