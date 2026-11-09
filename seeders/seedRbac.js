@@ -1,22 +1,17 @@
-require('dotenv').config({ quiet: true });
-const { sequelize, User, Role, Permission } = require('../models/sql');
+const config = require('config');
+const { sequelize, User, Role, Permission, Product, ProductVariant, Inventory } = require('../models/sql');
 const { ROLES, ROLE_PERMISSIONS, PERMISSION_KEYS, USERS } = require('./rbacMatrix');
 const { hashPassword, verifyPassword } = require('../services/password');
+const { seedSampleSql } = require('./sampleSql');
 
-const DEV_DEFAULT_PASSWORD = 'Stride-Dev-123';
-
-function getSeedPassword() {
-  const fromEnv = process.env.SEED_USER_PASSWORD;
-  if (fromEnv) return fromEnv;
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('SEED_USER_PASSWORD es obligatoria en producción');
-  }
-  return DEV_DEFAULT_PASSWORD;
+function getDemoPassword(role) {
+  const key = `seed.demoPasswords.${role}`;
+  if (!config.has(key)) throw new Error(`Falta ${key} en la configuración (config/default.json)`);
+  return config.get(key);
 }
 
-async function seedRbac() {
-  const seedPassword = getSeedPassword();
 
+async function seedRbac() {
   await sequelize.sync();
 
   const roles = {};
@@ -38,23 +33,25 @@ async function seedRbac() {
     await roles[roleName].setPermissions(keys.map((key) => permissions[key]));
   }
 
+
   const users = { created: 0, updated: 0, unchanged: 0 };
   for (const { role, ...data } of USERS) {
     const roleId = roles[role].id;
+    const demoPassword = getDemoPassword(role);
     const user = await User.findOne({ where: { email: data.email } });
 
     if (!user) {
-      const credentials = await hashPassword(seedPassword);
-      await User.create({ ...data, role_id: roleId, ...credentials });
+      const credentials = await hashPassword(demoPassword);
+      await User.create({ ...data, role_id: roleId, active: true, ...credentials });
       users.created += 1;
       continue;
     }
 
     const changes = {};
     if (user.role_id !== roleId) changes.role_id = roleId;
-    if (!(await verifyPassword(seedPassword, user.password_hash))) {
-
-      Object.assign(changes, await hashPassword(seedPassword));
+    if (user.active !== true) changes.active = true;
+    if (!(await verifyPassword(demoPassword, user.password_hash))) {
+      Object.assign(changes, await hashPassword(demoPassword));
     }
 
     if (Object.keys(changes).length > 0) {
@@ -65,7 +62,9 @@ async function seedRbac() {
     }
   }
 
-  return { roles: ROLES.length, permissions: PERMISSION_KEYS.length, users };
+  const sample = await seedSampleSql({ Product, ProductVariant, Inventory });
+
+  return { roles: ROLES.length, permissions: PERMISSION_KEYS.length, users, sample };
 }
 
 module.exports = seedRbac;
@@ -74,7 +73,8 @@ if (require.main === module) {
   seedRbac()
     .then((r) => {
       console.log(`Seed RBAC listo: ${r.roles} roles, ${r.permissions} permisos`);
-      console.log(`Usuarios de prueba: ${r.users.created} creados, ${r.users.updated} actualizados, ${r.users.unchanged} sin cambios`);
+      console.log(`Usuarios de demostración: ${r.users.created} creados, ${r.users.updated} actualizados, ${r.users.unchanged} sin cambios`);
+      console.log(`Datos de ejemplo: ${r.sample.products} productos, ${r.sample.variants} variantes y ${r.sample.inventory} registros de inventario creados`);
       return sequelize.close();
     })
     .catch((err) => { console.error('Error en el seed:', err); process.exit(1); });
