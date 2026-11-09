@@ -37,11 +37,11 @@ async function seedRbac() {
   const users = { created: 0, updated: 0, unchanged: 0 };
   for (const { role, ...data } of USERS) {
     const roleId = roles[role].id;
-    const demoPassword = getDemoPassword(role);
+    const demoPasswords = getDemoPassword(role);
     const user = await User.findOne({ where: { email: data.email } });
 
     if (!user) {
-      const credentials = await hashPassword(demoPassword);
+      const credentials = await hashPassword(demoPasswords);
       await User.create({ ...data, role_id: roleId, active: true, ...credentials });
       users.created += 1;
       continue;
@@ -50,8 +50,8 @@ async function seedRbac() {
     const changes = {};
     if (user.role_id !== roleId) changes.role_id = roleId;
     if (user.active !== true) changes.active = true;
-    if (!(await verifyPassword(demoPassword, user.password_hash))) {
-      Object.assign(changes, await hashPassword(demoPassword));
+    if (!(await verifyPassword(demoPasswords, user.password_hash))) {
+      Object.assign(changes, await hashPassword(demoPasswords));
     }
 
     if (Object.keys(changes).length > 0) {
