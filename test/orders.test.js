@@ -17,8 +17,13 @@ const customerOfOther = { _id: 'c00000000000000000000a2', userId: 20 };
 const orderOfUser = { _id: 'o00000000000000000000b1', customerId: customerOfUser._id, paymentMethod: 'CARD' };
 const orderOfOther = { _id: 'o00000000000000000000b2', customerId: customerOfOther._id, paymentMethod: 'CASH' };
 
+// Simula una consulta de Mongoose: populate() devuelve la misma consulta y lean() resuelve el valor
 function mockLean(value) {
-  return { lean: () => Promise.resolve(value) };
+  const query = {
+    populate: jest.fn(() => query),
+    lean: () => Promise.resolve(value)
+  };
+  return query;
 }
 
 afterEach(() => {
@@ -158,6 +163,67 @@ describe('DELETE /api/orders/:id', () => {
   it('sales no tiene permiso de eliminar: responde 403', async () => {
     const response = await request(protectedApp).delete(`/api/orders/${orderOfUser._id}`).set(users.sales);
     expect(response.statusCode).toBe(403);
+  });
+});
+
+describe('Order -> Customer (populate)', () => {
+  const clienteDeLaOrden = { _id: customerOfUser._id, phone: '6141234567', email: 'ana@stride.co', addresses: [] };
+  const ordenConCliente = { ...orderOfUser, customerId: clienteDeLaOrden };
+
+  it('GET /api/orders/:id devuelve los datos del cliente con populate de customerId', async () => {
+    const query = mockLean(ordenConCliente);
+    jest.spyOn(Order, 'findById').mockReturnValue(query);
+    jest.spyOn(Customer, 'findById').mockReturnValue(mockLean(customerOfUser));
+
+    const response = await request(protectedApp).get(`/api/orders/${orderOfUser._id}`).set(users.user);
+
+    expect(response.statusCode).toBe(200);
+    expect(query.populate).toHaveBeenCalledWith(expect.objectContaining({ path: 'customerId' }));
+    expect(response.body.data.customerId).toEqual(clienteDeLaOrden);
+  });
+
+  it('GET /api/orders devuelve cada orden con su cliente', async () => {
+    const query = mockLean([ordenConCliente]);
+    jest.spyOn(Order, 'find').mockReturnValue(query);
+
+    const response = await request(protectedApp).get('/api/orders').set(users.admin);
+
+    expect(response.statusCode).toBe(200);
+    expect(query.populate).toHaveBeenCalledWith(expect.objectContaining({ path: 'customerId' }));
+    expect(response.body.data[0].customerId.email).toBe('ana@stride.co');
+  });
+
+  it('el populate no expone el userId interno del cliente', async () => {
+    const query = mockLean(ordenConCliente);
+    jest.spyOn(Order, 'findById').mockReturnValue(query);
+    jest.spyOn(Customer, 'findById').mockReturnValue(mockLean(customerOfUser));
+
+    await request(protectedApp).get(`/api/orders/${orderOfUser._id}`).set(users.user);
+
+    expect(query.populate.mock.calls[0][0].select).not.toMatch(/userId/);
+  });
+
+  it('own: en la lista el populate no amplía el filtro a clientes ajenos', async () => {
+    jest.spyOn(Customer, 'find').mockReturnValue(mockLean([customerOfUser]));
+    const query = mockLean([ordenConCliente]);
+    const findSpy = jest.spyOn(Order, 'find').mockReturnValue(query);
+
+    const response = await request(protectedApp).get('/api/orders').set(users.user);
+
+    expect(response.statusCode).toBe(200);
+    expect(findSpy.mock.calls[0][0].customerId.$in).toEqual([customerOfUser._id]);
+    expect(query.populate).toHaveBeenCalled();
+  });
+
+  it('own: 403 en la orden de otro usuario sin llegar al populate', async () => {
+    const query = mockLean(orderOfOther);
+    jest.spyOn(Order, 'findById').mockReturnValue(query);
+    jest.spyOn(Customer, 'findById').mockReturnValue(mockLean(customerOfOther));
+
+    const response = await request(protectedApp).get(`/api/orders/${orderOfOther._id}`).set(users.user);
+
+    expect(response.statusCode).toBe(403);
+    expect(query.populate).not.toHaveBeenCalled();
   });
 });
 
