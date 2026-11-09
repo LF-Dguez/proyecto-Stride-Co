@@ -90,7 +90,10 @@ describe('Flujo completo: login -> token -> recurso protegido', () => {
 });
 
 describe('Flujo completo con alcance own: el dueño real sale de los datos, no del token', () => {
-  const mockLean = (value) => ({ lean: () => Promise.resolve(value) });
+  const mockLean = (value) => {
+    const query = { populate: jest.fn(() => query), lean: () => Promise.resolve(value) };
+    return query;
+  };
 
   it('USER con JWT: consulta su propia orden => 200', async () => {
     const user = await seedUser('user');
