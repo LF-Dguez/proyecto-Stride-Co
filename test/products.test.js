@@ -3,9 +3,9 @@ const { buildApp, users } = require('./helpers/rbacApp');
 
 jest.mock('../models/sql', () => {
   const { mockModel } = require('./helpers/sequelizeMocks');
-  return { Product: mockModel(), ProductVariant: {}, Inventory: {} };
+  return { Product: mockModel(), ProductVariant: { name: 'ProductVariant' }, Inventory: { name: 'Inventory' } };
 });
-const { Product } = require('../models/sql');
+const { Product, ProductVariant, Inventory } = require('../models/sql');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
 const productsRouter = require('../routes/products');
 
@@ -110,5 +110,37 @@ describe('API de Products (PostgreSQL con Sequelize)', () => {
     const response = await request(app).delete('/api/products/999').set(users.admin);
 
     expect(response.statusCode).toBe(404);
+  });
+});
+
+describe('Product -> Variant -> Inventory (include)', () => {
+  const incluyeVariantesEInventario = [
+    expect.objectContaining({
+      model: ProductVariant,
+      as: 'variants',
+      include: [expect.objectContaining({ model: Inventory, as: 'inventory' })]
+    })
+  ];
+  const productoConVariantes = {
+    ...producto,
+    variants: [{ id: 7, sku: 'STR-RUN-27', size: '27', inventory: { id: 3, stock: 40, reserved: 2 } }]
+  };
+
+  it('GET /api/products consulta los productos con sus variantes y el inventario de cada una', async () => {
+    Product.findAll.mockResolvedValue([productoConVariantes]);
+    const response = await request(app).get('/api/products').set(users.admin);
+
+    expect(response.statusCode).toBe(200);
+    expect(Product.findAll).toHaveBeenCalledWith(expect.objectContaining({ include: incluyeVariantesEInventario }));
+    expect(response.body.data[0].variants[0].inventory.stock).toBe(40);
+  });
+
+  it('GET /api/products/:id devuelve el producto con sus variantes y su inventario', async () => {
+    Product.findByPk.mockResolvedValue(productoConVariantes);
+    const response = await request(app).get('/api/products/1').set(users.admin);
+
+    expect(response.statusCode).toBe(200);
+    expect(Product.findByPk).toHaveBeenCalledWith(1, expect.objectContaining({ include: incluyeVariantesEInventario }));
+    expect(response.body.data.variants[0].sku).toBe('STR-RUN-27');
   });
 });

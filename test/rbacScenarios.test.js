@@ -10,11 +10,17 @@ const Customer = require('../models/mongo/Customer');
 const { Product } = require('../models/sql');
 const { buildApp, users } = require('./helpers/rbacApp');
 
+function mockLean(value) {
+  const query = { populate: jest.fn(() => query), lean: () => Promise.resolve(value) };
+  return query;
+}
+
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
-// 11.1 Acceso permitido: ADMIN, products:delete:any, cualquier producto -> permitido
+
+
 describe('11.1 Acceso permitido (ADMIN, products:delete:any)', () => {
   it('admin elimina cualquier producto', async () => {
     const app = buildApp((a) => a.use('/api/products', productsRouter));
@@ -27,7 +33,6 @@ describe('11.1 Acceso permitido (ADMIN, products:delete:any)', () => {
   });
 });
 
-// 11.2 Acceso denegado: SALES, products:delete:any, cualquier producto -> 403
 describe('11.2 Acceso denegado (SALES, products:delete:any)', () => {
   it('sales no puede eliminar productos', async () => {
     const app = buildApp((a) => a.use('/api/products', productsRouter));
@@ -40,42 +45,38 @@ describe('11.2 Acceso denegado (SALES, products:delete:any)', () => {
   });
 });
 
-// 11.3 Recurso propio: USER, orders:read:own, orden propia -> permitido
+
 describe('11.3 Recurso propio (USER, orders:read:own, orden propia)', () => {
   it('user consulta una orden que le pertenece', async () => {
     const app = buildApp((a) => a.use('/api/orders', ordersRouter));
     const customer = { _id: 'c00000000000000000000a1', userId: 10 }; // users.user = id 10
     const order = { _id: 'o00000000000000000000b1', customerId: customer._id };
-    jest.spyOn(Order, 'findById').mockReturnValue({ lean: () => Promise.resolve(order) });
-    jest.spyOn(Customer, 'findById').mockReturnValue({ lean: () => Promise.resolve(customer) });
+    jest.spyOn(Order, 'findById').mockReturnValue(mockLean(order));
+    jest.spyOn(Customer, 'findById').mockReturnValue(mockLean(customer));
 
     const response = await request(app).get(`/api/orders/${order._id}`).set(users.user);
     expect(response.statusCode).toBe(200);
   });
 });
 
-// 11.4 Recurso de otro usuario: USER, orders:read:own, orden ajena -> 403
+
 describe('11.4 Recurso de otro usuario (USER, orders:read:own, orden ajena)', () => {
   it('user no puede consultar la orden de alguien más', async () => {
     const app = buildApp((a) => a.use('/api/orders', ordersRouter));
     const customerDeOtro = { _id: 'c00000000000000000000a2', userId: 20 }; // users.otherUser = id 20
     const ordenAjena = { _id: 'o00000000000000000000b2', customerId: customerDeOtro._id };
-    jest.spyOn(Order, 'findById').mockReturnValue({ lean: () => Promise.resolve(ordenAjena) });
-    jest.spyOn(Customer, 'findById').mockReturnValue({ lean: () => Promise.resolve(customerDeOtro) });
-
+    jest.spyOn(Order, 'findById').mockReturnValue(mockLean(ordenAjena));
+    jest.spyOn(Customer, 'findById').mockReturnValue(mockLean(customerDeOtro));
     const response = await request(app).get(`/api/orders/${ordenAjena._id}`).set(users.user);
     expect(response.statusCode).toBe(403);
     expect(response.body.error.status).toBe(403);
   });
 });
 
-// 11.5 Permiso any no asignado: USER, orders:read:any, cualquier orden -> 403
+
 describe('11.5 Permiso any no asignado (USER, orders:read:any)', () => {
   it('user no tiene orders:read:any, aunque sí tenga orders:read:own', async () => {
-    // La matriz solo le da a USER orders:read:own; se exige explícitamente 'any'
-    // para comprobar que no hay una concesión de más (ningún endpoint real exige
-    // 'any' puro en orders, así que se prueba el middleware directamente, igual
-    // que test/authorize.test.js).
+    
     const app = buildApp((a) => a.get('/orders-any', authorize('orders', 'read', 'any'), (req, res) => res.json({ ok: true })));
     const response = await request(app).get('/orders-any').set(users.user);
     expect(response.statusCode).toBe(403);

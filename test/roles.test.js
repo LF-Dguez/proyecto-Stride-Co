@@ -148,3 +148,23 @@ describe('API de Roles (como admin, PostgreSQL con Sequelize)', () => {
     expect(instancia.destroy).not.toHaveBeenCalled();
   });
 });
+
+describe('Role <-> Permission (include)', () => {
+  const incluyePermisos = [expect.objectContaining({ model: Permission, as: 'permissions' })];
+
+  it('GET /api/roles/:id devuelve el rol con sus permisos', async () => {
+    Role.findByPk.mockResolvedValue({ ...rol, permissions: permisos });
+    const response = await request(protectedApp).get('/api/roles/4').set(users.admin);
+
+    expect(response.statusCode).toBe(200);
+    expect(Role.findByPk).toHaveBeenCalledWith(4, expect.objectContaining({ include: incluyePermisos }));
+    expect(response.body.data.permissions.map((p) => p.key)).toEqual(['products:read:any', 'orders:read:own']);
+  });
+
+  it('GET /api/roles consulta cada rol con sus permisos', async () => {
+    Role.findAll.mockResolvedValue([{ ...rol, permissions: permisos }]);
+    await request(protectedApp).get('/api/roles').set(users.admin);
+
+    expect(Role.findAll).toHaveBeenCalledWith(expect.objectContaining({ include: incluyePermisos }));
+  });
+});
