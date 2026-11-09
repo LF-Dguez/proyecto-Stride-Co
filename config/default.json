@@ -17,6 +17,10 @@
         "baseUrl": "http://localhost:3000"
     },
     "seed": {
-        "demoPassword": "Stride-Dev-123"
+        "demoPasswords": {
+           "admin": "Admin-Demo-2026!",
+            "sales": "Ventas-Demo-2026!",
+            "user": "Cliente-Demo-2026!" 
+        }
     }
 }

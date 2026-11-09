@@ -14,8 +14,7 @@ function leaves(obj, prefix = '') {
 }
 
 describe('configuración por entornos', () => {
-  // Contraseña de los usuarios de demostración del seed: es pública (se documenta en el README)
-  const PUBLIC_VALUES = ['seed.demoPassword'];
+  const PUBLIC_VALUES = ['seed.demoPasswords.admin', 'seed.demoPasswords.sales', 'seed.demoPasswords.user'];
   const SECRET_KEY = /secret|password|uri|token|apikey/i;
 
   it.each(['default.json', 'development.json', 'production.json'])(
