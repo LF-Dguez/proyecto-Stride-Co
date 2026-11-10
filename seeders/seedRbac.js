@@ -4,12 +4,13 @@ const { ROLES, ROLE_PERMISSIONS, PERMISSION_KEYS, USERS } = require('./rbacMatri
 const { hashPassword, verifyPassword } = require('../services/password');
 const { seedSampleSql } = require('./sampleSql');
 
+// Contraseña de los usuarios de demostración, una por rol (seed.demoPasswords.<role>).
+// Es un dato ficticio que se documenta en el README y no debe reutilizarse en ninguna otra cuenta.
 function getDemoPassword(role) {
   const key = `seed.demoPasswords.${role}`;
   if (!config.has(key)) throw new Error(`Falta ${key} en la configuración (config/default.json)`);
   return config.get(key);
 }
-
 
 async function seedRbac() {
   await sequelize.sync();

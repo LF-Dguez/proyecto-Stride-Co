@@ -1,5 +1,5 @@
 const createError = require('http-errors');
-const Order = require('../models/mongo/Order');
+const { Order } = require('../models/mongo');
 const { orderListFilter } = require('../services/ownership');
 
 // Mongoose rechaza un id mal formado o datos que no pasan el schema; se traducen
@@ -14,6 +14,7 @@ function toHttpError(err) {
 // se fija al crear, para que un usuario con alcance own no pueda pasarse el
 // registro a otra persona ni apropiarse de uno ajeno.
 const EDITABLE_FIELDS = ['salesPersonId', 'status', 'paymentMethod', 'items', 'totals'];
+const CUSTOMER_POPULATE = { path: 'customerId', select: 'phone email addresses' };
 
 function pickFields(body) {
   const fields = {};
@@ -26,7 +27,7 @@ function pickFields(body) {
 exports.getAll = async (req, res, next) => {
   try {
     // Con alcance own solo trae las órdenes del usuario autenticado (services/ownership.js)
-    const orders = await Order.find(await orderListFilter(req)).lean();
+    const orders = await Order.find(await orderListFilter(req)).populate(CUSTOMER_POPULATE).lean();
     res.status(200).json({ message: 'GET órdenes obtenido exitosamente (Modelo Documental MongoDB)', data: orders });
   } catch (err) {
     next(toHttpError(err));
@@ -35,7 +36,7 @@ exports.getAll = async (req, res, next) => {
 
 exports.getById = async (req, res, next) => {
   try {
-    const order = await Order.findById(req.params.id).lean();
+    const order = await Order.findById(req.params.id).populate(CUSTOMER_POPULATE).lean();
     if (!order) return next(createError(404, 'Orden no encontrada'));
     res.status(200).json({ message: `GET orden con ID ${req.params.id}`, data: order });
   } catch (err) {

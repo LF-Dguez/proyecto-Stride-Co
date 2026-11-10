@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=production node ./bin/www",
+    "start": "node ./bin/www",
     "dev": "cross-env NODE_ENV=development nodemon ./bin/www",
     "lint": "eslint .",
     "test": "jest",
-    "seed": "node seeders/seedRbac.js"
+    "seed": "node seeders/seedRbac.js",
+    "matrix": "node seeders/printMatrix.js",
+    "test:e2e": "jest --config jest.e2e.config.js"
   },
   "dependencies": {
     "accesscontrol": "2.2.1",
@@ -15,7 +17,6 @@
     "config": "4.4.2",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "dotenv": "^18.0.8",
     "express": "~4.16.1",
     "express-jwt": "^8.5.1",
     "http-errors": "~1.6.3",
@@ -41,8 +42,9 @@
     "node": ">=20.19.0"
   },
   "jest": {
-    "setupFiles": [
-      "<rootDir>/test/setupEnv.js"
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/test/e2e/"
     ]
   }
 }

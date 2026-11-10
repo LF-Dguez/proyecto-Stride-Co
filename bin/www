@@ -4,15 +4,15 @@
  * Module dependencies.
  */
 
-require('dotenv').config({ quiet: true });
+const config = require('config');
+const { assertRequiredConfig } = require('../config/validate');
 
-// Sin JWT_SECRET, JWT_EXPIRES_IN, JWT_ISSUER y JWT_AUDIENCE la API no puede firmar
-// ni verificar tokens: se detiene el arranque con un mensaje claro en lugar del
-// RangeError que lanzaría express-jwt al cargar middlewares/authenticate.js.
+// Sin jwt.secret (ni las URIs de las bases de datos) la API no puede funcionar: se detiene el
+// arranque con un mensaje claro en lugar de fallar más adelante con un error confuso.
 try {
-  require('../services/token').getJwtConfig();
+  assertRequiredConfig();
 } catch (error) {
-  console.error(error.message + '. Revisa tu archivo .env (ver .env.example).');
+  console.error(error.message);
   process.exit(1);
 }
 
@@ -27,7 +27,7 @@ var { loadAccessControl } = require('../services/rbac');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(config.get('server.port'));
 app.set('port', port);
 
 /**

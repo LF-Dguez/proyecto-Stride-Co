@@ -1,4 +1,3 @@
-process.env.BCRYPT_SALT_ROUNDS = '4';
 
 const request = require('supertest');
 const app = require('../app');
@@ -11,9 +10,10 @@ jest.mock('../models/sql', () => ({
     findAll: jest.fn(),
     findByPk: jest.fn(),
     create: jest.fn()
-  }
+  },
+  Role: { name: 'Role' }
 }));
-const { User } = require('../models/sql');
+const { User, Role } = require('../models/sql');
 
 const protectedApp = buildApp((a) => a.use('/api/users', usersRouter));
 
@@ -157,7 +157,7 @@ describe('POST /api/users (como admin)', () => {
     expect(response.statusCode).toBe(400);
   });
 
-  it('responde 409 si el email ya existe', async () => {
+  it('responde 400 si el email ya existe', async () => {
     const duplicado = new Error('Validation error');
     duplicado.name = 'SequelizeUniqueConstraintError';
     User.create.mockRejectedValue(duplicado);
@@ -166,7 +166,7 @@ describe('POST /api/users (como admin)', () => {
       .post('/api/users')
       .set(users.admin)
       .send(nuevoUsuario);
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
   });
 });
 
@@ -245,7 +245,7 @@ describe('PUT /api/users/:id (como admin)', () => {
     expect(response.statusCode).toBe(400);
   });
 
-  it('responde 409 si el email ya existe', async () => {
+  it('responde 400 si el email ya existe', async () => {
     const user = fakeUser();
     const duplicado = new Error('Validation error');
     duplicado.name = 'SequelizeUniqueConstraintError';
@@ -256,7 +256,7 @@ describe('PUT /api/users/:id (como admin)', () => {
       .put('/api/users/1')
       .set(users.admin)
       .send({ email: 'otro@stride.com' });
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(400);
   });
 });
 
@@ -284,5 +284,38 @@ describe('Rutas inexistentes', () => {
     const response = await request(app).get('/api/users/1/inexistente');
     expect(response.statusCode).toBe(401);
     expect(response.body).toHaveProperty('error');
+  });
+});
+
+
+describe('User -> Role (include)', () => {
+  const rolDelUsuario = { id: 2, name: 'sales', description: 'Vendedor' };
+  const incluyeRol = [expect.objectContaining({ model: Role, as: 'role' })];
+
+  it('GET /api/users consulta cada usuario con su rol', async () => {
+    User.findAll.mockResolvedValue([fakeUser({ role: rolDelUsuario })]);
+    const response = await request(protectedApp).get('/api/users').set(users.admin);
+
+    expect(response.statusCode).toBe(200);
+    expect(User.findAll).toHaveBeenCalledWith(expect.objectContaining({ include: incluyeRol }));
+    expect(response.body.data[0].role).toEqual(rolDelUsuario);
+    expectNoSensitiveFields(response.body);
+  });
+
+  it('GET /api/users/:id devuelve el usuario con su rol', async () => {
+    User.findByPk.mockResolvedValue(fakeUser({ role: rolDelUsuario }));
+    const response = await request(protectedApp).get('/api/users/1').set(users.admin);
+
+    expect(response.statusCode).toBe(200);
+    expect(User.findByPk).toHaveBeenCalledWith(1, expect.objectContaining({ include: incluyeRol }));
+    expect(response.body.data.role.name).toBe('sales');
+  });
+
+  it('el rol incluido solo trae id, name y description', async () => {
+    User.findByPk.mockResolvedValue(fakeUser({ role: rolDelUsuario }));
+    await request(protectedApp).get('/api/users/1').set(users.admin);
+
+    const { include } = User.findByPk.mock.calls[0][1];
+    expect(include[0].attributes).toEqual(['id', 'name', 'description']);
   });
 });

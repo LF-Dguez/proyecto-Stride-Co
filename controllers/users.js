@@ -1,9 +1,10 @@
 const createError = require('http-errors');
-const { User } = require('../models/sql');
+const { User, Role } = require('../models/sql');
 const { hashPassword } = require('../services/password');
 
 const MIN_PASSWORD_LENGTH = 8;
 const EDITABLE_FIELDS = ['first_name', 'last_name', 'email', 'role_id', 'active'];
+const include = [{ model: Role, as: 'role', attributes: ['id', 'name', 'description'] }];
 
 function pickFields(body) {
   const fields = {};
@@ -25,7 +26,7 @@ function parseId(value) {
 
 function handleError(err, next) {
   if (err.name === 'SequelizeUniqueConstraintError') {
-    return next(createError(409, 'El email ya está registrado'));
+    return next(createError(400, 'El email ya está registrado'));
   }
   if (err.name === 'SequelizeValidationError') {
     return next(createError(400, err.errors?.[0]?.message || 'Datos inválidos'));
@@ -35,7 +36,7 @@ function handleError(err, next) {
 
 exports.getAll = async (req, res, next) => {
   try {
-    const users = await User.findAll({ order: [['id', 'ASC']] });
+    const users = await User.findAll({ include, order: [['id', 'ASC']] });
     res.status(200).json({ message: 'GET usuarios obtenido exitosamente', data: users });
   } catch (err) {
     handleError(err, next);
@@ -45,7 +46,7 @@ exports.getAll = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     const id = parseId(req.params.id);
-    const user = await User.findByPk(id);
+    const user = await User.findByPk(id, { include });
     if (!user) throw createError(404, 'Usuario no encontrado');
     res.status(200).json({ message: `GET usuario con ID ${id}`, data: user });
   } catch (err) {
