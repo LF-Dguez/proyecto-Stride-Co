@@ -84,7 +84,7 @@ Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/st
 
 `npm start` y `npm run dev` necesitan PostgreSQL y MongoDB corriendo: al arrancar, el servidor se conecta a ambas, sincroniza las tablas y carga los permisos RBAC antes de aceptar peticiones. `npm test` no los necesita: las pruebas simulan las consultas a la base de datos.
 
-Para poblar roles, permisos y usuarios de prueba (`admin@stride.co`, `sales@stride.co` y `user@stride.co`, con la contraseña de demostración `seed.demoPassword`, definida en `config/default.json`; es un dato ficticio exclusivo de esas cuentas):
+Para poblar roles, permisos y usuarios de prueba (`admin@stride.co`, `sales@stride.co` y `user@stride.co`, cada uno con su propia contraseña de demostración, definida en seed.demoPasswords de config/default.json; son datos ficticios exclusivos de esas cuentas):
 
 ```bash
 npm run seed
@@ -268,7 +268,7 @@ Público. Busca al usuario por email, valida que exista y esté activo, verifica
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@stride.co","password":"Stride-Dev-123"}'
+  -d '{"email":"admin@stride.co","password":"Admin-Demo-2026!"}'
 ```
 
 ```json

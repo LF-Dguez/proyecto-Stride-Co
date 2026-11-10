@@ -2,6 +2,7 @@
 // test/e2e/helpers.js, baseUrl.js y globalSetup.js. Las suites E2E reales viven en test/e2e/.
 const express = require('express');
 const http = require('http');
+const config = require('config');
 
 // Servidor falso que imita los endpoints que usan los helpers
 function startFakeApi() {
@@ -11,8 +12,11 @@ function startFakeApi() {
   app.use((req, res, next) => { calls.push(`${req.method} ${req.path}`); next(); });
   app.post('/api/auth/login', (req, res) => {
     const known = { 'admin@stride.co': 'admin', 'sales@stride.co': 'sales' };
-    if (!known[req.body.email] || req.body.password !== 'Stride-Dev-123') return res.status(401).json({ message: 'Invalid credentials' });
-    return res.json({ token: `token-de-${known[req.body.email]}` });
+    const role = known[req.body.email];
+    if (!role || req.body.password !== config.get(`seed.demoPasswords.${role}`)) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    return res.json({ token: `token-de-${role}` });
   });
   app.delete('/api/products/:id', (req, res) => {
     if (req.get('authorization') !== 'Bearer token-de-admin') return res.status(403).json({});
