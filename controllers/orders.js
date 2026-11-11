@@ -4,8 +4,8 @@ const { orderListFilter } = require('../services/ownership');
 
 // Mongoose rechaza un id mal formado o datos que no pasan el schema; se traducen
 // a errores HTTP en vez de dejarlos caer como 500.
-function toHttpError(err) {
-  if (err.name === 'CastError') return createError(400, 'Id de orden inválido');
+function toHttpError(err, req) {
+  if (err.name === 'CastError') return createError(400, req.__('orders.invalidId'));
   if (err.name === 'ValidationError') return createError(400, err.message);
   return err;
 }
@@ -28,49 +28,49 @@ exports.getAll = async (req, res, next) => {
   try {
     // Con alcance own solo trae las órdenes del usuario autenticado (services/ownership.js)
     const orders = await Order.find(await orderListFilter(req)).populate(CUSTOMER_POPULATE).lean();
-    res.status(200).json({ message: 'GET órdenes obtenido exitosamente (Modelo Documental MongoDB)', data: orders });
+    res.status(200).json({ message: req.__('orders.listed'), data: orders });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };
 
 exports.getById = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id).populate(CUSTOMER_POPULATE).lean();
-    if (!order) return next(createError(404, 'Orden no encontrada'));
-    res.status(200).json({ message: `GET orden con ID ${req.params.id}`, data: order });
+    if (!order) return next(createError(404, req.__('orders.notFound')));
+    res.status(200).json({ message: req.__('orders.found', req.params.id), data: order });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };
 
 exports.create = async (req, res, next) => {
   try {
     const order = await Order.create(req.body);
-    res.status(201).json({ message: 'Orden creada exitosamente', data: order });
+    res.status(201).json({ message: req.__('orders.created'), data: order });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };
 
 exports.update = async (req, res, next) => {
   try {
     const changes = pickFields(req.body);
-    if (Object.keys(changes).length === 0) return next(createError(400, 'No hay datos válidos para actualizar'));
+    if (Object.keys(changes).length === 0) return next(createError(400, req.__('common.noValidFields')));
     const order = await Order.findByIdAndUpdate(req.params.id, changes, { new: true, runValidators: true }).lean();
-    if (!order) return next(createError(404, 'Orden no encontrada'));
-    res.status(200).json({ message: `Orden con ID ${req.params.id} actualizada exitosamente`, data: order });
+    if (!order) return next(createError(404, req.__('orders.notFound')));
+    res.status(200).json({ message: req.__('orders.updated', req.params.id), data: order });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };
 
 exports.delete = async (req, res, next) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id).lean();
-    if (!order) return next(createError(404, 'Orden no encontrada'));
-    res.status(200).json({ message: `Orden con ID ${req.params.id} eliminada exitosamente` });
+    if (!order) return next(createError(404, req.__('orders.notFound')));
+    res.status(200).json({ message: req.__('orders.deleted', req.params.id) });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };

@@ -7,8 +7,8 @@ const Order = require('../models/mongo/Order');
 // quién puede acceder a qué.
 
 // Un id de MongoDB mal formado responde 400 aunque el error ocurra dentro de authorize()
-function toHttpError(err, label) {
-  if (err.name === 'CastError') return createError(400, `Id de ${label} inválido`);
+function toHttpError(err, req, key) {
+  if (err.name === 'CastError') return createError(400, req.__(key));
   return err;
 }
 
@@ -16,10 +16,10 @@ function toHttpError(err, label) {
 async function customerOwner(req) {
   try {
     const customer = await Customer.findById(req.params.id).lean();
-    if (!customer) throw createError(404, 'Cliente no encontrado');
+    if (!customer) throw createError(404, req.__('customers.notFound'));
     return customer.userId;
   } catch (err) {
-    throw toHttpError(err, 'cliente');
+    throw toHttpError(err, req, 'customers.invalidId');
   }
 }
 
@@ -27,11 +27,11 @@ async function customerOwner(req) {
 async function orderOwner(req) {
   try {
     const order = await Order.findById(req.params.id).lean();
-    if (!order) throw createError(404, 'Orden no encontrada');
+    if (!order) throw createError(404, req.__('orders.notFound'));
     const customer = await Customer.findById(order.customerId).lean();
     return customer ? customer.userId : null;
   } catch (err) {
-    throw toHttpError(err, 'orden');
+    throw toHttpError(err, req, 'orders.invalidId');
   }
 }
 
