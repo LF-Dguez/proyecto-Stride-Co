@@ -47,5 +47,32 @@
         "deleted": "Permiso con ID %s eliminado exitosamente",
         "notFound": "Permiso no encontrado",
         "keyRequired": "key es obligatoria"
+    },
+
+    "products": {
+        "listed": "GET productos obtenido exitosamente",
+        "found": "GET producto con ID %s",
+        "created": "Producto creado exitosamente",
+        "updated": "Producto con ID %s actualizado exitosamente",
+        "deleted": "Producto con ID %s eliminado exitosamente",
+        "notFound": "Producto no encontrado"
+    },
+
+    "variants": {
+        "listed": "GET variantes obtenido exitosamente",
+        "found": "GET variante con ID %s",
+        "created": "Variante creada exitosamente",
+        "updated": "Variante con ID %s actualizada exitosamente",
+        "deleted": "Variante con ID %s eliminada exitosamente",
+        "notFound": "Variante no encontrada"
+    },
+
+    "inventory": {
+        "listed": "GET inventario obtenido exitosamente",
+        "found": "GET inventario con ID %s",
+        "created": "Registro de inventario creado exitosamente",
+        "updated": "Inventario con ID %s actualizado exitosamente",
+        "deleted": "Registro de inventario con ID %s eliminado exitosamente",
+        "notFound": "Registro de inventario no encontrado"
     }
 }
