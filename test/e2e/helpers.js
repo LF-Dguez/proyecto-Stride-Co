@@ -25,7 +25,7 @@ async function login(role) {
 
   const response = await api()
     .post('/api/auth/login')
-    .send({ email: DEMO_USERS[role], password: config.get('seed.demoPassword') });
+    .send({ email: DEMO_USERS[role], password: config.get(`seed.demoPasswords.${role}`) });
 
   if (response.statusCode !== 200 || !response.body.token) {
     throw new Error(
