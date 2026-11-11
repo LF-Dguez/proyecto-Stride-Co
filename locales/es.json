@@ -11,7 +11,16 @@
         "duplicateRecord": "El registro ya existe",
         "recordInUse": "El registro está en uso por otros registros",
         "relatedRecordMissing": "El registro relacionado no existe",
-        "noValidFields": "No hay datos válidos para actualizar"
+        "noValidFields": "No hay datos válidos para actualizar",
+        "routeNotFound": "Ruta no encontrada",
+        "serverError": "Error interno del servidor",
+        "unauthenticated": "No autenticado",
+        "unauthorized": "Usuario no autorizado",
+        "forbidden": "Acceso denegado"
+    },
+
+    "home": {
+        "welcome": "Bienvenido a %s"
     },
 
     "users": {
