@@ -6,6 +6,7 @@
 // Así cada prueba elige el rol con un header (x-test-user) sin firmar tokens.
 // El flujo con JWT real está cubierto en test/auth.integration.test.js.
 const express = require('express');
+const i18n = require('../../config/i18n');
 const { ROLE_PERMISSIONS } = require('../../seeders/rbacMatrix');
 const { buildAccessControl, setAccessControl } = require('../../services/rbac');
 
@@ -27,6 +28,7 @@ function buildApp(mount) {
   setAccessControl(buildAccessControl(permissionRows));
   const app = express();
   app.use(express.json());
+  app.use(i18n.middleware); // req.__() disponible, igual que en app.js
   app.use((req, res, next) => {
     const header = req.get('x-test-user');
     if (header) req.user = JSON.parse(header);

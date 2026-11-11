@@ -140,7 +140,10 @@ describe('matriz RBAC: seed, README y reglas de código', () => {
   });
 
   it('la matriz del README es exactamente la generada desde el seed (npm run matrix)', () => {
-    const readme = fs.readFileSync(path.join(__dirname, '..', 'README.md'), 'utf8');
+    // Se normaliza CRLF -> LF: git guarda el archivo con LF, pero un checkout en
+    // Windows con core.autocrlf=true lo convierte a CRLF, y haría fallar esta
+    // comparación aunque el contenido sea idéntico.
+    const readme = fs.readFileSync(path.join(__dirname, '..', 'README.md'), 'utf8').replace(/\r\n/g, '\n');
     expect(readme).toContain(matrixMarkdown());
   });
 

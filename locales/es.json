@@ -1,6 +1,51 @@
 {
     "auth" : {
-        "invalidCredentials": "Credenciales Inválidas"
-    }
+        "invalidCredentials": "Credenciales Inválidas",
+        "missingFields": "email y password son obligatorios",
+        "loginSuccess": "Login exitoso"
+    },
 
+    "common": {
+        "invalidId": "ID inválido",
+        "invalidData": "Datos inválidos",
+        "duplicateRecord": "El registro ya existe",
+        "recordInUse": "El registro está en uso por otros registros",
+        "relatedRecordMissing": "El registro relacionado no existe",
+        "noValidFields": "No hay datos válidos para actualizar"
+    },
+
+    "users": {
+        "listed": "GET usuarios obtenido exitosamente",
+        "found": "GET usuario con ID %s",
+        "created": "Usuario creado exitosamente",
+        "updated": "Usuario con ID %s actualizado exitosamente",
+        "deleted": "Usuario con ID %s eliminado exitosamente",
+        "notFound": "Usuario no encontrado",
+        "emailTaken": "El email ya está registrado",
+        "nameEmailRequired": "first_name, last_name y email son obligatorios",
+        "passwordRequired": "La contraseña es obligatoria (mínimo %s caracteres)",
+        "passwordMinLength": "La contraseña debe tener mínimo %s caracteres"
+    },
+
+    "roles": {
+        "listed": "GET roles obtenido exitosamente",
+        "found": "GET rol con ID %s",
+        "created": "Rol creado exitosamente",
+        "updated": "Rol con ID %s actualizado exitosamente",
+        "deleted": "Rol con ID %s eliminado exitosamente",
+        "notFound": "Rol no encontrado",
+        "invalidPermissionIds": "permission_ids debe ser un arreglo de IDs de permisos",
+        "permissionNotFound": "Algún permiso de permission_ids no existe",
+        "hasAssignedUsers": "El rol tiene %s usuario(s) asignado(s)"
+    },
+
+    "permissions": {
+        "listed": "GET permisos obtenido exitosamente",
+        "found": "GET permiso con ID %s",
+        "created": "Permiso creado exitosamente",
+        "updated": "Permiso con ID %s actualizado exitosamente",
+        "deleted": "Permiso con ID %s eliminado exitosamente",
+        "notFound": "Permiso no encontrado",
+        "keyRequired": "key es obligatoria"
+    }
 }

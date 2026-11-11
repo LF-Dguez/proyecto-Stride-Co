@@ -1,6 +1,51 @@
 {
     "auth" : {
-        "invalidCredentials": "Invalid Credentials"
-    }
+        "invalidCredentials": "Invalid Credentials",
+        "missingFields": "email and password are required",
+        "loginSuccess": "Login successful"
+    },
 
+    "common": {
+        "invalidId": "Invalid ID",
+        "invalidData": "Invalid data",
+        "duplicateRecord": "The record already exists",
+        "recordInUse": "The record is in use by other records",
+        "relatedRecordMissing": "The related record does not exist",
+        "noValidFields": "No valid data to update"
+    },
+
+    "users": {
+        "listed": "GET users retrieved successfully",
+        "found": "GET user with ID %s",
+        "created": "User created successfully",
+        "updated": "User with ID %s updated successfully",
+        "deleted": "User with ID %s deleted successfully",
+        "notFound": "User not found",
+        "emailTaken": "This email is already registered",
+        "nameEmailRequired": "first_name, last_name and email are required",
+        "passwordRequired": "Password is required (minimum %s characters)",
+        "passwordMinLength": "Password must be at least %s characters long"
+    },
+
+    "roles": {
+        "listed": "GET roles retrieved successfully",
+        "found": "GET role with ID %s",
+        "created": "Role created successfully",
+        "updated": "Role with ID %s updated successfully",
+        "deleted": "Role with ID %s deleted successfully",
+        "notFound": "Role not found",
+        "invalidPermissionIds": "permission_ids must be an array of permission IDs",
+        "permissionNotFound": "Some permission in permission_ids does not exist",
+        "hasAssignedUsers": "This role has %s assigned user(s)"
+    },
+
+    "permissions": {
+        "listed": "GET permissions retrieved successfully",
+        "found": "GET permission with ID %s",
+        "created": "Permission created successfully",
+        "updated": "Permission with ID %s updated successfully",
+        "deleted": "Permission with ID %s deleted successfully",
+        "notFound": "Permission not found",
+        "keyRequired": "key is required"
+    }
 }
