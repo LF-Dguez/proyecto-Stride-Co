@@ -1,6 +1,107 @@
 {
     "auth" : {
-        "invalidCredentials": "Invalid Credentials"
-    }
+        "invalidCredentials": "Invalid Credentials",
+        "missingFields": "email and password are required",
+        "loginSuccess": "Login successful"
+    },
 
+    "common": {
+        "invalidId": "Invalid ID",
+        "invalidData": "Invalid data",
+        "duplicateRecord": "The record already exists",
+        "recordInUse": "The record is in use by other records",
+        "relatedRecordMissing": "The related record does not exist",
+        "noValidFields": "No valid data to update",
+        "routeNotFound": "Route not found",
+        "serverError": "Internal server error",
+        "unauthenticated": "Not authenticated",
+        "unauthorized": "Unauthorized user",
+        "forbidden": "Access denied"
+    },
+
+    "home": {
+        "welcome": "Welcome to %s"
+    },
+
+    "users": {
+        "listed": "GET users retrieved successfully",
+        "found": "GET user with ID %s",
+        "created": "User created successfully",
+        "updated": "User with ID %s updated successfully",
+        "deleted": "User with ID %s deleted successfully",
+        "notFound": "User not found",
+        "emailTaken": "This email is already registered",
+        "nameEmailRequired": "first_name, last_name and email are required",
+        "passwordRequired": "Password is required (minimum %s characters)",
+        "passwordMinLength": "Password must be at least %s characters long"
+    },
+
+    "roles": {
+        "listed": "GET roles retrieved successfully",
+        "found": "GET role with ID %s",
+        "created": "Role created successfully",
+        "updated": "Role with ID %s updated successfully",
+        "deleted": "Role with ID %s deleted successfully",
+        "notFound": "Role not found",
+        "invalidPermissionIds": "permission_ids must be an array of permission IDs",
+        "permissionNotFound": "Some permission in permission_ids does not exist",
+        "hasAssignedUsers": "This role has %s assigned user(s)"
+    },
+
+    "permissions": {
+        "listed": "GET permissions retrieved successfully",
+        "found": "GET permission with ID %s",
+        "created": "Permission created successfully",
+        "updated": "Permission with ID %s updated successfully",
+        "deleted": "Permission with ID %s deleted successfully",
+        "notFound": "Permission not found",
+        "keyRequired": "key is required"
+    },
+
+    "products": {
+        "listed": "GET products retrieved successfully",
+        "found": "GET product with ID %s",
+        "created": "Product created successfully",
+        "updated": "Product with ID %s updated successfully",
+        "deleted": "Product with ID %s deleted successfully",
+        "notFound": "Product not found"
+    },
+
+    "variants": {
+        "listed": "GET variants retrieved successfully",
+        "found": "GET variant with ID %s",
+        "created": "Variant created successfully",
+        "updated": "Variant with ID %s updated successfully",
+        "deleted": "Variant with ID %s deleted successfully",
+        "notFound": "Variant not found"
+    },
+
+    "inventory": {
+        "listed": "GET inventory retrieved successfully",
+        "found": "GET inventory record with ID %s",
+        "created": "Inventory record created successfully",
+        "updated": "Inventory record with ID %s updated successfully",
+        "deleted": "Inventory record with ID %s deleted successfully",
+        "notFound": "Inventory record not found"
+    },
+
+    "customers": {
+        "listed": "GET customers retrieved successfully (MongoDB document model)",
+        "found": "GET customer with ID %s",
+        "created": "Customer created successfully",
+        "updated": "Customer with ID %s updated successfully",
+        "deleted": "Customer with ID %s deleted successfully",
+        "notFound": "Customer not found",
+        "invalidId": "Invalid customer ID"
+    },
+
+    "orders": {
+        "listed": "GET orders retrieved successfully (MongoDB document model)",
+        "found": "GET order with ID %s",
+        "created": "Order created successfully",
+        "updated": "Order with ID %s updated successfully",
+        "deleted": "Order with ID %s deleted successfully",
+        "notFound": "Order not found",
+        "invalidId": "Invalid order ID"
+    }
 }

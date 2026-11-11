@@ -80,7 +80,27 @@ NODE_ENV=production PORT=8080 npm start    # production, puerto 8080
 docker run -d --name stride-pg -e POSTGRES_PASSWORD=CAMBIAR -e POSTGRES_DB=stride_co -p 5432:5432 postgres:16
 ```
 
-Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/stride_co`. Para la External Database URL de Render PostgreSQL se necesita SSL: `postgres.ssl` es `true` en `config/production.json`. **MongoDB:** `mongo.uri` (por ejemplo `mongodb://localhost:27017/stride_co`).
+Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/stride_co`. Para la External Database URL de Render PostgreSQL se necesita SSL: `postgres.ssl` es `true` en `config/production.json`.
+
+**MongoDB:** `mongo.uri`. En desarrollo puede apuntar a una instalación local (`mongodb://localhost:27017/stride_co`) o, si no quieres instalar MongoDB en tu máquina, a un cluster gratuito de [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (`mongodb+srv://usuario:CAMBIAR@cluster.mongodb.net/stride_co`). Cualquiera de las dos opciones va en el mismo campo `mongo.uri` de `config/local-development.json`.
+
+#### MongoDB Atlas (producción)
+
+La base documental de producción es un cluster **M0 (gratuito)** de MongoDB Atlas:
+
+| Dato | Valor |
+|---|---|
+| Proveedor / región | AWS, Oregon (us-west-2) |
+| Tier | M0 Free |
+| Usuario de base de datos | Exclusivo del proyecto, con el rol `readWriteAnyDatabase` (no `Atlas Admin`) |
+| Network Access | `0.0.0.0/0`, porque el plan gratuito de Render no tiene IP fija. Por eso la contraseña del usuario es robusta y la URI **nunca** se publica (solo vive en `config/local-production.json`, fuera de git) |
+| Creado | 11 de noviembre de 2026 |
+
+Esta URI va en `mongo.uri` de `config/local-production.json`. Para comprobar la conexión desde una computadora local:
+
+```bash
+NODE_ENV=production node -e "require('./config/mongoose')().then(() => console.log('OK')).catch((e) => console.error(e.message))"
+```
 
 `npm start` y `npm run dev` necesitan PostgreSQL y MongoDB corriendo: al arrancar, el servidor se conecta a ambas, sincroniza las tablas y carga los permisos RBAC antes de aceptar peticiones. `npm test` no los necesita: las pruebas simulan las consultas a la base de datos.
 
@@ -495,6 +515,46 @@ Los escenarios mínimos de la Tarea 6 están en `test/rbacScenarios.test.js`, un
 | 11.5 Permiso `any` no asignado | user | `orders:read:any` / `orders:delete:any` | 403 |
 
 Además, cada recurso tiene pruebas de acceso permitido y denegado (`test/*.rbac.test.js` y los archivos de cada recurso), `test/authorize.test.js` prueba el middleware (401, 403, `any` y `own`) y `test/auth.integration.test.js` recorre el flujo completo con un JWT real: login → token → `authenticate` → `authorize` → 200 / 403.
+
+## Internacionalización
+
+La API responde en español (`es`, idioma por defecto) e inglés (`en`), con la librería [`i18n`](https://www.npmjs.com/package/i18n).
+
+### Cómo se elige el idioma
+
+El idioma se detecta en este orden:
+
+1. **`?lang=es`** o **`?lang=en`** en la URL (tiene prioridad sobre todo lo demás).
+2. Cabecera **`Accept-Language`** de la petición (acepta listas de preferencia y variantes regionales: `es-MX`, `en-US`, etc., que se resuelven a su idioma base).
+3. Si no se reconoce ninguno de los dos (por ejemplo `fr`), se usa el idioma por defecto (`es`).
+
+```bash
+curl -H "Accept-Language: en" https://<url>/api/products/999
+```
+
+```json
+{ "error": { "message": "Product not found", "status": 404 } }
+```
+
+### Qué está traducido
+
+Todos los `message` de la API (éxito y error: 400, 401, 403, 404 y 500), incluidos los mensajes transversales (ruta inexistente, sin token, sin permiso, error inesperado) y la vista `index.pug`. En los controllers y middlewares se traduce con `req.__('clave', ...valores)`; no hay textos escritos directamente en el código.
+
+### Archivos de traducción
+
+```
+locales/
+├── es.json
+└── en.json
+```
+
+Las claves están organizadas por recurso (`users`, `products`, `orders`, `common`, etc.) con la misma estructura en ambos archivos; `test/locales.test.js` comprueba que tengan exactamente las mismas claves, que ninguna quede vacía o sin traducir, y que conserven los mismos marcadores (`%s`).
+
+### Cómo agregar un idioma nuevo
+
+1. Crear `locales/<idioma>.json` con las mismas claves que `es.json`/`en.json` (mismo formato, mismos marcadores `%s`).
+2. Agregar el código del idioma a `SUPPORTED_LOCALES` en `config/i18n.js`.
+3. Correr `npm test`: `test/locales.test.js` avisa si falta alguna clave.
 
 ## Control de cambios
 

@@ -2,6 +2,7 @@ const request = require('supertest');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const i18n = require('../config/i18n');
 
 jest.mock('../models/sql', () => ({
   User: { findByPk: jest.fn() }
@@ -14,6 +15,7 @@ const authenticate = require('../middlewares/authenticate');
 // comprobar que los errores de express-jwt llegan tal cual se esperan.
 function buildApp() {
   const app = express();
+  app.use(i18n.middleware); // req.__() disponible, igual que en app.js
   app.get('/protegido', authenticate, (req, res) => {
     res.json({ id: req.user.id, role_id: req.user.role_id });
   });

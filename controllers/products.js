@@ -14,57 +14,57 @@ const include = [{
 exports.getAll = async (req, res, next) => {
   try {
     const products = await Product.findAll({ include, order: [['id', 'ASC']] });
-    res.status(200).json({ message: 'GET productos obtenido exitosamente', data: products });
+    res.status(200).json({ message: req.__('products.listed'), data: products });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };
 
 exports.getById = async (req, res, next) => {
   try {
-    const id = parseId(req.params.id);
+    const id = parseId(req.params.id, req);
     const product = await Product.findByPk(id, { include });
-    if (!product) throw createError(404, 'Producto no encontrado');
-    res.status(200).json({ message: `GET producto con ID ${id}`, data: product });
+    if (!product) throw createError(404, req.__('products.notFound'));
+    res.status(200).json({ message: req.__('products.found', String(id)), data: product });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };
 
 exports.create = async (req, res, next) => {
   try {
     const product = await Product.create(pickFields(req.body, EDITABLE_FIELDS));
-    res.status(201).json({ message: 'Producto creado exitosamente', data: product });
+    res.status(201).json({ message: req.__('products.created'), data: product });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };
 
 exports.update = async (req, res, next) => {
   try {
-    const id = parseId(req.params.id);
+    const id = parseId(req.params.id, req);
     const product = await Product.findByPk(id);
-    if (!product) throw createError(404, 'Producto no encontrado');
+    if (!product) throw createError(404, req.__('products.notFound'));
 
     const changes = pickFields(req.body, EDITABLE_FIELDS);
-    if (Object.keys(changes).length === 0) throw createError(400, 'No hay datos válidos para actualizar');
+    if (Object.keys(changes).length === 0) throw createError(400, req.__('common.noValidFields'));
 
     await product.update(changes);
-    res.status(200).json({ message: `Producto con ID ${id} actualizado exitosamente`, data: product });
+    res.status(200).json({ message: req.__('products.updated', String(id)), data: product });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };
 
 exports.delete = async (req, res, next) => {
   try {
-    const id = parseId(req.params.id);
+    const id = parseId(req.params.id, req);
     const product = await Product.findByPk(id);
-    if (!product) throw createError(404, 'Producto no encontrado');
+    if (!product) throw createError(404, req.__('products.notFound'));
 
     await product.destroy();
-    res.status(200).json({ message: `Producto con ID ${id} eliminado exitosamente` });
+    res.status(200).json({ message: req.__('products.deleted', String(id)) });
   } catch (err) {
-    next(toHttpError(err));
+    next(toHttpError(err, req));
   }
 };

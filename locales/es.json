@@ -1,6 +1,107 @@
 {
     "auth" : {
-        "invalidCredentials": "Credenciales Inválidas"
-    }
+        "invalidCredentials": "Credenciales Inválidas",
+        "missingFields": "email y password son obligatorios",
+        "loginSuccess": "Login exitoso"
+    },
 
+    "common": {
+        "invalidId": "ID inválido",
+        "invalidData": "Datos inválidos",
+        "duplicateRecord": "El registro ya existe",
+        "recordInUse": "El registro está en uso por otros registros",
+        "relatedRecordMissing": "El registro relacionado no existe",
+        "noValidFields": "No hay datos válidos para actualizar",
+        "routeNotFound": "Ruta no encontrada",
+        "serverError": "Error interno del servidor",
+        "unauthenticated": "No autenticado",
+        "unauthorized": "Usuario no autorizado",
+        "forbidden": "Acceso denegado"
+    },
+
+    "home": {
+        "welcome": "Bienvenido a %s"
+    },
+
+    "users": {
+        "listed": "GET usuarios obtenido exitosamente",
+        "found": "GET usuario con ID %s",
+        "created": "Usuario creado exitosamente",
+        "updated": "Usuario con ID %s actualizado exitosamente",
+        "deleted": "Usuario con ID %s eliminado exitosamente",
+        "notFound": "Usuario no encontrado",
+        "emailTaken": "El email ya está registrado",
+        "nameEmailRequired": "first_name, last_name y email son obligatorios",
+        "passwordRequired": "La contraseña es obligatoria (mínimo %s caracteres)",
+        "passwordMinLength": "La contraseña debe tener mínimo %s caracteres"
+    },
+
+    "roles": {
+        "listed": "GET roles obtenido exitosamente",
+        "found": "GET rol con ID %s",
+        "created": "Rol creado exitosamente",
+        "updated": "Rol con ID %s actualizado exitosamente",
+        "deleted": "Rol con ID %s eliminado exitosamente",
+        "notFound": "Rol no encontrado",
+        "invalidPermissionIds": "permission_ids debe ser un arreglo de IDs de permisos",
+        "permissionNotFound": "Algún permiso de permission_ids no existe",
+        "hasAssignedUsers": "El rol tiene %s usuario(s) asignado(s)"
+    },
+
+    "permissions": {
+        "listed": "GET permisos obtenido exitosamente",
+        "found": "GET permiso con ID %s",
+        "created": "Permiso creado exitosamente",
+        "updated": "Permiso con ID %s actualizado exitosamente",
+        "deleted": "Permiso con ID %s eliminado exitosamente",
+        "notFound": "Permiso no encontrado",
+        "keyRequired": "key es obligatoria"
+    },
+
+    "products": {
+        "listed": "GET productos obtenido exitosamente",
+        "found": "GET producto con ID %s",
+        "created": "Producto creado exitosamente",
+        "updated": "Producto con ID %s actualizado exitosamente",
+        "deleted": "Producto con ID %s eliminado exitosamente",
+        "notFound": "Producto no encontrado"
+    },
+
+    "variants": {
+        "listed": "GET variantes obtenido exitosamente",
+        "found": "GET variante con ID %s",
+        "created": "Variante creada exitosamente",
+        "updated": "Variante con ID %s actualizada exitosamente",
+        "deleted": "Variante con ID %s eliminada exitosamente",
+        "notFound": "Variante no encontrada"
+    },
+
+    "inventory": {
+        "listed": "GET inventario obtenido exitosamente",
+        "found": "GET inventario con ID %s",
+        "created": "Registro de inventario creado exitosamente",
+        "updated": "Inventario con ID %s actualizado exitosamente",
+        "deleted": "Registro de inventario con ID %s eliminado exitosamente",
+        "notFound": "Registro de inventario no encontrado"
+    },
+
+    "customers": {
+        "listed": "GET clientes obtenido exitosamente (Modelo Documental MongoDB)",
+        "found": "GET cliente con ID %s",
+        "created": "Cliente creado exitosamente",
+        "updated": "Cliente con ID %s actualizado exitosamente",
+        "deleted": "Cliente con ID %s eliminado exitosamente",
+        "notFound": "Cliente no encontrado",
+        "invalidId": "Id de cliente inválido"
+    },
+
+    "orders": {
+        "listed": "GET órdenes obtenido exitosamente (Modelo Documental MongoDB)",
+        "found": "GET orden con ID %s",
+        "created": "Orden creada exitosamente",
+        "updated": "Orden con ID %s actualizada exitosamente",
+        "deleted": "Orden con ID %s eliminada exitosamente",
+        "notFound": "Orden no encontrada",
+        "invalidId": "Id de orden inválido"
+    }
 }
