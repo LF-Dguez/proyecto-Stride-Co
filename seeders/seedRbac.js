@@ -1,8 +1,13 @@
 const config = require('config');
+const mongoose = require('mongoose');
 const { sequelize, User, Role, Permission, Product, ProductVariant, Inventory } = require('../models/sql');
+const Customer = require('../models/mongo/Customer');
+const Order = require('../models/mongo/Order');
+const connectMongo = require('../config/mongoose');
 const { ROLES, ROLE_PERMISSIONS, PERMISSION_KEYS, USERS } = require('./rbacMatrix');
 const { hashPassword, verifyPassword } = require('../services/password');
-const { seedSampleSql } = require('./sampleSql');
+const { seedSampleSql, SAMPLE_PRODUCTS } = require('./sampleSql');
+const { seedSampleMongo, buildCatalog, buildUserIds } = require('./sampleMongo');
 
 // Contraseña de los usuarios de demostración, una por rol (seed.demoPasswords.<role>).
 // Es un dato ficticio que se documenta en el README y no debe reutilizarse en ninguna otra cuenta.
@@ -70,13 +75,33 @@ async function seedRbac() {
 
 module.exports = seedRbac;
 
+// Runner de npm run seed: siembra PostgreSQL y después MongoDB. Las dos conexiones se cierran
+// al terminar, incluso si algo falla, para que el proceso no se quede colgado.
+async function runSeed() {
+  try {
+    const r = await seedRbac();
+    console.log(`Seed RBAC listo: ${r.roles} roles, ${r.permissions} permisos`);
+    console.log(`Usuarios de demostración: ${r.users.created} creados, ${r.users.updated} actualizados, ${r.users.unchanged} sin cambios`);
+    console.log(`Datos de ejemplo: ${r.sample.products} productos, ${r.sample.variants} variantes y ${r.sample.inventory} registros de inventario creados`);
+
+    await connectMongo();
+    const users = await User.findAll({ where: { email: USERS.map((u) => u.email) } });
+    const products = await Product.findAll({ where: { name: SAMPLE_PRODUCTS.map((p) => p.name) } });
+    const mongo = await seedSampleMongo({
+      Customer,
+      Order,
+      userIds: buildUserIds(users),
+      catalog: buildCatalog(products)
+    });
+    console.log(`Datos de ejemplo de MongoDB: ${mongo.customers.created} clientes creados (${mongo.customers.updated} actualizados) y ${mongo.orders.created} órdenes creadas`);
+  } catch (err) {
+    console.error('Error en el seed:', err);
+    process.exitCode = 1;
+  } finally {
+    await Promise.allSettled([sequelize.close(), mongoose.disconnect()]);
+  }
+}
+
 if (require.main === module) {
-  seedRbac()
-    .then((r) => {
-      console.log(`Seed RBAC listo: ${r.roles} roles, ${r.permissions} permisos`);
-      console.log(`Usuarios de demostración: ${r.users.created} creados, ${r.users.updated} actualizados, ${r.users.unchanged} sin cambios`);
-      console.log(`Datos de ejemplo: ${r.sample.products} productos, ${r.sample.variants} variantes y ${r.sample.inventory} registros de inventario creados`);
-      return sequelize.close();
-    })
-    .catch((err) => { console.error('Error en el seed:', err); process.exit(1); });
+  runSeed();
 }
