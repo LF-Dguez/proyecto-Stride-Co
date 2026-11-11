@@ -5,26 +5,24 @@ const { signToken } = require('../services/token');
 // Mismo mensaje genérico en todos los casos de fallo: email inexistente, usuario
 // inactivo o contraseña incorrecta. No revela cuáles cuentas están registradas.
 
-//const INVALID_CREDENTIALS = { message: 'Invalid credentials' };
-
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body || {};
     // Ambos deben ser texto no vacío: un objeto o un número en el body responde 400,
     // no llega a la consulta de Sequelize (que lo rechazaría con un 500).
     if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
-      return res.status(400).json({ message: req.__('auth.invalidCredentials') });
+      return res.status(400).json({ message: req.__('auth.missingFields') });
     }
 
     const user = await User.findOne({ where: { email } });
     if (!user || !user.active || !(await verifyPassword(password, user.password_hash))) {
-      return res.status(401).json({message: req.__('auth.invalidCredentials')});
+      return res.status(401).json({ message: req.__('auth.invalidCredentials') });
     }
 
     // El payload del JWT solo lleva sub (ver services/token.js); user se serializa
     // con User.prototype.toJSON(), que ya oculta password_hash y salt_key.
     const token = signToken(user);
-    res.status(200).json({ message: 'Login exitoso', token, user });
+    res.status(200).json({ message: req.__('auth.loginSuccess'), token, user });
   } catch (err) {
     next(err);
   }
