@@ -84,6 +84,24 @@ Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/st
 
 **MongoDB:** `mongo.uri`. En desarrollo puede apuntar a una instalación local (`mongodb://localhost:27017/stride_co`) o, si no quieres instalar MongoDB en tu máquina, a un cluster gratuito de [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (`mongodb+srv://usuario:CAMBIAR@cluster.mongodb.net/stride_co`). Cualquiera de las dos opciones va en el mismo campo `mongo.uri` de `config/local-development.json`.
 
+#### MongoDB Atlas (producción)
+
+La base documental de producción es un cluster **M0 (gratuito)** de MongoDB Atlas:
+
+| Dato | Valor |
+|---|---|
+| Proveedor / región | AWS, Oregon (us-west-2) |
+| Tier | M0 Free |
+| Usuario de base de datos | Exclusivo del proyecto, con el rol `readWriteAnyDatabase` (no `Atlas Admin`) |
+| Network Access | `0.0.0.0/0`, porque el plan gratuito de Render no tiene IP fija. Por eso la contraseña del usuario es robusta y la URI **nunca** se publica (solo vive en `config/local-production.json`, fuera de git) |
+| Creado | 11 de noviembre de 2026 |
+
+Esta URI va en `mongo.uri` de `config/local-production.json`. Para comprobar la conexión desde una computadora local:
+
+```bash
+NODE_ENV=production node -e "require('./config/mongoose')().then(() => console.log('OK')).catch((e) => console.error(e.message))"
+```
+
 `npm start` y `npm run dev` necesitan PostgreSQL y MongoDB corriendo: al arrancar, el servidor se conecta a ambas, sincroniza las tablas y carga los permisos RBAC antes de aceptar peticiones. `npm test` no los necesita: las pruebas simulan las consultas a la base de datos.
 
 Para poblar roles, permisos y usuarios de prueba (`admin@stride.co`, `sales@stride.co` y `user@stride.co`, cada uno con su propia contraseña de demostración, definida en seed.demoPasswords de config/default.json; son datos ficticios exclusivos de esas cuentas):
