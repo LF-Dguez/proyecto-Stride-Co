@@ -11,7 +11,16 @@
         "duplicateRecord": "The record already exists",
         "recordInUse": "The record is in use by other records",
         "relatedRecordMissing": "The related record does not exist",
-        "noValidFields": "No valid data to update"
+        "noValidFields": "No valid data to update",
+        "routeNotFound": "Route not found",
+        "serverError": "Internal server error",
+        "unauthenticated": "Not authenticated",
+        "unauthorized": "Unauthorized user",
+        "forbidden": "Access denied"
+    },
+
+    "home": {
+        "welcome": "Welcome to %s"
     },
 
     "users": {
@@ -74,5 +83,25 @@
         "updated": "Inventory record with ID %s updated successfully",
         "deleted": "Inventory record with ID %s deleted successfully",
         "notFound": "Inventory record not found"
+    },
+
+    "customers": {
+        "listed": "GET customers retrieved successfully (MongoDB document model)",
+        "found": "GET customer with ID %s",
+        "created": "Customer created successfully",
+        "updated": "Customer with ID %s updated successfully",
+        "deleted": "Customer with ID %s deleted successfully",
+        "notFound": "Customer not found",
+        "invalidId": "Invalid customer ID"
+    },
+
+    "orders": {
+        "listed": "GET orders retrieved successfully (MongoDB document model)",
+        "found": "GET order with ID %s",
+        "created": "Order created successfully",
+        "updated": "Order with ID %s updated successfully",
+        "deleted": "Order with ID %s deleted successfully",
+        "notFound": "Order not found",
+        "invalidId": "Invalid order ID"
     }
 }

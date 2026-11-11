@@ -17,11 +17,11 @@ const { getAccessControl, getRoleName } = require('../services/rbac');
 function authorize(resource, action, possession = 'any', ownerResolver) {
   const middleware = async (req, res, next) => {
     try {
-      if (!req.user) return next(createError(401, 'No autenticado'));
+      if (!req.user) return next(createError(401, req.__('common.unauthenticated')));
 
       const ac = getAccessControl();
       const role = getRoleName(req.user);
-      if (!ac || !role || !ac.hasRole(role)) return next(createError(403, 'Acceso denegado'));
+      if (!ac || !role || !ac.hasRole(role)) return next(createError(403, req.__('common.forbidden')));
 
       const can = ac.can(role);
 
@@ -34,14 +34,14 @@ function authorize(resource, action, possession = 'any', ownerResolver) {
         if (ownerResolver) {
           const ownerId = await ownerResolver(req);
           if (ownerId === null || ownerId === undefined || String(ownerId) !== String(req.user.id)) {
-            return next(createError(403, 'Acceso denegado'));
+            return next(createError(403, req.__('common.forbidden')));
           }
         }
         req.rbac = { possession: 'own' };
         return next();
       }
 
-      return next(createError(403, 'Acceso denegado'));
+      return next(createError(403, req.__('common.forbidden')));
     } catch (err) {
       return next(err);
     }
