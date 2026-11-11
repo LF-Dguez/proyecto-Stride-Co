@@ -80,7 +80,9 @@ NODE_ENV=production PORT=8080 npm start    # production, puerto 8080
 docker run -d --name stride-pg -e POSTGRES_PASSWORD=CAMBIAR -e POSTGRES_DB=stride_co -p 5432:5432 postgres:16
 ```
 
-Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/stride_co`. Para la External Database URL de Render PostgreSQL se necesita SSL: `postgres.ssl` es `true` en `config/production.json`. **MongoDB:** `mongo.uri` (por ejemplo `mongodb://localhost:27017/stride_co`).
+Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/stride_co`. Para la External Database URL de Render PostgreSQL se necesita SSL: `postgres.ssl` es `true` en `config/production.json`.
+
+**MongoDB:** `mongo.uri`. En desarrollo puede apuntar a una instalación local (`mongodb://localhost:27017/stride_co`) o, si no quieres instalar MongoDB en tu máquina, a un cluster gratuito de [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (`mongodb+srv://usuario:CAMBIAR@cluster.mongodb.net/stride_co`). Cualquiera de las dos opciones va en el mismo campo `mongo.uri` de `config/local-development.json`.
 
 `npm start` y `npm run dev` necesitan PostgreSQL y MongoDB corriendo: al arrancar, el servidor se conecta a ambas, sincroniza las tablas y carga los permisos RBAC antes de aceptar peticiones. `npm test` no los necesita: las pruebas simulan las consultas a la base de datos.
 
