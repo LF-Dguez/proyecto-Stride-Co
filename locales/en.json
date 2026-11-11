@@ -74,5 +74,25 @@
         "updated": "Inventory record with ID %s updated successfully",
         "deleted": "Inventory record with ID %s deleted successfully",
         "notFound": "Inventory record not found"
+    },
+
+    "customers": {
+        "listed": "GET customers retrieved successfully (MongoDB document model)",
+        "found": "GET customer with ID %s",
+        "created": "Customer created successfully",
+        "updated": "Customer with ID %s updated successfully",
+        "deleted": "Customer with ID %s deleted successfully",
+        "notFound": "Customer not found",
+        "invalidId": "Invalid customer ID"
+    },
+
+    "orders": {
+        "listed": "GET orders retrieved successfully (MongoDB document model)",
+        "found": "GET order with ID %s",
+        "created": "Order created successfully",
+        "updated": "Order with ID %s updated successfully",
+        "deleted": "Order with ID %s deleted successfully",
+        "notFound": "Order not found",
+        "invalidId": "Invalid order ID"
     }
 }

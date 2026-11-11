@@ -74,5 +74,25 @@
         "updated": "Inventario con ID %s actualizado exitosamente",
         "deleted": "Registro de inventario con ID %s eliminado exitosamente",
         "notFound": "Registro de inventario no encontrado"
+    },
+
+    "customers": {
+        "listed": "GET clientes obtenido exitosamente (Modelo Documental MongoDB)",
+        "found": "GET cliente con ID %s",
+        "created": "Cliente creado exitosamente",
+        "updated": "Cliente con ID %s actualizado exitosamente",
+        "deleted": "Cliente con ID %s eliminado exitosamente",
+        "notFound": "Cliente no encontrado",
+        "invalidId": "Id de cliente inválido"
+    },
+
+    "orders": {
+        "listed": "GET órdenes obtenido exitosamente (Modelo Documental MongoDB)",
+        "found": "GET orden con ID %s",
+        "created": "Orden creada exitosamente",
+        "updated": "Orden con ID %s actualizada exitosamente",
+        "deleted": "Orden con ID %s eliminada exitosamente",
+        "notFound": "Orden no encontrada",
+        "invalidId": "Id de orden inválido"
     }
 }
