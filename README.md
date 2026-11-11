@@ -496,6 +496,46 @@ Los escenarios mínimos de la Tarea 6 están en `test/rbacScenarios.test.js`, un
 
 Además, cada recurso tiene pruebas de acceso permitido y denegado (`test/*.rbac.test.js` y los archivos de cada recurso), `test/authorize.test.js` prueba el middleware (401, 403, `any` y `own`) y `test/auth.integration.test.js` recorre el flujo completo con un JWT real: login → token → `authenticate` → `authorize` → 200 / 403.
 
+## Internacionalización
+
+La API responde en español (`es`, idioma por defecto) e inglés (`en`), con la librería [`i18n`](https://www.npmjs.com/package/i18n).
+
+### Cómo se elige el idioma
+
+El idioma se detecta en este orden:
+
+1. **`?lang=es`** o **`?lang=en`** en la URL (tiene prioridad sobre todo lo demás).
+2. Cabecera **`Accept-Language`** de la petición (acepta listas de preferencia y variantes regionales: `es-MX`, `en-US`, etc., que se resuelven a su idioma base).
+3. Si no se reconoce ninguno de los dos (por ejemplo `fr`), se usa el idioma por defecto (`es`).
+
+```bash
+curl -H "Accept-Language: en" https://<url>/api/products/999
+```
+
+```json
+{ "error": { "message": "Product not found", "status": 404 } }
+```
+
+### Qué está traducido
+
+Todos los `message` de la API (éxito y error: 400, 401, 403, 404 y 500), incluidos los mensajes transversales (ruta inexistente, sin token, sin permiso, error inesperado) y la vista `index.pug`. En los controllers y middlewares se traduce con `req.__('clave', ...valores)`; no hay textos escritos directamente en el código.
+
+### Archivos de traducción
+
+```
+locales/
+├── es.json
+└── en.json
+```
+
+Las claves están organizadas por recurso (`users`, `products`, `orders`, `common`, etc.) con la misma estructura en ambos archivos; `test/locales.test.js` comprueba que tengan exactamente las mismas claves, que ninguna quede vacía o sin traducir, y que conserven los mismos marcadores (`%s`).
+
+### Cómo agregar un idioma nuevo
+
+1. Crear `locales/<idioma>.json` con las mismas claves que `es.json`/`en.json` (mismo formato, mismos marcadores `%s`).
+2. Agregar el código del idioma a `SUPPORTED_LOCALES` en `config/i18n.js`.
+3. Correr `npm test`: `test/locales.test.js` avisa si falta alguna clave.
+
 ## Control de cambios
 
 - Los commits siguen la especificación [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `chore:`.

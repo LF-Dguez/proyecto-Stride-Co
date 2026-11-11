@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-//const {expressjwt}
 
 const i18n = require('./config/i18n');
 
@@ -49,7 +48,7 @@ app.use('/api/orders', authenticate, ordersRouter);
 
 
 app.use((req, res, next) => {
-  next(createError(404, 'Ruta no encontrada'));
+  next(createError(404, req.__('common.routeNotFound')));
 });
 
 app.use((err, req, res, next) => {
@@ -57,11 +56,13 @@ app.use((err, req, res, next) => {
     const status = err.status || 500;
     // En un error 500 no se expone el detalle interno (consultas, rutas, librerías)
     if (status >= 500) console.error(err);
+    // express-jwt reporta en inglés y sin distinguir el motivo (token ausente,
+    // inválido o expirado); se traduce al mismo mensaje genérico de siempre.
+    let message = err.message;
+    if (status >= 500) message = req.__('common.serverError');
+    else if (err.name === 'UnauthorizedError') message = req.__('common.unauthenticated');
     return res.status(status).json({
-      error: {
-        message: status >= 500 ? 'Error interno del servidor' : err.message,
-        status
-      }
+      error: { message, status }
     });
   }
 

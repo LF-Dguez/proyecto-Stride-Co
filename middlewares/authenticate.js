@@ -23,7 +23,7 @@ async function loadUser(req, res, next) {
     const id = Number(req.auth && req.auth.sub);
     const user = await User.findByPk(id);
     if (!user || !user.active) {
-      return next(createError(401, 'Usuario no autorizado'));
+      return next(createError(401, req.__('common.unauthorized')));
     }
     req.user = user;
     next();
