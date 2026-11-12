@@ -606,6 +606,18 @@ docker logs stride-co
 2. Agregar un archivo con la ruta `/etc/secrets/local-production.json` (el nombre que Render le da en el contenedor) y como contenido el JSON de secretos (`jwt.secret`, `postgres.uri`, `mongo.uri` reales).
 3. Render lo monta ahí automáticamente en cada despliegue; nunca se sube al repositorio.
 
+### Render Web Service (producción)
+
+| Dato | Valor |
+|---|---|
+| Proveedor / región | Render, Oregon (US West) |
+| Plan | Free, sin tarjeta |
+| Runtime | Docker |
+| Rama desplegada | `staging` |
+| Health Check Path | `/health` |
+
+El servicio queda público en `https://proyecto-stride-co-dylo.onrender.com`. Cada push a `staging` dispara un despliegue automático; el plan gratuito duerme tras un rato sin tráfico, por lo que la primera petición después de eso puede tardar hasta 50 segundos.
+
 ## Control de cambios
 
 - Los commits siguen la especificación [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `chore:`.
