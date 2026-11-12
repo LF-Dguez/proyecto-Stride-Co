@@ -667,6 +667,18 @@ El servicio queda público en `https://proyecto-stride-co-dylo.onrender.com`. Ca
 ## Control de cambios
 
 - Los commits siguen la especificación [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `chore:`.
-- El trabajo se hace en ramas por funcionalidad (por ejemplo `feat/...`, `test/...`) y se integra a `main` mediante Pull Request con merge commit.
-- Cada actividad conserva su rama en el remoto después del merge: `feat/jwt-authentication` (Actividad 4) y `feat/rbac-authorization` (Tarea 6).
+- La rama de entrega del Entregable 2 es **`staging`** (creada a partir de `main`): es la que se revisa y desde la que despliega Render.
+- Cada bloque se desarrolla en su propia rama y se integra a `staging` mediante merge o Pull Request con merge commit, conservando la rama en el remoto:
+
+| Rama | Bloque |
+|---|---|
+| `feat/orm-odm-routes`, `feat/models-validations`, `feat/associations-queries`, `feat/seed-sql-sample-data`, `feat/seed-mongo-data` | Rutas con Sequelize / Mongoose, validaciones, asociaciones y seed |
+| `feat/route-protection` | `authenticate` + `authorize` en todas las rutas |
+| `feat/i18n`, `feat/i18n-*` | Internacionalización |
+| `feat/config` | Configuración por entornos y secretos |
+| `chore/render-deploy`, `chore-docker-secret-file`, `docs-render-postgres`, `docs-mongo-atlas`, `docs/render-web-service` | Despliegue en Render, Render PostgreSQL y MongoDB Atlas |
+| `test/e2e`, `test/e2e-*` | Pruebas E2E con Jest + Supertest (generadas con Antigravity) |
+| `fix/uniform-response`, `docs/readme-endpoints` | Respuesta uniforme `{ message, data }` y documentación de endpoints |
+
+- Las ramas de actividades anteriores también se conservan: `feat/jwt-authentication` (Actividad 4) y `feat/rbac-authorization` (Tarea 6).
 - No se suben `node_modules/` ni los archivos `config/local*.json` (secretos); están incluidos en `.gitignore`.
