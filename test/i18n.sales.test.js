@@ -47,8 +47,8 @@ describe('i18n en customers, orders y ownership (issue #99)', () => {
     const es = await request(app).get('/api/customers/000000000000000000000000').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/customers/000000000000000000000000?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Cliente no encontrado');
-    expect(en.body.error.message).toBe('Customer not found');
+    expect(es.body.message).toBe('Cliente no encontrado');
+    expect(en.body.message).toBe('Customer not found');
   });
 
   it('GET /api/customers/:id con id mal formado (400): mismo mensaje, en es y en', async () => {
@@ -56,8 +56,8 @@ describe('i18n en customers, orders y ownership (issue #99)', () => {
     const es = await request(app).get('/api/customers/no-es-un-id').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/customers/no-es-un-id?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Id de cliente inválido');
-    expect(en.body.error.message).toBe('Invalid customer ID');
+    expect(es.body.message).toBe('Id de cliente inválido');
+    expect(en.body.message).toBe('Invalid customer ID');
   });
 
   it('GET /api/orders (200): mismo mensaje, en es y en', async () => {
@@ -74,8 +74,8 @@ describe('i18n en customers, orders y ownership (issue #99)', () => {
     const es = await request(app).get('/api/orders/000000000000000000000000').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/orders/000000000000000000000000?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Orden no encontrada');
-    expect(en.body.error.message).toBe('Order not found');
+    expect(es.body.message).toBe('Orden no encontrada');
+    expect(en.body.message).toBe('Order not found');
   });
 
   it('GET /api/orders/:id con id mal formado (400): mismo mensaje, en es y en', async () => {
@@ -83,8 +83,8 @@ describe('i18n en customers, orders y ownership (issue #99)', () => {
     const es = await request(app).get('/api/orders/no-es-un-id').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/orders/no-es-un-id?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Id de orden inválido');
-    expect(en.body.error.message).toBe('Invalid order ID');
+    expect(es.body.message).toBe('Id de orden inválido');
+    expect(en.body.message).toBe('Invalid order ID');
   });
 
   it('own: 403 al consultar la orden de otro usuario (ownership.js), mismo flujo en es y en', async () => {

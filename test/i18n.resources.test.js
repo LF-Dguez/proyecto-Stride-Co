@@ -43,16 +43,16 @@ describe('i18n en users, roles, permissions y auth (issue #97)', () => {
     const es = await request(app).get('/api/users/999').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/users/999?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Usuario no encontrado');
-    expect(en.body.error.message).toBe('User not found');
+    expect(es.body.message).toBe('Usuario no encontrado');
+    expect(en.body.message).toBe('User not found');
   });
 
   it('POST /api/users sin campos obligatorios (400): mismo mensaje, en es y en', async () => {
     const es = await request(app).post('/api/users').set(users.admin).set('Accept-Language', 'es').send({});
     const en = await request(app).post('/api/users?lang=en').set(users.admin).send({});
 
-    expect(es.body.error.message).toBe('first_name, last_name y email son obligatorios');
-    expect(en.body.error.message).toBe('first_name, last_name and email are required');
+    expect(es.body.message).toBe('first_name, last_name y email son obligatorios');
+    expect(en.body.message).toBe('first_name, last_name and email are required');
   });
 
   it('GET /api/roles (200): mismo mensaje, en es y en', async () => {
@@ -69,8 +69,8 @@ describe('i18n en users, roles, permissions y auth (issue #97)', () => {
     const es = await request(app).get('/api/roles/999').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/roles/999?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Rol no encontrado');
-    expect(en.body.error.message).toBe('Role not found');
+    expect(es.body.message).toBe('Rol no encontrado');
+    expect(en.body.message).toBe('Role not found');
   });
 
   it('POST /api/roles con permission_ids inválido (400): mismo mensaje, en es y en', async () => {
@@ -78,8 +78,8 @@ describe('i18n en users, roles, permissions y auth (issue #97)', () => {
     const es = await request(app).post('/api/roles').set(users.admin).set('Accept-Language', 'es').send(body);
     const en = await request(app).post('/api/roles?lang=en').set(users.admin).send(body);
 
-    expect(es.body.error.message).toBe('permission_ids debe ser un arreglo de IDs de permisos');
-    expect(en.body.error.message).toBe('permission_ids must be an array of permission IDs');
+    expect(es.body.message).toBe('permission_ids debe ser un arreglo de IDs de permisos');
+    expect(en.body.message).toBe('permission_ids must be an array of permission IDs');
   });
 
   it('GET /api/permissions (200): mismo mensaje, en es y en', async () => {
@@ -96,16 +96,16 @@ describe('i18n en users, roles, permissions y auth (issue #97)', () => {
     const es = await request(app).get('/api/permissions/999').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/permissions/999?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Permiso no encontrado');
-    expect(en.body.error.message).toBe('Permission not found');
+    expect(es.body.message).toBe('Permiso no encontrado');
+    expect(en.body.message).toBe('Permission not found');
   });
 
   it('POST /api/permissions sin key (400): mismo mensaje, en es y en', async () => {
     const es = await request(app).post('/api/permissions').set(users.admin).set('Accept-Language', 'es').send({});
     const en = await request(app).post('/api/permissions?lang=en').set(users.admin).send({});
 
-    expect(es.body.error.message).toBe('key es obligatoria');
-    expect(en.body.error.message).toBe('key is required');
+    expect(es.body.message).toBe('key es obligatoria');
+    expect(en.body.message).toBe('key is required');
   });
 
   it('POST /api/auth/login sin campos (400): mismo mensaje, en es y en', async () => {

@@ -232,7 +232,7 @@ describe('Ruta inexistente', () => {
     // authenticate (issue #75) protege todo el prefijo /api/orders.
     const response = await request(app).get('/api/orders/1/inexistente');
     expect(response.statusCode).toBe(401);
-    expect(response.body).toHaveProperty('error');
+    expect(response.body).toHaveProperty('message');
   });
 });
 
@@ -244,7 +244,7 @@ describe('ID mal formado con alcance own', () => {
     const response = await request(protectedApp).get('/api/orders/abc').set(users.user);
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.error.message).toBe('Id de orden inválido');
+    expect(response.body.message).toBe('Id de orden inválido');
   });
 });
 

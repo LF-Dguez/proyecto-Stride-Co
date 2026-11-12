@@ -40,7 +40,7 @@ describe('Autorización de /api/permissions', () => {
   it('GET a una subruta inexistente de /api/permissions, sin token, responde 401', async () => {
     const response = await request(app).get('/api/permissions/1/inexistente');
     expect(response.statusCode).toBe(401);
-    expect(response.body).toHaveProperty('error');
+    expect(response.body).toHaveProperty('message');
   });
 });
 

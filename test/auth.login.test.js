@@ -90,7 +90,7 @@ describe('POST /api/auth/login', () => {
     const response = await request(app).post('/api/auth/login').send({ email: 'ana@stride.co', password: 'Secret123' });
 
     expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: { message: 'Error interno del servidor', status: 500 } });
+    expect(response.body).toEqual({ message: 'Error interno del servidor', data: null });
     console.error.mockRestore();
   });
 
@@ -103,7 +103,7 @@ describe('POST /api/auth/login', () => {
       .send({ email: 'no-existe@stride.co', password: 'cualquiera' });
 
     expect(response.statusCode).toBe(401);
-    expect(response.body).toEqual({ message: 'Invalid Credentials' });
+    expect(response.body).toEqual({ message: 'Invalid Credentials', data: null });
   });
 
   it('401: contraseña incorrecta responde con el mismo mensaje genérico', async () => {
@@ -113,7 +113,7 @@ describe('POST /api/auth/login', () => {
     const response = await request(app).post('/api/auth/login').set('Accept-Language', 'en').send({ email: user.email, password: 'incorrecta' });
 
     expect(response.statusCode).toBe(401);
-    expect(response.body).toEqual({ message: 'Invalid Credentials' });
+    expect(response.body).toEqual({ message: 'Invalid Credentials', data: null });
   });
 
   it('401: usuario inactivo responde con el mismo mensaje genérico', async () => {
@@ -123,7 +123,7 @@ describe('POST /api/auth/login', () => {
     const response = await request(app).post('/api/auth/login').set('Accept-Language', 'en').send({ email: user.email, password: 'Secret123' });
 
     expect(response.statusCode).toBe(401);
-    expect(response.body).toEqual({ message: 'Invalid Credentials' });
+    expect(response.body).toEqual({ message: 'Invalid Credentials', data: null });
   });
 
   it('401: el mismo mensaje genérico sale en español con Accept-Language: es', async () => {
@@ -135,6 +135,6 @@ describe('POST /api/auth/login', () => {
       .send({ email: 'no-existe@stride.co', password: 'cualquiera' });
 
     expect(response.statusCode).toBe(401);
-    expect(response.body).toEqual({ message: 'Credenciales Inválidas' });
+    expect(response.body).toEqual({ message: 'Credenciales Inválidas', data: null });
   });
 });
