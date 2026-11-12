@@ -147,6 +147,22 @@ describe('matriz RBAC: seed, README y reglas de código', () => {
     expect(readme).toContain(matrixMarkdown());
   });
 
+  it('la tabla de endpoints del README tiene todos los endpoints con su permiso real', () => {
+    const readme = fs.readFileSync(path.join(__dirname, '..', 'README.md'), 'utf8').replace(/\r\n/g, '\n');
+    // Filas como: | `GET` | `/api/products/:id` | `products:read:any` | ... |
+    const documented = [...readme.matchAll(/^\| `([A-Z]+)` \| `([^`]+)` \| ([^|]+?) \|/gm)]
+      .map(([, method, route, permission]) => `${method} ${route} ${permission.trim()}`);
+    const expected = endpoints.map((e) => {
+      const rbac = rbacOf(e);
+      let permission = 'Público';
+      if (rbac) permission = `\`${rbac.resource}:${rbac.action}:${rbac.possession}\``;
+      else if (AUTHENTICATE_ONLY.includes(label(e))) permission = 'Solo `authenticate`';
+      return `${e.method.toUpperCase()} ${e.path} ${permission}`;
+    });
+
+    expect(documented.sort()).toEqual(expected.sort());
+  });
+
   it('ni los controllers ni las rutas comparan nombres de rol para autorizar', () => {
     const dirs = ['controllers', 'routes'];
     const offenders = dirs.flatMap((dir) => fs.readdirSync(path.join(__dirname, '..', dir))
