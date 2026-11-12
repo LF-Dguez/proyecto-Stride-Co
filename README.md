@@ -128,7 +128,7 @@ NODE_ENV=production node -e "require('./config/mongoose')().then(() => console.l
 
 `npm start` y `npm run dev` necesitan PostgreSQL y MongoDB corriendo: al arrancar, el servidor se conecta a ambas, sincroniza las tablas y carga los permisos RBAC antes de aceptar peticiones. `npm test` no los necesita: las pruebas simulan las consultas a la base de datos.
 
-Para poblar roles, permisos y usuarios de prueba (`admin@stride.co`, `sales@stride.co` y `user@stride.co`, cada uno con su propia contraseña de demostración, definida en seed.demoPasswords de config/default.json; son datos ficticios exclusivos de esas cuentas):
+Para poblar roles, permisos, usuarios de prueba (`admin@stride.co`, `sales@stride.co` y `user@stride.co`, cada uno con su propia contraseña de demostración definida en `seed.demoPasswords` de `config/default.json`), productos, variantes, inventario y clientes y órdenes de MongoDB (son datos ficticios exclusivos de la demostración):
 
 ```bash
 npm run seed

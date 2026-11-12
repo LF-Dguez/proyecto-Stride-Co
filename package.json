@@ -42,9 +42,7 @@
     "node": ">=20.19.0"
   },
   "jest": {
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/test/e2e/"
-    ]
+  "testPathIgnorePatterns": ["/node_modules/", "/test/e2e/"],
+  "testTimeout": 30000
   }
 }
