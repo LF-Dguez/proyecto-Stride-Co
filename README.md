@@ -664,6 +664,24 @@ docker logs stride-co
 
 El servicio queda público en `https://proyecto-stride-co-dylo.onrender.com`. Cada push a `staging` dispara un despliegue automático; el plan gratuito duerme tras un rato sin tráfico, por lo que la primera petición después de eso puede tardar hasta 50 segundos.
 
+### Verificación en producción
+
+Con el servicio desplegado, se corrió `npm run seed` contra la PostgreSQL de Render (External Database URL) y el cluster de Atlas:
+
+![Seed en producción](docs/img/seed-produccion.png)
+
+Luego, contra la URL pública, se verificó el flujo completo en **es** y en **en** con el usuario de demostración `user@stride.co`: login, un recurso permitido (`GET /api/products`, 200) y uno denegado por rol (`GET /api/users`, 403).
+
+| | es | en |
+|---|---|---|
+| Login | `Login exitoso` | `Login successful` |
+| `GET /api/products` | 200 | 200 |
+| `GET /api/users` | 403 `Acceso denegado` | 403 `Access denied` |
+
+Por último, `test/e2e` corrió contra el servicio público con `E2E_BASE_URL=https://proyecto-stride-co-dylo.onrender.com npm run test:e2e`:
+
+![E2E contra producción](docs/img/e2e-produccion.png)
+
 ## API pública
 
 Datos para probar el despliegue en Render (plan gratuito, desplegado desde `staging`):
