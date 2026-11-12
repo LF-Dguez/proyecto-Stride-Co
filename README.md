@@ -229,15 +229,56 @@ Todos los endpoints responden con `{ "message": "...", "data": ... }` y leen o e
 | Customers | Documental (MongoDB) | `/api/customers` |
 | Orders | Documental (MongoDB) | `/api/orders` |
 
-Operaciones disponibles en cada recurso:
+Tabla de todos los endpoints, con el permiso RBAC que exige cada uno (`recurso:acción:alcance`) y los roles que lo tienen según la [matriz RBAC](#matriz-rbac). Todas las rutas bajo `/api`, salvo el login, pasan primero por `authenticate` (JWT) y después por `authorize` (RBAC). Con alcance `own`, `admin` y `sales` tienen la versión `any`; `user` solo puede ver o cambiar los registros que le pertenecen (el dueño real se comprueba en la base de datos, ver [Ejemplo de permiso `own`](#ejemplo-de-permiso-own)).
 
-| Método | Ruta | Descripción | Código |
-|--------|------|-------------|--------|
-| `GET` | `/api/<recurso>` | Lista los registros | 200 |
-| `GET` | `/api/<recurso>/:id` | Obtiene un registro | 200 |
-| `POST` | `/api/<recurso>` | Crea un registro | 201 |
-| `PUT` | `/api/<recurso>/:id` | Actualiza un registro | 200 |
-| `DELETE` | `/api/<recurso>/:id` | Elimina un registro | 200 |
+| Método | Ruta | Permiso RBAC | Roles con acceso | Descripción |
+|---|---|---|---|---|
+| `GET` | `/` | Público | Todos | Página de inicio (vista Pug traducida) |
+| `GET` | `/health` | Público | Todos | Estado del servicio: `{ "status": "UP" }` |
+| `POST` | `/api/auth/login` | Público | Todos | Inicia sesión y devuelve el JWT |
+| `GET` | `/api/auth/me` | Solo `authenticate` | Cualquier usuario autenticado | Datos seguros del usuario del token |
+| `GET` | `/api/users` | `users:read:any` | admin | Lista los usuarios |
+| `GET` | `/api/users/:id` | `users:read:any` | admin | Obtiene un usuario |
+| `POST` | `/api/users` | `users:create:any` | admin | Crea un usuario |
+| `PUT` | `/api/users/:id` | `users:update:any` | admin | Actualiza un usuario |
+| `DELETE` | `/api/users/:id` | `users:delete:any` | admin | Elimina un usuario |
+| `GET` | `/api/roles` | `roles:read:any` | admin | Lista los roles con sus permisos |
+| `GET` | `/api/roles/:id` | `roles:read:any` | admin | Obtiene un rol con sus permisos |
+| `POST` | `/api/roles` | `roles:create:any` | admin | Crea un rol (acepta permission_ids) |
+| `PUT` | `/api/roles/:id` | `roles:update:any` | admin | Actualiza un rol (acepta permission_ids) |
+| `DELETE` | `/api/roles/:id` | `roles:delete:any` | admin | Elimina un rol |
+| `GET` | `/api/permissions` | `permissions:read:any` | admin | Lista los permisos |
+| `GET` | `/api/permissions/:id` | `permissions:read:any` | admin | Obtiene un permiso |
+| `POST` | `/api/permissions` | `permissions:create:any` | admin | Crea un permiso |
+| `PUT` | `/api/permissions/:id` | `permissions:update:any` | admin | Actualiza un permiso |
+| `DELETE` | `/api/permissions/:id` | `permissions:delete:any` | admin | Elimina un permiso |
+| `GET` | `/api/products` | `products:read:any` | admin, sales, user | Lista los productos con sus variantes y su stock |
+| `GET` | `/api/products/:id` | `products:read:any` | admin, sales, user | Obtiene un producto con sus variantes y su stock |
+| `POST` | `/api/products` | `products:create:any` | admin | Crea un producto |
+| `PUT` | `/api/products/:id` | `products:update:any` | admin | Actualiza un producto |
+| `DELETE` | `/api/products/:id` | `products:delete:any` | admin | Elimina un producto |
+| `GET` | `/api/variants` | `variants:read:any` | admin, sales, user | Lista las variantes con su producto e inventario |
+| `GET` | `/api/variants/:id` | `variants:read:any` | admin, sales, user | Obtiene una variante con su producto e inventario |
+| `POST` | `/api/variants` | `variants:create:any` | admin | Crea una variante |
+| `PUT` | `/api/variants/:id` | `variants:update:any` | admin | Actualiza una variante |
+| `DELETE` | `/api/variants/:id` | `variants:delete:any` | admin | Elimina una variante |
+| `GET` | `/api/inventory` | `inventory:read:any` | admin, sales | Lista los registros de inventario |
+| `GET` | `/api/inventory/:id` | `inventory:read:any` | admin, sales | Obtiene un registro de inventario |
+| `POST` | `/api/inventory` | `inventory:create:any` | admin | Crea un registro de inventario |
+| `PUT` | `/api/inventory/:id` | `inventory:update:any` | admin, sales | Actualiza un registro de inventario |
+| `DELETE` | `/api/inventory/:id` | `inventory:delete:any` | admin | Elimina un registro de inventario |
+| `GET` | `/api/customers` | `customers:read:own` | admin, sales, user (solo propios) | Lista los clientes |
+| `GET` | `/api/customers/:id` | `customers:read:own` | admin, sales, user (solo propios) | Obtiene un cliente |
+| `POST` | `/api/customers` | `customers:create:any` | admin, sales | Crea un cliente |
+| `PUT` | `/api/customers/:id` | `customers:update:own` | admin, sales, user (solo propios) | Actualiza un cliente |
+| `DELETE` | `/api/customers/:id` | `customers:delete:any` | admin | Elimina un cliente |
+| `GET` | `/api/orders` | `orders:read:own` | admin, sales, user (solo propios) | Lista las órdenes con los datos de su cliente |
+| `GET` | `/api/orders/:id` | `orders:read:own` | admin, sales, user (solo propios) | Obtiene una orden con los datos de su cliente |
+| `POST` | `/api/orders` | `orders:create:any` | admin, sales, user | Crea una orden |
+| `PUT` | `/api/orders/:id` | `orders:update:own` | admin, sales, user (solo propios) | Actualiza una orden |
+| `DELETE` | `/api/orders/:id` | `orders:delete:any` | admin | Elimina una orden |
+
+Códigos de respuesta correcta: `200` en consultas, actualizaciones y eliminaciones, y `201` al crear.
 
 Códigos de error:
 
@@ -479,6 +520,8 @@ Los 40 endpoints de los 8 recursos pasan por `authorize(resource, action, posses
 | `/api/customers` | Sí | `own` en lectura/actualización, `any` en creación/eliminación |
 
 El middleware no compara nombres de rol (`if (user.role === 'admin')`) y los controllers no deciden permisos: solo `authorize()` lo hace, con la instancia de `AccessControl`.
+
+El permiso exacto de cada endpoint está en la [tabla de endpoints](#api). Una prueba (`test/routesAudit.test.js`) comprueba que esa tabla coincide con los `authorize()` reales de las rutas, igual que la matriz con el seed.
 
 ### Ejemplo de permiso `any`
 
