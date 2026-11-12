@@ -84,6 +84,32 @@ Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/st
 
 **MongoDB:** `mongo.uri`. En desarrollo puede apuntar a una instalación local (`mongodb://localhost:27017/stride_co`) o, si no quieres instalar MongoDB en tu máquina, a un cluster gratuito de [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (`mongodb+srv://usuario:CAMBIAR@cluster.mongodb.net/stride_co`). Cualquiera de las dos opciones va en el mismo campo `mongo.uri` de `config/local-development.json`.
 
+#### Render PostgreSQL (producción)
+
+La base relacional de producción es una instancia **Free** de Render PostgreSQL:
+
+| Dato | Valor |
+|---|---|
+| Proveedor / región | Render, Oregon (US West) |
+| Plan | Free, sin tarjeta |
+| Creada | 11 de noviembre de 2026 |
+| **Caduca** | **11 de diciembre de 2026** (30 días desde su creación; 14 días de gracia y después se borra con sus datos) |
+
+> ⚠️ Solo se permite una base Free por workspace. Si caduca antes de la entrega, hay que recrearla y volver a correr `npm run seed`.
+
+Render da dos cadenas de conexión distintas:
+
+| URL | Uso |
+|---|---|
+| **Internal Database URL** | La usa el Web Service de Render, porque está en la misma región (más rápida, no sale a internet) |
+| **External Database URL** | Para conectarte desde una computadora local (por ejemplo, para correr el seed o probar la conexión). Requiere SSL: `postgres.ssl` es `true` en `config/production.json` |
+
+La que corresponda va en `postgres.uri` de `config/local-production.json`. Para comprobar la conexión desde una computadora local (con la External Database URL):
+
+```bash
+NODE_ENV=production node -e "require('./config/sequelize').authenticate().then(() => console.log('OK')).catch((e) => console.error(e.message))"
+```
+
 #### MongoDB Atlas (producción)
 
 La base documental de producción es un cluster **M0 (gratuito)** de MongoDB Atlas:
