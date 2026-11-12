@@ -664,6 +664,52 @@ docker logs stride-co
 
 El servicio queda público en `https://proyecto-stride-co-dylo.onrender.com`. Cada push a `staging` dispara un despliegue automático; el plan gratuito duerme tras un rato sin tráfico, por lo que la primera petición después de eso puede tardar hasta 50 segundos.
 
+## API pública
+
+Datos para probar el despliegue en Render (plan gratuito, desplegado desde `staging`):
+
+| Dato | Contenido |
+|---|---|
+| URL pública | `https://proyecto-stride-co-dylo.onrender.com` |
+| Health Check | `GET https://proyecto-stride-co-dylo.onrender.com/health` → `200 { "status": "UP" }` (también configurado como *Health Check Path* en Render) |
+| Usuarios de demostración | Ver la tabla de abajo (datos ficticios, exclusivos de estas cuentas) |
+| Ejemplo de uso | Ver los comandos de abajo |
+| Render PostgreSQL | Plan Free, Oregon (US West). Creada el 11 de noviembre de 2026; **caduca el 11 de diciembre de 2026** (30 días). Si caduca, se crea otra y se vuelve a correr `npm run seed` (ver [Render PostgreSQL](#render-postgresql-producción)) |
+| MongoDB Atlas | Cluster M0 (gratuito) en AWS, Oregon (us-west-2). Usuario de base de datos exclusivo del proyecto. Network Access `0.0.0.0/0`, porque el plan gratuito de Render no tiene IP fija; por eso la contraseña es robusta y la URI nunca se publica (ver [MongoDB Atlas](#mongodb-atlas-producción)) |
+| Secretos | `config/local-production.json` (`jwt.secret`, `postgres.uri`, `mongo.uri`) se sube a Render como *Secret File* y nunca entra al repositorio ni a la imagen (ver [Cómo se entrega el secret file a Render](#cómo-se-entrega-el-secret-file-a-render)) |
+
+Usuarios de demostración creados por `npm run seed` (las contraseñas están en `seed.demoPasswords` de `config/default.json`; son ficticias y solo sirven para estas cuentas):
+
+| Rol | Email | Contraseña | Puede, por ejemplo |
+|---|---|---|---|
+| `admin` | `admin@stride.co` | `Admin-Demo-2026!` | Todo (`*:*:any`) |
+| `sales` | `sales@stride.co` | `Ventas-Demo-2026!` | Consultar el catálogo, operar clientes y órdenes; **no** puede borrar productos (403) |
+| `user` | `user@stride.co` | `Cliente-Demo-2026!` | Consultar el catálogo y **solo sus propias** órdenes y datos de cliente |
+
+Ejemplo de uso (el plan gratuito duerme sin tráfico: la primera petición puede tardar cerca de un minuto, por eso conviene empezar por `/health`):
+
+```bash
+URL=https://proyecto-stride-co-dylo.onrender.com
+
+# 1. Health check
+curl $URL/health
+
+# 2. Login con un usuario de demostración (el token viene en data.token)
+curl -X POST $URL/api/auth/login -H "Content-Type: application/json" \
+  -d '{"email":"sales@stride.co","password":"Ventas-Demo-2026!"}'
+
+# 3. Recurso permitido, en español y en inglés
+curl $URL/api/products -H "Authorization: Bearer <token>" -H "Accept-Language: es"
+curl "$URL/api/products?lang=en" -H "Authorization: Bearer <token>"
+
+# 4. Recurso denegado: sales no tiene products:delete:any -> 403 traducido
+curl -X DELETE $URL/api/products/1 -H "Authorization: Bearer <token>" -H "Accept-Language: en"
+```
+
+```json
+{ "message": "Access denied", "data": null }
+```
+
 ## Control de cambios
 
 - Los commits siguen la especificación [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `chore:`.
