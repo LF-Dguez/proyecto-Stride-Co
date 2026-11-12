@@ -95,8 +95,6 @@ La base relacional de producción es una instancia **Free** de Render PostgreSQL
 | Creada | 11 de noviembre de 2026 |
 | **Caduca** | **11 de diciembre de 2026** (30 días desde su creación; 14 días de gracia y después se borra con sus datos) |
 
-> ⚠️ Solo se permite una base Free por workspace. Si caduca antes de la entrega, hay que recrearla y volver a correr `npm run seed`.
-
 Render da dos cadenas de conexión distintas:
 
 | URL | Uso |
