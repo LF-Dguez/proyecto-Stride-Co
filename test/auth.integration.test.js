@@ -40,7 +40,7 @@ async function seedUser(role, overrides = {}) {
 async function login(user) {
   User.findOne.mockResolvedValue(user);
   const response = await request(app).post('/api/auth/login').send({ email: user.email, password: 'Secret123' });
-  return response.body.token;
+  return response.body.data.token;
 }
 
 beforeAll(() => {

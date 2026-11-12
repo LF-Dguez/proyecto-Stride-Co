@@ -27,12 +27,13 @@ async function login(role) {
     .post('/api/auth/login')
     .send({ email: DEMO_USERS[role], password: config.get(`seed.demoPasswords.${role}`) });
 
-  if (response.statusCode !== 200 || !response.body.token) {
+  const token = response.body.data && response.body.data.token;
+  if (response.statusCode !== 200 || !token) {
     throw new Error(
       `No se pudo iniciar sesión como "${role}" (${response.statusCode}). ¿Se ejecutó "npm run seed" en las bases de la API?`
     );
   }
-  tokens[role] = response.body.token;
+  tokens[role] = token;
   return tokens[role];
 }
 

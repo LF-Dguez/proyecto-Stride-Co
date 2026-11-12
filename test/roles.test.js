@@ -40,7 +40,7 @@ describe('Autorización de /api/roles', () => {
   it('un rol sin permiso (user) responde 403 sin consultar la base de datos', async () => {
     const response = await request(protectedApp).get('/api/roles').set(users.user);
     expect(response.statusCode).toBe(403);
-    expect(response.body.error.status).toBe(403);
+    expect(response.statusCode).toBe(403);
     expect(Role.findAll).not.toHaveBeenCalled();
   });
 
@@ -48,7 +48,7 @@ describe('Autorización de /api/roles', () => {
     // authenticate protege todo el prefijo /api/roles en la app real.
     const response = await request(app).get('/api/roles/1/inexistente');
     expect(response.statusCode).toBe(401);
-    expect(response.body).toHaveProperty('error');
+    expect(response.body).toHaveProperty('message');
   });
 });
 

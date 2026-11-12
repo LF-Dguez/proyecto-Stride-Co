@@ -212,7 +212,7 @@ stride-co/
 ```
 
 - **Logging:** todas las solicitudes HTTP se registran con Morgan.
-- **Errores:** bajo `/api` todos los errores responden JSON con la forma `{ "error": { "message": "...", "status": 404 } }`. Un error `500` responde `Error interno del servidor` y no expone el detalle.
+- **Errores:** bajo `/api` todos los errores responden con el mismo formato que las respuestas correctas, `{ "message": "...", "data": null }`, con el `message` traducido. Un error `500` responde `Error interno del servidor` y no expone el detalle.
 
 ## API
 
@@ -318,15 +318,17 @@ curl -X POST http://localhost:3000/api/auth/login \
 ```json
 {
   "message": "Login exitoso",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": { "id": 1, "first_name": "Admin", "last_name": "Stride", "email": "admin@stride.co", "role_id": 1, "active": true }
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": { "id": 1, "first_name": "Admin", "last_name": "Stride", "email": "admin@stride.co", "role_id": 1, "active": true }
+  }
 }
 ```
 
 Si el email no existe, la contraseña es incorrecta o el usuario está inactivo, la respuesta es siempre la misma, para no revelar qué cuentas existen:
 
 ```json
-{ "message": "Invalid credentials" }
+{ "message": "Credenciales Inválidas", "data": null }
 ```
 
 El token se firma con `jwt.sign()` usando `HS256`, `jwt.secret`, `jwt.expiresIn`, `jwt.issuer` y `jwt.audience`. Su payload lleva **solo** `sub` (el id del usuario), además de los campos estándar `iat`, `exp`, `iss` y `aud`:
@@ -349,10 +351,10 @@ El middleware reutilizable `authenticate` (`middlewares/authenticate.js`) se mon
 2. Busca al usuario con `req.auth.sub`; si ya no existe o está inactivo responde `401`.
 3. Deja al usuario en `req.user`, que después usa el middleware RBAC `authorize`.
 
-Los errores de `express-jwt` (token inexistente, inválido o expirado) los atiende el manejador de errores de `app.js` y responden `401` en JSON:
+Los errores de `express-jwt` (token inexistente, inválido o expirado) los atiende el manejador de errores de `app.js` y responden `401` con el formato de siempre y el mensaje traducido, sin revelar el motivo:
 
 ```json
-{ "error": { "message": "jwt expired", "status": 401 } }
+{ "message": "No autenticado", "data": null }
 ```
 
 ### Usuario autenticado: `GET /api/auth/me`
@@ -364,7 +366,10 @@ curl http://localhost:3000/api/auth/me -H "Authorization: Bearer <token>"
 ```
 
 ```json
-{ "id": 1, "first_name": "Admin", "last_name": "Stride", "email": "admin@stride.co", "role_id": 1, "active": true }
+{
+  "message": "Usuario autenticado",
+  "data": { "id": 1, "first_name": "Admin", "last_name": "Stride", "email": "admin@stride.co", "role_id": 1, "active": true }
+}
 ```
 
 ### Expiración
@@ -486,7 +491,7 @@ router.delete('/:id', authorize('products', 'delete', 'any'), controller.delete)
 Con el rol `sales`, que no tiene ese permiso, la respuesta es:
 
 ```json
-{ "error": { "message": "Acceso denegado", "status": 403 } }
+{ "message": "Acceso denegado", "data": null }
 ```
 
 ### Ejemplo de permiso `own`
@@ -557,7 +562,7 @@ curl -H "Accept-Language: en" https://<url>/api/products/999
 ```
 
 ```json
-{ "error": { "message": "Product not found", "status": 404 } }
+{ "message": "Product not found", "data": null }
 ```
 
 ### Qué está traducido

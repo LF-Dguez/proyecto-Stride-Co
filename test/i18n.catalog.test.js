@@ -38,8 +38,8 @@ describe('i18n en products, variants e inventory (issue #98)', () => {
     const es = await request(app).get('/api/products/999').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/products/999?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Producto no encontrado');
-    expect(en.body.error.message).toBe('Product not found');
+    expect(es.body.message).toBe('Producto no encontrado');
+    expect(en.body.message).toBe('Product not found');
   });
 
   it('GET /api/variants (200): mismo mensaje, en es y en', async () => {
@@ -56,8 +56,8 @@ describe('i18n en products, variants e inventory (issue #98)', () => {
     const es = await request(app).get('/api/variants/999').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/variants/999?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Variante no encontrada');
-    expect(en.body.error.message).toBe('Variant not found');
+    expect(es.body.message).toBe('Variante no encontrada');
+    expect(en.body.message).toBe('Variant not found');
   });
 
   it('GET /api/inventory (200): mismo mensaje, en es y en', async () => {
@@ -74,8 +74,8 @@ describe('i18n en products, variants e inventory (issue #98)', () => {
     const es = await request(app).get('/api/inventory/999').set(users.admin).set('Accept-Language', 'es');
     const en = await request(app).get('/api/inventory/999?lang=en').set(users.admin);
 
-    expect(es.body.error.message).toBe('Registro de inventario no encontrado');
-    expect(en.body.error.message).toBe('Inventory record not found');
+    expect(es.body.message).toBe('Registro de inventario no encontrado');
+    expect(en.body.message).toBe('Inventory record not found');
   });
 
   it('PUT /api/products/:id sin datos (400): mismo mensaje, en es y en', async () => {
@@ -83,7 +83,7 @@ describe('i18n en products, variants e inventory (issue #98)', () => {
     const es = await request(app).put('/api/products/1').set(users.admin).set('Accept-Language', 'es').send({});
     const en = await request(app).put('/api/products/1?lang=en').set(users.admin).send({});
 
-    expect(es.body.error.message).toBe('No hay datos válidos para actualizar');
-    expect(en.body.error.message).toBe('No valid data to update');
+    expect(es.body.message).toBe('No hay datos válidos para actualizar');
+    expect(en.body.message).toBe('No valid data to update');
   });
 });
