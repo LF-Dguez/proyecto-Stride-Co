@@ -2,7 +2,8 @@
     "auth" : {
         "invalidCredentials": "Credenciales Inválidas",
         "missingFields": "email y password son obligatorios",
-        "loginSuccess": "Login exitoso"
+        "loginSuccess": "Login exitoso",
+        "me": "Usuario autenticado"
     },
 
     "common": {

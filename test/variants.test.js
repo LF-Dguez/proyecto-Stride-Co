@@ -39,7 +39,7 @@ describe('API de Variants (PostgreSQL con Sequelize)', () => {
     const response = await request(app).get('/api/variants/999').set(users.admin);
 
     expect(response.statusCode).toBe(404);
-    expect(response.body.error.message).toBe('Variante no encontrada');
+    expect(response.body.message).toBe('Variante no encontrada');
   });
 
   it('POST /api/variants crea la variante y responde 201', async () => {
@@ -65,7 +65,7 @@ describe('API de Variants (PostgreSQL con Sequelize)', () => {
     const response = await request(app).post('/api/variants').set(users.admin).send({ product_id: 999, sku: 'X' });
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.error.message).toBe('El registro relacionado no existe');
+    expect(response.body.message).toBe('El registro relacionado no existe');
   });
 
   it('PUT /api/variants/:id actualiza y responde 200', async () => {

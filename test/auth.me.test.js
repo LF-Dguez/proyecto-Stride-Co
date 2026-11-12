@@ -60,7 +60,8 @@ describe('GET /api/auth/me', () => {
     const response = await request(app).get('/api/auth/me').set('Authorization', `Bearer ${sign(user.id)}`);
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
+    expect(response.body.message).toBe('Usuario autenticado');
+    expect(response.body.data).toEqual({
       id: user.id,
       first_name: user.first_name,
       last_name: user.last_name,

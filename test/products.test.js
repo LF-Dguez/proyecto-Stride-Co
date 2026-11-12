@@ -42,7 +42,7 @@ describe('API de Products (PostgreSQL con Sequelize)', () => {
     const response = await request(app).get('/api/products/999').set(users.admin);
 
     expect(response.statusCode).toBe(404);
-    expect(response.body.error.message).toBe('Producto no encontrado');
+    expect(response.body.message).toBe('Producto no encontrado');
   });
 
   it('GET /api/products/abc responde 400 por ID inválido', async () => {
@@ -69,7 +69,7 @@ describe('API de Products (PostgreSQL con Sequelize)', () => {
     const response = await request(app).post('/api/products').set(users.admin).send({ price: 10 });
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.error.message).toBe('Product.name cannot be null');
+    expect(response.body.message).toBe('Product.name cannot be null');
   });
 
   it('PUT /api/products/:id actualiza y responde 200', async () => {

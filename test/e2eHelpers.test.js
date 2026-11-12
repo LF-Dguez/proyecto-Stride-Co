@@ -16,7 +16,7 @@ function startFakeApi() {
     if (!role || req.body.password !== config.get(`seed.demoPasswords.${role}`)) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-    return res.json({ token: `token-de-${role}` });
+    return res.json({ message: 'Login successful', data: { token: `token-de-${role}` } });
   });
   app.delete('/api/products/:id', (req, res) => {
     if (req.get('authorization') !== 'Bearer token-de-admin') return res.status(403).json({});

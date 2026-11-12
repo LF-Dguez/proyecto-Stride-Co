@@ -1,3 +1,4 @@
+const createError = require('http-errors');
 const { User } = require('../models/sql');
 const { verifyPassword } = require('../services/password');
 const { signToken } = require('../services/token');
@@ -11,25 +12,25 @@ exports.login = async (req, res, next) => {
     // Ambos deben ser texto no vacío: un objeto o un número en el body responde 400,
     // no llega a la consulta de Sequelize (que lo rechazaría con un 500).
     if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
-      return res.status(400).json({ message: req.__('auth.missingFields') });
+      return next(createError(400, req.__('auth.missingFields')));
     }
 
     const user = await User.findOne({ where: { email } });
     if (!user || !user.active || !(await verifyPassword(password, user.password_hash))) {
-      return res.status(401).json({ message: req.__('auth.invalidCredentials') });
+      return next(createError(401, req.__('auth.invalidCredentials')));
     }
 
     // El payload del JWT solo lleva sub (ver services/token.js); user se serializa
     // con User.prototype.toJSON(), que ya oculta password_hash y salt_key.
     const token = signToken(user);
-    res.status(200).json({ message: req.__('auth.loginSuccess'), token, user });
+    res.status(200).json({ message: req.__('auth.loginSuccess'), data: { token, user } });
   } catch (err) {
     next(err);
   }
 };
 
 // req.user ya lo deja listo el middleware authenticate (ver middlewares/authenticate.js).
-// Se responde con la instancia tal cual: toJSON() oculta password_hash y salt_key.
+// Se responde con la instancia tal cual dentro de data: toJSON() oculta password_hash y salt_key.
 exports.me = (req, res) => {
-  res.status(200).json(req.user);
+  res.status(200).json({ message: req.__('auth.me'), data: req.user });
 };

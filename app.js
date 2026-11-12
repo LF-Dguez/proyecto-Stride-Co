@@ -60,10 +60,11 @@ app.use((err, req, res, next) => {
     // inválido o expirado); se traduce al mismo mensaje genérico de siempre.
     let message = err.message;
     if (status >= 500) message = req.__('common.serverError');
-    else if (err.name === 'UnauthorizedError') message = req.__('common.unauthenticated');
-    return res.status(status).json({
-      error: { message, status }
-    });
+    // Solo los errores de express-jwt traen code (credentials_required, invalid_token…);
+    // un 401 propio, como el del login, conserva su mensaje.
+    else if (err.name === 'UnauthorizedError' && err.code) message = req.__('common.unauthenticated');
+    // Mismo formato que las respuestas correctas: { message, data }
+    return res.status(status).json({ message, data: null });
   }
 
   res.locals.message = err.message;

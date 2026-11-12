@@ -28,7 +28,7 @@ async function seedUser(role) {
 async function login(user) {
   User.findOne.mockResolvedValue(user);
   const response = await request(app).post('/api/auth/login').send({ email: user.email, password: 'Secret123' });
-  return response.body.token;
+  return response.body.data.token;
 }
 
 beforeAll(() => {
@@ -47,8 +47,8 @@ describe('i18n en errores globales (issue #100)', () => {
     const en = await request(app).get('/api/no-existe?lang=en');
 
     expect(es.statusCode).toBe(404);
-    expect(es.body.error.message).toBe('Ruta no encontrada');
-    expect(en.body.error.message).toBe('Route not found');
+    expect(es.body.message).toBe('Ruta no encontrada');
+    expect(en.body.message).toBe('Route not found');
   });
 
   it('401, sin token: mismo mensaje, en es y en', async () => {
@@ -56,8 +56,8 @@ describe('i18n en errores globales (issue #100)', () => {
     const en = await request(app).get('/api/products?lang=en');
 
     expect(es.statusCode).toBe(401);
-    expect(es.body.error.message).toBe('No autenticado');
-    expect(en.body.error.message).toBe('Not authenticated');
+    expect(es.body.message).toBe('No autenticado');
+    expect(en.body.message).toBe('Not authenticated');
   });
 
   it('401, token inválido: mismo mensaje, en es y en (lo reporta express-jwt)', async () => {
@@ -65,8 +65,8 @@ describe('i18n en errores globales (issue #100)', () => {
     const en = await request(app).get('/api/products?lang=en').set('Authorization', 'Bearer token-invalido');
 
     expect(es.statusCode).toBe(401);
-    expect(es.body.error.message).toBe('No autenticado');
-    expect(en.body.error.message).toBe('Not authenticated');
+    expect(es.body.message).toBe('No autenticado');
+    expect(en.body.message).toBe('Not authenticated');
   });
 
   it('403, rol autenticado sin permiso: mismo mensaje, en es y en', async () => {
@@ -78,8 +78,8 @@ describe('i18n en errores globales (issue #100)', () => {
     const en = await request(app).delete('/api/products/1?lang=en').set('Authorization', `Bearer ${token}`);
 
     expect(es.statusCode).toBe(403);
-    expect(es.body.error.message).toBe('Acceso denegado');
-    expect(en.body.error.message).toBe('Access denied');
+    expect(es.body.message).toBe('Acceso denegado');
+    expect(en.body.message).toBe('Access denied');
   });
 
   it('500, error inesperado: mismo mensaje, en es y en, sin exponer el detalle', async () => {
@@ -92,8 +92,8 @@ describe('i18n en errores globales (issue #100)', () => {
     const en = await request(app).get('/api/products?lang=en').set('Authorization', `Bearer ${token}`);
 
     expect(es.statusCode).toBe(500);
-    expect(es.body.error.message).toBe('Error interno del servidor');
-    expect(en.body.error.message).toBe('Internal server error');
+    expect(es.body.message).toBe('Error interno del servidor');
+    expect(en.body.message).toBe('Internal server error');
     expect(JSON.stringify(es.body)).not.toContain('conexión perdida');
   });
 

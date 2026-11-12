@@ -36,7 +36,7 @@ function buildApp(mount) {
   });
   mount(app);
   app.use((err, req, res, _next) => {
-    res.status(err.status || 500).json({ error: { message: err.message, status: err.status || 500 } });
+    res.status(err.status || 500).json({ message: err.message, data: null });
   });
   return app;
 }
