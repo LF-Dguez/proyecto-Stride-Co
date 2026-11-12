@@ -49,11 +49,11 @@ describe('POST /api/auth/login', () => {
     const response = await request(app).post('/api/auth/login').send({ email: user.email, password: 'Secret123' });
 
     expect(response.statusCode).toBe(200);
-    expect(typeof response.body.token).toBe('string');
-    expect(response.body.user.email).toBe(user.email);
+    expect(typeof response.body.data.token).toBe('string');
+    expect(response.body.data.user.email).toBe(user.email);
     expectNoSensitiveFields(response.body);
 
-    const payload = jwt.decode(response.body.token);
+    const payload = jwt.decode(response.body.data.token);
     expect(payload.sub).toBe(String(user.id));
     expect(payload).not.toHaveProperty('password_hash');
     expect(payload).not.toHaveProperty('salt_key');
