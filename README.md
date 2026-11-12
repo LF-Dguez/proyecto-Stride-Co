@@ -212,7 +212,7 @@ stride-co/
 ```
 
 - **Logging:** todas las solicitudes HTTP se registran con Morgan.
-- **Errores:** bajo `/api` todos los errores responden JSON con la forma `{ "error": { "message": "...", "status": 404 } }`. Un error `500` responde `Error interno del servidor` y no expone el detalle.
+- **Errores:** bajo `/api` todos los errores responden con el mismo formato que las respuestas correctas, `{ "message": "...", "data": null }`, con el `message` traducido. Un error `500` responde `Error interno del servidor` y no expone el detalle.
 
 ## API
 
@@ -491,7 +491,7 @@ router.delete('/:id', authorize('products', 'delete', 'any'), controller.delete)
 Con el rol `sales`, que no tiene ese permiso, la respuesta es:
 
 ```json
-{ "error": { "message": "Acceso denegado", "status": 403 } }
+{ "message": "Acceso denegado", "data": null }
 ```
 
 ### Ejemplo de permiso `own`
@@ -562,7 +562,7 @@ curl -H "Accept-Language: en" https://<url>/api/products/999
 ```
 
 ```json
-{ "error": { "message": "Product not found", "status": 404 } }
+{ "message": "Product not found", "data": null }
 ```
 
 ### Qué está traducido
