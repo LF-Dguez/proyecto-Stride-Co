@@ -582,6 +582,30 @@ Las claves están organizadas por recurso (`users`, `products`, `orders`, `commo
 2. Agregar el código del idioma a `SUPPORTED_LOCALES` en `config/i18n.js`.
 3. Correr `npm test`: `test/locales.test.js` avisa si falta alguna clave.
 
+## Despliegue
+
+### Docker
+
+La imagen (`Dockerfile`) corre con `node:22-alpine`. Los secretos (`config/local-production.json`) **nunca** entran a la imagen: `.dockerignore` los excluye explícitamente. En su lugar, `docker-entrypoint.sh` los recibe en tiempo de ejecución desde `/etc/secrets/local-production.json` (donde Render monta los *Secret Files*), los copia a `config/` y recién entonces arranca el servidor. Si ese archivo no existe, el contenedor **no arranca** y lo dice en los logs.
+
+Para probarlo en local, con un `local-production.json` propio (puede ser de prueba, con URIs y `jwt.secret` reales de un entorno que no sea el de producción):
+
+```bash
+docker build -t stride-co .
+docker run -d --name stride-co -p 3000:3000 \
+  -e PORT=3000 \
+  -v "/ruta/completa/a/config/local-production.json:/etc/secrets/local-production.json:ro" \
+  stride-co
+curl http://localhost:3000/health
+docker logs stride-co
+```
+
+### Cómo se entrega el secret file a Render
+
+1. En el Web Service, ir a **Environment → Secret Files**.
+2. Agregar un archivo con la ruta `/etc/secrets/local-production.json` (el nombre que Render le da en el contenedor) y como contenido el JSON de secretos (`jwt.secret`, `postgres.uri`, `mongo.uri` reales).
+3. Render lo monta ahí automáticamente en cada despliegue; nunca se sube al repositorio.
+
 ## Control de cambios
 
 - Los commits siguen la especificación [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `chore:`.
