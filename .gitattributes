@@ -1,0 +1,4 @@
+# Los scripts que corren dentro del contenedor Linux necesitan salto de línea LF
+# siempre, aunque se clone en Windows con core.autocrlf=true (si no, el shebang
+# #!/bin/sh queda como "#!/bin/sh\r" y docker-entrypoint.sh no arranca).
+*.sh text eol=lf
