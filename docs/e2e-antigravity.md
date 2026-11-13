@@ -17,7 +17,7 @@ Ambas sesiones usaron Antigravity CLI, ejecutado desde la terminal con el comand
 
 ![Sesión de Antigravity de Dannonini en la terminal con la cuenta de la UACH](img/antigravity-sesion.png)
 
-**Sesión 2 (LF-Dguez):** `users`, `roles`, `permissions`, `products` y `variants`.
+**Sesión 2 (LF-Dguez):** `users`, `roles`, `permissions`, `products`, `variants`, `inventory`, `customers`, `orders`, `rbac` e `i18n`.
 
 ![Sesión de Antigravity de LF-Dguez en la terminal con la cuenta de la UACH](img/antigravity-sesion-ife.png)
 
@@ -103,78 +103,6 @@ Agrega también: crear con un sku que ya existe responde 400; crear con un produ
 Usa SKUs únicos con Date.now() más un sufijo aleatorio corto (Math.random().toString(36).slice(2, 8)). Registra con cleanup.track() todo lo que crees, en el orden en que lo creas, y llama cleanup.run() en afterAll. En las pruebas que esperan un error al crear, si la respuesta fuera 201 registra también ese id en cleanup para no dejar basura. Compara códigos de estado y datos, no los textos de los mensajes.
 ```
 
-## 3. Qué generó el agente y qué corrigió el equipo
-
-Antes de aceptar cada archivo se leyó completo, se pasó por `npm run lint` y se ejecutó contra la API con PostgreSQL y MongoDB reales.
-
-### `health.e2e.test.js`
-
-Se aceptó sin cambios: comprueba el código 200 y el body completo con `toEqual({ status: 'UP' })`, usa `api()` de `helpers.js` y no usa mocks.
-
-### `auth.e2e.test.js`
-
-El agente generó 6 pruebas que usaban `helpers.js`, comparaban solo códigos de estado y no tenían mocks.
-
-| # | Corrección | Por qué |
-|---|---|---|
-| 1 | `role_id: 3` fijo en la creación del usuario inactivo, reemplazado por una búsqueda del rol `user` por nombre en `GET /api/roles` | El id de un rol depende del orden de siembra. Podría cambiar al recrear la base de datos o en Render |
-| 2 | Se agregó `expect(createRes.body.data.active).toBe(false)` al crear el usuario inactivo | Si la API ignorara `active: false`, el fallo apunta a la causa real y no solo al login |
-| 3 | En `GET /api/auth/me` con token válido se agregó la comprobación del email (`response.body.data.email`) y se quitaron dos aserciones `toBeUndefined` redundantes | Las aserciones originales solo comprobaban ausencias: un 200 con body vacío habría pasado la prueba |
-| 4 | Se agregó la prueba `GET /api/auth/me sin token responde 401` | `/api/auth/me` es una ruta protegida distinta de `/api/products` que el agente no cubrió |
-
-### `users.e2e.test.js`
-
-El agente cubrió todo el prompt: ciclo completo con admin, ausencia de `password`, `password_hash` y `salt_key` en todas las respuestas, los 400, el 404, el 401 y el 403 con `sales`, y buscó el `role_id` por nombre.
-
-| # | Corrección | Por qué |
-|---|---|---|
-| 1 | Emails únicos con `Date.now()` más un sufijo aleatorio | Dos usuarios creados en el mismo milisegundo compartirían email y la prueba fallaría por un 400 de duplicado que no es el que se quiere probar |
-| 2 | `trackIfCreated(res)` en las pruebas que esperan 400 | Si la API aceptara por error un dato inválido (201), el usuario quedaría en la base: ahora se registra para limpieza y la suite sigue siendo repetible |
-
-### `roles.e2e.test.js`
-
-El agente cubrió el ciclo completo, el cambio de permisos (comprueba que el permiso nuevo aparece y el anterior desaparece), los 400, 404, 401, 403 y el 409 al eliminar un rol con usuarios asignados, con el orden de limpieza correcto (el usuario se borra antes que el rol). Correcciones: las mismas dos de `users` (nombres únicos con sufijo aleatorio y `trackIfCreated`).
-
-### `permissions.e2e.test.js`
-
-| # | Corrección | Por qué |
-|---|---|---|
-| 1 | La parte única de la key se generaba con `Date.now().toString(36)`, que incluye dígitos (por ejemplo `mhvx3k2a`). Se reemplazó por el timestamp escrito en base 26 solo con letras más 4 letras aleatorias | El recurso de `Permission.key` solo admite letras minúsculas y guion bajo (`/^[a-z][a-z_]*:…/`): la API respondía 400 y la prueba de crear fallaba |
-| 2 | Se agregó la prueba `crear sin key responde 400` | El prompt la pedía y el agente no la escribió |
-| 3 | `trackIfCreated(res)` en las pruebas que esperan 400 | Mismo motivo que en `users` |
-
-### `products.e2e.test.js`
-
-El agente comparó el precio con `Number()` (PostgreSQL devuelve los `DECIMAL` como texto) y comprobó que la actualización persiste con un segundo `GET`.
-
-| # | Corrección | Por qué |
-|---|---|---|
-| 1 | Nombres y SKUs únicos con sufijo aleatorio | Mismo motivo que en `users` |
-| 2 | `trackIfCreated(res)` al crear sin `name`, con precio negativo y con el rol `user` | Si la API aceptara por error alguna de esas peticiones, el producto se limpia igual |
-| 3 | Después del 403 de `sales` al eliminar, se comprueba con admin que el producto sigue existiendo | Un 403 que borrara el registro sería un error grave que el código de estado solo no detecta |
-
-### `variants.e2e.test.js`
-
-Se aceptó sin cambios: el prompt ya incluía los SKUs con sufijo aleatorio y la limpieza de lo creado por error, y el agente cubrió el ciclo completo (con `data.product`), el SKU duplicado, el `product_id` inexistente, la variante sin SKU, los 400/404, el 401 y los permisos de `user`.
-
-## 4. Token expirado
-
-El criterio de `auth` menciona "inválido o expirado". En E2E solo se prueba el token inválido. Un token expirado habría que firmarlo con `jwt.secret`, que coincide únicamente con la API local: contra Render el secreto es otro, la respuesta sería 401 por firma inválida y la prueba pasaría por un motivo distinto al que dice comprobar.
-
-## 5. Suites escritas sin Antigravity
-
-La cuota de Antigravity de la cuenta se agotó después de `variants`, con el prompt 8 ya preparado. Para terminar a tiempo, `inventory`, `customers`, `orders`, `rbac` e `i18n` se escribieron con Claude (asistente de IA) a partir de los prompts 8 a 12, siguiendo el mismo estilo y las mismas reglas que las suites generadas con Antigravity. El equipo las revisó igual que las demás (lint, lectura completa, ejecución contra la API real y roturas a propósito). Sus commits no llevan la leyenda de Antigravity.
-
-Antes de escribirlas se compararon los prompts con el código, y eso cambió dos cosas:
-
-- **Prompt 8 (`inventory`):** la versión original pedía crear inventario con `stock` y `reserved`, pero la API solo edita `variant_id` y `stock` (`reserved` empieza en 0), y cada variante admite un solo registro de inventario. La suite crea una variante distinta para cada prueba y comprueba que `reserved` vale 0.
-- **Prompt 10 (`orders`):** en lugar de tomar un producto existente, la suite crea el suyo, para no depender de que el seed tenga productos en la base contra la que se corre.
-
-En MongoDB el id de los documentos es `_id` y la orden trae su cliente con `populate`, así que `orders` comprueba que `data.customerId` llega como objeto con el email del cliente.
-
-<details>
-<summary>Prompts 8 a 12 (especificación de las suites escritas sin Antigravity)</summary>
-
 ### Prompt 8: `inventory.e2e.test.js`
 
 ```
@@ -249,9 +177,95 @@ Lee config/i18n.js, app.js, locales/es.json, locales/en.json, test/e2e/helpers.j
 Usa api() y authHeader(rol) de test/e2e/helpers.js. Esta suite no crea datos.
 ```
 
-</details>
+## 3. Qué generó el agente y qué corrigió el equipo
 
-## 6. Roturas a propósito
+Antes de aceptar cada archivo se leyó completo, se pasó por `npm run lint` y se ejecutó contra la API con PostgreSQL y MongoDB reales.
+
+### `health.e2e.test.js`
+
+Se aceptó sin cambios: comprueba el código 200 y el body completo con `toEqual({ status: 'UP' })`, usa `api()` de `helpers.js` y no usa mocks.
+
+### `auth.e2e.test.js`
+
+El agente generó 6 pruebas que usaban `helpers.js`, comparaban solo códigos de estado y no tenían mocks.
+
+| # | Corrección | Por qué |
+|---|---|---|
+| 1 | `role_id: 3` fijo en la creación del usuario inactivo, reemplazado por una búsqueda del rol `user` por nombre en `GET /api/roles` | El id de un rol depende del orden de siembra. Podría cambiar al recrear la base de datos o en Render |
+| 2 | Se agregó `expect(createRes.body.data.active).toBe(false)` al crear el usuario inactivo | Si la API ignorara `active: false`, el fallo apunta a la causa real y no solo al login |
+| 3 | En `GET /api/auth/me` con token válido se agregó la comprobación del email (`response.body.data.email`) y se quitaron dos aserciones `toBeUndefined` redundantes | Las aserciones originales solo comprobaban ausencias: un 200 con body vacío habría pasado la prueba |
+| 4 | Se agregó la prueba `GET /api/auth/me sin token responde 401` | `/api/auth/me` es una ruta protegida distinta de `/api/products` que el agente no cubrió |
+
+### `users.e2e.test.js`
+
+El agente cubrió todo el prompt: ciclo completo con admin, ausencia de `password`, `password_hash` y `salt_key` en todas las respuestas, los 400, el 404, el 401 y el 403 con `sales`, y buscó el `role_id` por nombre.
+
+| # | Corrección | Por qué |
+|---|---|---|
+| 1 | Emails únicos con `Date.now()` más un sufijo aleatorio | Dos usuarios creados en el mismo milisegundo compartirían email y la prueba fallaría por un 400 de duplicado que no es el que se quiere probar |
+| 2 | `trackIfCreated(res)` en las pruebas que esperan 400 | Si la API aceptara por error un dato inválido (201), el usuario quedaría en la base: ahora se registra para limpieza y la suite sigue siendo repetible |
+
+### `roles.e2e.test.js`
+
+El agente cubrió el ciclo completo, el cambio de permisos (comprueba que el permiso nuevo aparece y el anterior desaparece), los 400, 404, 401, 403 y el 409 al eliminar un rol con usuarios asignados, con el orden de limpieza correcto (el usuario se borra antes que el rol). Correcciones: las mismas dos de `users` (nombres únicos con sufijo aleatorio y `trackIfCreated`).
+
+### `permissions.e2e.test.js`
+
+| # | Corrección | Por qué |
+|---|---|---|
+| 1 | La parte única de la key se generaba con `Date.now().toString(36)`, que incluye dígitos (por ejemplo `mhvx3k2a`). Se reemplazó por el timestamp escrito en base 26 solo con letras más 4 letras aleatorias | El recurso de `Permission.key` solo admite letras minúsculas y guion bajo (`/^[a-z][a-z_]*:…/`): la API respondía 400 y la prueba de crear fallaba |
+| 2 | Se agregó la prueba `crear sin key responde 400` | El prompt la pedía y el agente no la escribió |
+| 3 | `trackIfCreated(res)` en las pruebas que esperan 400 | Mismo motivo que en `users` |
+
+### `products.e2e.test.js`
+
+El agente comparó el precio con `Number()` (PostgreSQL devuelve los `DECIMAL` como texto) y comprobó que la actualización persiste con un segundo `GET`.
+
+| # | Corrección | Por qué |
+|---|---|---|
+| 1 | Nombres y SKUs únicos con sufijo aleatorio | Mismo motivo que en `users` |
+| 2 | `trackIfCreated(res)` al crear sin `name`, con precio negativo y con el rol `user` | Si la API aceptara por error alguna de esas peticiones, el producto se limpia igual |
+| 3 | Después del 403 de `sales` al eliminar, se comprueba con admin que el producto sigue existiendo | Un 403 que borrara el registro sería un error grave que el código de estado solo no detecta |
+
+### `variants.e2e.test.js`
+
+Se aceptó sin cambios: el prompt ya incluía los SKUs con sufijo aleatorio y la limpieza de lo creado por error, y el agente cubrió el ciclo completo (con `data.product`), el SKU duplicado, el `product_id` inexistente, la variante sin SKU, los 400/404, el 401 y los permisos de `user`.
+
+### `inventory.e2e.test.js`
+
+Se aceptó sin cambios: el agente creó una variante nueva por prueba mediante la función auxiliar con `admin` para respetar la unicidad de `variant_id`, comprobó que `reserved` inicializa en `0`, verificó la relación desde `GET /api/products/:id` y cubrió todos los 400, 404, 401, los permisos de `sales` y `user`, y `trackIfCreated`.
+
+### `customers.e2e.test.js`
+
+El agente cubrió el ciclo completo en MongoDB, el alcance `own` obteniendo el `userId` con `GET /api/auth/me`, los 400, 404 y 401.
+
+| # | Corrección | Por qué |
+|---|---|---|
+| 1 | Emails únicos con `Date.now()` más un sufijo aleatorio | Mismo motivo que en `users` |
+| 2 | `trackIfCreated(res)` en las pruebas que esperan 400 o 403 al crear | Evita dejar documentos residuales en MongoDB si alguna validación fallara |
+
+### `orders.e2e.test.js`
+
+El agente cubrió el ciclo completo en MongoDB (incluyendo el cálculo automático de `totals.subtotal` y `totals.total`, y el `populate` de `data.customerId` con el email del cliente), el alcance `own`, los 400, 404 y 401.
+
+| # | Corrección | Por qué |
+|---|---|---|
+| 1 | En `beforeAll`, en lugar de tomar un producto existente con `GET /api/products`, se creó un producto propio de la prueba con `admin` (registrado en `cleanup`) | Evita que la suite dependa de que el seed tenga productos cargados en la base contra la que se ejecuta |
+| 2 | `trackIfCreated(res)` en las pruebas que esperan 400 al crear | Mismo motivo que en `customers` |
+
+### `rbac.e2e.test.js`
+
+Se aceptó sin cambios: el agente cubrió los cinco escenarios mínimos de la matriz RBAC (`products:delete:any` con `admin` y `sales`, `orders:read:own` sobre orden propia y ajena con `user`, filtrado en `GET /api/orders` y `DELETE /api/orders/:id` con `user`), verificando también `{ message, data: null }` y las traducciones leídas de `locales/es.json` y `locales/en.json`.
+
+### `i18n.e2e.test.js`
+
+Se aceptó sin cambios: el agente leyó los textos esperados de `locales/es.json` y `locales/en.json` y cubrió `Accept-Language`, `?lang=`, prioridad de `?lang` sobre `Accept-Language`, variantes regionales (`es-MX`, `en-US`), fallback a idioma por defecto (`fr` -> `es`), errores transversales (401, 404, 403) y mensajes de éxito con la estructura `{ message, data }`.
+
+## 4. Token expirado
+
+El criterio de `auth` menciona "inválido o expirado". En E2E solo se prueba el token inválido. Un token expirado habría que firmarlo con `jwt.secret`, que coincide únicamente con la API local: contra Render el secreto es otro, la respuesta sería 401 por firma inválida y la prueba pasaría por un motivo distinto al que dice comprobar.
+
+## 5. Roturas a propósito
 
 Para cada caso se cambió a propósito un valor esperado en la suite, se ejecutó contra la API real y se comprobó que la prueba fallaba; después se restauró el archivo. Lo hizo un script que restaura el archivo original aunque algo falle, y al final corre todas las suites sin cambios.
 
@@ -276,13 +290,13 @@ Para cada caso se cambió a propósito un valor esperado en la suite, se ejecut�
 | `rbac` | Escenario 4 (orden ajena) | el user consulta con el token de admin | Sí (1 de 6) |
 | `i18n` | Variante regional | `'es-MX'` por `'en-MX'` | Sí (1 de 13) |
 
-En los 18 casos falló exactamente una prueba, la modificada, y el resto de la suite siguió pasando: cada prueba comprueba lo que dice comprobar y no depende de las demás. Al terminar, la suite completa sin cambios volvió a pasar (sección 9).
+En los 18 casos falló exactamente una prueba, la modificada, y el resto de la suite siguió pasando: cada prueba comprueba lo que dice comprobar y no depende de las demás. Al terminar, la suite completa sin cambios volvió a pasar (sección 8).
 
-## 7. Limpieza de datos
+## 6. Limpieza de datos
 
 Cada suite registra con `createCleanup()` todo lo que crea (usuarios, roles, permisos, productos, variantes, inventario, clientes y órdenes) y lo elimina en `afterAll`, en orden inverso, para que lo dependiente se borre antes que aquello de lo que depende. Las pruebas que esperan un error al crear registran también el id si la API respondiera 201 por error. Las suites se ejecutaron varias veces seguidas sin fallos por datos repetidos.
 
-## 8. Cómo ejecutarlas
+## 7. Cómo ejecutarlas
 
 ```bash
 npm run seed       # roles, permisos y usuarios de demostración
@@ -296,7 +310,7 @@ Contra el despliegue en Render:
 E2E_BASE_URL=https://proyecto-stride-co-dylo.onrender.com npm run test:e2e
 ```
 
-## 9. Resultado
+## 8. Resultado
 
 Ejecución completa contra la API local, con las suites sin cambios:
 
