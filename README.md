@@ -180,6 +180,8 @@ E2E_BASE_URL=https://<servicio>.onrender.com npm run test:e2e
 
 Antes de empezar, las pruebas esperan hasta 90 segundos a que `GET /health` responda (el plan gratuito de Render tarda cerca de un minuto en despertar). `test/e2e/helpers.js` ofrece `login(rol)` (JWT de los usuarios de demostración), `authHeader(rol)` y `createCleanup()`, que elimina al terminar los datos que cada prueba creó para poder repetir la suite.
 
+Hay una suite por recurso (`users`, `roles`, `permissions`, `products`, `variants`, `inventory`, `customers`, `orders`) más `health`, `auth`, `rbac` (los cinco escenarios mínimos de la Tarea 6) e `i18n`. Cómo se generó su código con Antigravity, los prompts usados, qué corrigió el equipo y qué suites se escribieron sin Antigravity está en [docs/e2e-antigravity.md](docs/e2e-antigravity.md).
+
 ## Arquitectura
 
 El flujo de cada solicitud es:
