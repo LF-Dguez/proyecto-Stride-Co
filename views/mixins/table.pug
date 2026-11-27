@@ -1,0 +1,11 @@
+//- Tabla genérica del panel administrativo. El contenido del <tbody> lo arma quien
+//- incluye el mixin (cada <tr>/<td>), para no atar esta plantilla a una forma de fila.
+mixin table(headers)
+  .table-responsive
+    table.table.table-hover.align-middle.mb-0
+      thead.table-light
+        tr
+          each h in headers
+            th= h
+      tbody
+        block

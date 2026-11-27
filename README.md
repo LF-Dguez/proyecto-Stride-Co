@@ -199,19 +199,28 @@ stride-co/
 ├── models/
 │   ├── sql/             modelos Sequelize (users, roles, permissions, products, variants, inventory)
 │   └── mongo/           modelos Mongoose (customers, orders)
-├── controllers/         lógica de cada recurso
-├── routes/              endpoints de cada recurso
-├── middlewares/         authenticate.js (JWT) y authorize.js (RBAC)
+├── controllers/
+│   └── api/             responden { message, data } (JSON)
+├── routes/
+│   └── api/             endpoints de cada recurso bajo /api
 ├── services/            password.js (bcrypt), token.js (JWT), rbac.js (permisos desde la BD) y ownership.js (dueño real para `own`)
+├── middlewares/         authenticate.js (JWT), authorize.js (RBAC) y flash.js (mensaje de confirmación tras un redirect)
 ├── utils/               sequelizeHelpers.js: validación de IDs y traducción de errores de Sequelize a HTTP
 ├── seeders/             siembra roles, permisos y role_permission (seedRbac.js)
 ├── test/                pruebas automatizadas
-├── public/              archivos estáticos
-├── views/               vistas Pug
-├── app.js               configuración de Express, logging y manejo de errores
+├── public/
+│   └── css/stride.css   estilo visual extraído de stride_co_mockup.html
+├── views/
+│   ├── layouts/         store.pug (tienda) y admin.pug (panel administrativo)
+│   ├── partials/        flash.pug (confirmación PRG) y pagination.pug
+│   ├── mixins/          productCard, table, formField, statusBadge
+│   └── errors/          403.pug, 404.pug y 500.pug
+├── app.js               configuración de Express, i18n, logging y manejo de errores
 ├── eslint.config.js     configuración de ESLint
 └── package.json
 ```
+
+Las vistas SSR (tienda y panel administrativo, Entregable 3) viven aparte, en `routes/web` y `controllers/web`, y reutilizan los mismos `services/`, `middlewares/` y modelos que la API; ver la sección [Funcionalidades SSR](#funcionalidades-ssr).
 
 - **Logging:** todas las solicitudes HTTP se registran con Morgan.
 - **Errores:** bajo `/api` todos los errores responden con el mismo formato que las respuestas correctas, `{ "message": "...", "data": null }`, con el `message` traducido. Un error `500` responde `Error interno del servidor` y no expone el detalle.

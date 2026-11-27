@@ -1,0 +1,10 @@
+extends ../layouts/store
+
+block content
+  .container.py-5.text-center
+    .store-panel.mx-auto(style='max-width:560px')
+      i.bi.bi-exclamation-triangle.display-4.text-secondary
+      h1.fw-bold.display-4.mb-0 500
+      h2.fw-bold.mt-2= __('webErrors.500.title')
+      p.text-secondary= __('webErrors.500.message')
+      a.btn.btn-dark(href='/')= __('webErrors.backHome')

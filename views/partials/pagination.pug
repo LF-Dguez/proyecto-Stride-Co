@@ -1,0 +1,14 @@
+//- Espera `pagination = { page, pages, href(p) }`, donde href(p) arma la URL de la
+//- página p conservando los demás filtros del query string (q, category, status, ...).
+if pagination && pagination.pages > 1
+  nav.mt-4(aria-label=__('common.pagination'))
+    ul.pagination
+      li.page-item(class=pagination.page <= 1 ? 'disabled' : '')
+        a.page-link(href=pagination.href(Math.max(1, pagination.page - 1)), aria-label='Previous')
+          i.bi.bi-chevron-left
+      each p in Array.from({ length: pagination.pages }, (_, i) => i + 1)
+        li.page-item(class=p === pagination.page ? 'active' : '')
+          a.page-link(href=pagination.href(p))= p
+      li.page-item(class=pagination.page >= pagination.pages ? 'disabled' : '')
+        a.page-link(href=pagination.href(Math.min(pagination.pages, pagination.page + 1)), aria-label='Next')
+          i.bi.bi-chevron-right

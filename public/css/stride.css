@@ -1,0 +1,304 @@
+/*
+ * Estilo visual de Stride-Co, extraído de stride_co_mockup.html y conservado tal
+ * cual (colores, tipografía, tarjetas, sidebar) para las vistas SSR del Entregable 3.
+ * Carga junto con Bootstrap 5 + Bootstrap Icons (ver views/layouts/).
+ */
+
+:root {
+  --ink: #101820;
+  --lime: #dfff65;
+  --muted: #737b84;
+}
+
+body {
+  background: #f5f6f7;
+  color: var(--ink);
+}
+
+/* ---------- tienda: encabezado ---------- */
+
+.store-header {
+  background: #fff;
+  border-bottom: 1px solid #e7e7e7;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.brand {
+  font-weight: 900;
+  font-size: 1.55rem;
+  letter-spacing: -1.3px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand span {
+  color: #719400;
+}
+
+.store-nav a,
+.store-nav button {
+  border: none;
+  background: none;
+  color: #444;
+  padding: .65rem .85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.store-nav a.active {
+  border-bottom: 3px solid #171717;
+  color: #000;
+}
+
+@media (max-width: 540px) {
+  .store-nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .store-header .container {
+    flex-wrap: wrap;
+  }
+
+  .store-nav a {
+    font-size: .8rem;
+  }
+}
+
+/* ---------- tienda: hero ---------- */
+
+.hero {
+  min-height: 360px;
+  background: linear-gradient(110deg, #121b22, #283c47);
+  color: white;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero::after {
+  content: 'S';
+  font-weight: 900;
+  font-style: italic;
+  position: absolute;
+  right: 8%;
+  top: -110px;
+  font-size: 490px;
+  line-height: 1;
+  color: #ffffff0e;
+  pointer-events: none;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+}
+
+@media (max-width: 850px) {
+  .hero {
+    min-height: 290px;
+  }
+}
+
+.btn-lime {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: #171e15;
+  font-weight: 700;
+}
+
+.btn-lime:hover {
+  background: #c9f044;
+  border-color: #c9f044;
+  color: #171e15;
+}
+
+/* ---------- tienda: producto ---------- */
+
+.product-tile {
+  border: 1px solid #e7e8ea;
+  border-radius: 13px;
+  overflow: hidden;
+  background: white;
+  height: 100%;
+  transition: transform .15s, box-shadow .15s;
+}
+
+.product-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px #00000013;
+}
+
+.shoe-art {
+  height: 210px;
+  background: linear-gradient(140deg, #edf0f1, #dfe4e5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.shoe-art .shoe {
+  font-size: 6rem;
+  filter: drop-shadow(0px 12px 7px #0002);
+  transform: rotate(-14deg);
+}
+
+.shoe-art .tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+}
+
+@media (max-width: 850px) {
+  .shoe-art {
+    height: 150px;
+  }
+
+  .shoe-art .shoe {
+    font-size: 4rem;
+  }
+}
+
+.store-panel {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 13px;
+  padding: 22px;
+}
+
+.tiny {
+  font-size: .83rem;
+  color: #67727b;
+}
+
+.pill {
+  font-size: .75rem;
+  background: #edf2f4;
+  border-radius: 30px;
+  padding: 5px 10px;
+}
+
+.shop-footer {
+  background: #111a22;
+  color: #c4cbd0;
+  margin-top: 70px;
+}
+
+/* ---------- panel administrativo ---------- */
+
+.admin-sidebar {
+  background: #111a22;
+  color: #d6dfe3;
+  width: 250px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  padding: 20px 12px;
+  z-index: 30;
+}
+
+.admin-sidebar .nav-link {
+  color: #b8c5c9;
+  padding: 11px 15px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.admin-sidebar .nav-link.active,
+.admin-sidebar .nav-link:hover {
+  color: #fff;
+  background: #334149;
+}
+
+.admin-main {
+  margin-left: 250px;
+  padding: 25px 35px;
+  min-height: 100vh;
+}
+
+.admin-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  background: white;
+  border: 1px solid #e6e9eb;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.stat strong {
+  font-size: 1.65rem;
+}
+
+@media (max-width: 850px) {
+  .admin-sidebar {
+    width: 75px;
+    padding: 12px 5px;
+  }
+
+  .admin-sidebar .nav-link {
+    text-align: center;
+    font-size: 0;
+  }
+
+  .admin-sidebar .nav-link i {
+    font-size: 20px;
+  }
+
+  .admin-sidebar .brand,
+  .admin-sidebar .sidebar-label {
+    display: none;
+  }
+
+  .admin-main {
+    margin-left: 75px;
+    padding: 20px 14px;
+  }
+}
+
+/* ---------- acceso (login) ---------- */
+
+.login-shell {
+  min-height: 100vh;
+  padding: 48px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #111a22, #334350);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  border-radius: 18px;
+}
+
+.login-card .form-control {
+  padding: .7rem .85rem;
+}
+
+/* ---------- formularios SSR: errores por campo, patrón PRG ---------- */
+
+.field-error {
+  color: #b02a37;
+  font-size: .85rem;
+  margin-top: .25rem;
+}
