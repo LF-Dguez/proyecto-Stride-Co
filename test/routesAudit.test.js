@@ -163,15 +163,23 @@ describe('matriz RBAC: seed, README y reglas de código', () => {
     expect(documented.sort()).toEqual(expected.sort());
   });
 
+  // Recorre routes/ y controllers/ a cualquier profundidad (incluye api/ y web/)
+  function listJsFilesRecursive(absDir, relDir) {
+    return fs.readdirSync(absDir, { withFileTypes: true }).flatMap((entry) => {
+      const rel = `${relDir}/${entry.name}`;
+      if (entry.isDirectory()) return listJsFilesRecursive(path.join(absDir, entry.name), rel);
+      return entry.name.endsWith('.js') ? [rel] : [];
+    });
+  }
+
   it('ni los controllers ni las rutas comparan nombres de rol para autorizar', () => {
     const dirs = ['controllers', 'routes'];
-    const offenders = dirs.flatMap((dir) => fs.readdirSync(path.join(__dirname, '..', dir))
-      .filter((file) => file.endsWith('.js'))
-      .filter((file) => {
-        const code = fs.readFileSync(path.join(__dirname, '..', dir, file), 'utf8');
+    const offenders = dirs
+      .flatMap((dir) => listJsFilesRecursive(path.join(__dirname, '..', dir), dir))
+      .filter((relFile) => {
+        const code = fs.readFileSync(path.join(__dirname, '..', relFile), 'utf8');
         return /\.role\s*[!=]==|role_id\s*[!=]==|[!=]==\s*['"](admin|sales|user)['"]/.test(code);
-      })
-      .map((file) => `${dir}/${file}`));
+      });
     expect(offenders).toEqual([]);
   });
 });

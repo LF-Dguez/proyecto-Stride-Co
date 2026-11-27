@@ -8,9 +8,9 @@ jest.mock('../models/sql', () => {
 });
 const { Product, ProductVariant, Inventory } = require('../models/sql');
 
-const productsRouter = require('../routes/products');
-const variantsRouter = require('../routes/variants');
-const inventoryRouter = require('../routes/inventory');
+const productsRouter = require('../routes/api/products');
+const variantsRouter = require('../routes/api/variants');
+const inventoryRouter = require('../routes/api/inventory');
 const { buildApp, users } = require('./helpers/rbacApp');
 
 const app = buildApp((a) => {

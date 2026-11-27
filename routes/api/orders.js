@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/orders');
-const authorize = require('../middlewares/authorize');
-const { orderOwner } = require('../services/ownership');
+const controller = require('../../controllers/api/orders');
+const authorize = require('../../middlewares/authorize');
+const { orderOwner } = require('../../services/ownership');
 
 // own en GET / no lleva resolver: la lista se acota con el filtro de services/ownership.js.
 // own en :id sí lleva resolver: resuelve la orden concreta contra su dueño real.

@@ -1,7 +1,7 @@
 
 const request = require('supertest');
 const app = require('../app');
-const usersRouter = require('../routes/users');
+const usersRouter = require('../routes/api/users');
 const { buildApp, users } = require('./helpers/rbacApp');
 const { verifyPassword } = require('../services/password');
 

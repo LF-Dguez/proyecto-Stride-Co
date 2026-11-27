@@ -1,7 +1,7 @@
 const request = require('supertest');
 const { buildApp, users } = require('./helpers/rbacApp');
 
-jest.mock('../controllers/inventory', () => ({
+jest.mock('../controllers/api/inventory', () => ({
   getAll: (req, res) => res.status(200).json({ message: 'ok' }),
   getById: (req, res) => res.status(200).json({ message: 'ok' }),
   create: (req, res) => res.status(201).json({ message: 'ok' }),
@@ -9,7 +9,7 @@ jest.mock('../controllers/inventory', () => ({
   delete: (req, res) => res.status(200).json({ message: 'ok' })
 }));
 
-const inventoryRouter = require('../routes/inventory');
+const inventoryRouter = require('../routes/api/inventory');
 
 const app = buildApp((a) => a.use('/api/inventory', inventoryRouter));
 

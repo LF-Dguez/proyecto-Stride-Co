@@ -7,7 +7,7 @@ jest.mock('../models/sql', () => {
 });
 const { ProductVariant } = require('../models/sql');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
-const variantsRouter = require('../routes/variants');
+const variantsRouter = require('../routes/api/variants');
 
 const app = buildApp((a) => a.use('/api/variants', variantsRouter));
 

@@ -1,6 +1,6 @@
 const createError = require('http-errors');
-const { ProductVariant, Product, Inventory } = require('../models/sql');
-const { parseId, pickFields, toHttpError } = require('../utils/sequelizeHelpers');
+const { ProductVariant, Product, Inventory } = require('../../models/sql');
+const { parseId, pickFields, toHttpError } = require('../../utils/sequelizeHelpers');
 
 const EDITABLE_FIELDS = ['product_id', 'sku', 'color', 'size', 'active'];
 

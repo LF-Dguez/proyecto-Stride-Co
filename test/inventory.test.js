@@ -7,7 +7,7 @@ jest.mock('../models/sql', () => {
 });
 const { Inventory } = require('../models/sql');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
-const inventoryRouter = require('../routes/inventory');
+const inventoryRouter = require('../routes/api/inventory');
 
 const app = buildApp((a) => a.use('/api/inventory', inventoryRouter));
 

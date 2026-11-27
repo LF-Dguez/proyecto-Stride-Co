@@ -1,6 +1,6 @@
 const createError = require('http-errors');
-const { Order } = require('../models/mongo');
-const { orderListFilter } = require('../services/ownership');
+const { Order } = require('../../models/mongo');
+const { orderListFilter } = require('../../services/ownership');
 
 // Mongoose rechaza un id mal formado o datos que no pasan el schema; se traducen
 // a errores HTTP en vez de dejarlos caer como 500.

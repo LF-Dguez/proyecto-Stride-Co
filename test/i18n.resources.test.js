@@ -10,10 +10,10 @@ jest.mock('../models/sql', () => ({
 }));
 const { User, Role, Permission } = require('../models/sql');
 
-const usersRouter = require('../routes/users');
-const rolesRouter = require('../routes/roles');
-const permissionsRouter = require('../routes/permissions');
-const authRouter = require('../routes/auth');
+const usersRouter = require('../routes/api/users');
+const rolesRouter = require('../routes/api/roles');
+const permissionsRouter = require('../routes/api/permissions');
+const authRouter = require('../routes/api/auth');
 const { buildApp, users } = require('./helpers/rbacApp');
 const { hashPassword } = require('../services/password');
 

@@ -1,7 +1,7 @@
 const createError = require('http-errors');
-const { Permission } = require('../models/sql');
-const rbac = require('../services/rbac');
-const { parseId, pickFields, toHttpError } = require('../utils/sequelizeHelpers');
+const { Permission } = require('../../models/sql');
+const rbac = require('../../services/rbac');
+const { parseId, pickFields, toHttpError } = require('../../utils/sequelizeHelpers');
 
 const EDITABLE_FIELDS = ['key', 'description'];
 

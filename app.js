@@ -10,15 +10,15 @@ const i18n = require('./config/i18n');
 const authenticate = require('./middlewares/authenticate');
 
 const indexRouter = require('./routes/index');
-const authRouter = require('./routes/auth');
-const usersRouter = require('./routes/users');
-const rolesRouter = require('./routes/roles');
-const permissionsRouter = require('./routes/permissions');
-const productsRouter = require('./routes/products');
-const variantsRouter = require('./routes/variants');
-const inventoryRouter = require('./routes/inventory');
-const customersRouter = require('./routes/customers');
-const ordersRouter = require('./routes/orders');
+const authRouter = require('./routes/api/auth');
+const usersRouter = require('./routes/api/users');
+const rolesRouter = require('./routes/api/roles');
+const permissionsRouter = require('./routes/api/permissions');
+const productsRouter = require('./routes/api/products');
+const variantsRouter = require('./routes/api/variants');
+const inventoryRouter = require('./routes/api/inventory');
+const customersRouter = require('./routes/api/customers');
+const ordersRouter = require('./routes/api/orders');
 
 const app = express();
 

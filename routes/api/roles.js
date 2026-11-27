@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/roles');
-const authorize = require('../middlewares/authorize');
+const controller = require('../../controllers/api/roles');
+const authorize = require('../../middlewares/authorize');
 
 router.get('/', authorize('roles', 'read', 'any'), controller.getAll);
 router.get('/:id', authorize('roles', 'read', 'any'), controller.getById);
