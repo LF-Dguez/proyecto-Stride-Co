@@ -2,11 +2,11 @@ extends ../layouts/admin
 include ../mixins/statusBadge
 
 block content
-  .store-panel.mb-4
+  .store-panel.mb-4.reveal.d1
     h3.fw-bold= __('admin.dashboard.welcome', user.first_name)
     p.text-secondary.mb-0= __('admin.dashboard.hint')
 
-  .row.g-3.mb-4
+  .row.g-3.mb-4.reveal.d2
     .col-6.col-md-3
       .stat
         div.text-secondary.tiny= __('admin.dashboard.products')
@@ -24,7 +24,7 @@ block content
         div.text-secondary.tiny= __('admin.dashboard.orders')
         strong= stats.orderCount
 
-  .store-panel
+  .store-panel.reveal.d3
     h5.fw-bold.mb-3= __('admin.dashboard.recentOrders')
     if recentOrders.length
       table.table.table-sm.align-middle.mb-0

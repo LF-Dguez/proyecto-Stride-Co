@@ -3,23 +3,24 @@ include ../../mixins/table
 include ../../mixins/statusBadge
 
 block content
-  form.d-flex.gap-2.mb-3(method='get', action='/admin/orders')
+  form.d-flex.gap-2.mb-3.reveal.d1(method='get', action='/admin/orders')
     select.form-select(style='max-width:220px', name='status', onchange='this.form.submit()')
       option(value='', selected=!status)= __('admin.orders.allStatuses')
       each s in statuses
         option(value=s, selected=s === status)= __('admin.orders.status.' + s)
 
-  +table([__('admin.orders.col.id'), __('admin.orders.col.customer'), __('admin.orders.col.status'), __('admin.orders.col.total'), __('admin.orders.col.date'), ''])
-    if orders.length
-      each order in orders
+  .store-panel.reveal.d2
+    +table([__('admin.orders.col.id'), __('admin.orders.col.customer'), __('admin.orders.col.status'), __('admin.orders.col.total'), __('admin.orders.col.date'), ''])
+      if orders.length
+        each order in orders
+          tr
+            td= order.id.slice(-8)
+            td= order.email || '—'
+            td: +statusBadge(order.status)
+            td= order.totalLabel
+            td= order.dateLabel
+            td
+              a.btn.btn-sm.btn-outline-secondary(href=`/admin/orders/${order.id}`)= __('admin.orders.view')
+      else
         tr
-          td= order.id.slice(-8)
-          td= order.email || '—'
-          td: +statusBadge(order.status)
-          td= order.totalLabel
-          td= order.dateLabel
-          td
-            a.btn.btn-sm.btn-outline-secondary(href=`/admin/orders/${order.id}`)= __('admin.orders.view')
-    else
-      tr
-        td.text-secondary(colspan='6')= __('admin.orders.empty')
+          td.text-secondary(colspan='6')= __('admin.orders.empty')

@@ -2,7 +2,7 @@ extends ../../layouts/admin
 include ../../mixins/formField
 
 block content
-  .store-panel(style='max-width:560px')
+  .store-panel.reveal.d1(style='max-width:560px')
     form(method='post', action=isNew ? '/admin/products' : `/admin/products/${productId}`, novalidate=true)
       +formField({ name: 'name', label: __('admin.products.field.name'), value: values.name, error: errors.name, required: true })
       +formField({ name: 'brand', label: __('admin.products.field.brand'), value: values.brand })
