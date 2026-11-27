@@ -1,7 +1,7 @@
 const createError = require('http-errors');
-const { User } = require('../models/sql');
-const { verifyPassword } = require('../services/password');
-const { signToken } = require('../services/token');
+const { User } = require('../../models/sql');
+const { verifyPassword } = require('../../services/password');
+const { signToken } = require('../../services/token');
 
 // Mismo mensaje genérico en todos los casos de fallo: email inexistente, usuario
 // inactivo o contraseña incorrecta. No revela cuáles cuentas están registradas.

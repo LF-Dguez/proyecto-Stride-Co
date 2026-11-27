@@ -17,11 +17,65 @@
         "serverError": "Internal server error",
         "unauthenticated": "Not authenticated",
         "unauthorized": "Unauthorized user",
-        "forbidden": "Access denied"
+        "forbidden": "Access denied",
+        "pagination": "Pagination"
     },
 
     "home": {
         "welcome": "Welcome to %s"
+    },
+
+    "store": {
+        "nav": {
+            "home": "Home",
+            "products": "Products",
+            "orders": "My orders",
+            "cart": "Bag",
+            "login": "Log in",
+            "admin": "Admin"
+        },
+        "footer": {
+            "tagline": "Catalog · Orders · Support",
+            "rights": "All rights reserved."
+        },
+        "meta": {
+            "description": "Urban, sport and everyday sneakers from Stride-Co."
+        },
+        "catalog": {
+            "viewDetail": "View details",
+            "empty": "No products found."
+        }
+    },
+
+    "admin": {
+        "nav": {
+            "dashboard": "Dashboard",
+            "products": "Products",
+            "variants": "Variants",
+            "inventory": "Inventory",
+            "orders": "Orders",
+            "customers": "Customers",
+            "users": "Users",
+            "roles": "Roles & permissions"
+        },
+        "viewStore": "View store",
+        "logout": "Log out"
+    },
+
+    "webErrors": {
+        "404": {
+            "title": "Page not found",
+            "message": "The page you're looking for doesn't exist or was moved."
+        },
+        "403": {
+            "title": "Access denied",
+            "message": "You don't have permission to view this page."
+        },
+        "500": {
+            "title": "Something went wrong",
+            "message": "An unexpected error occurred. Please try again later."
+        },
+        "backHome": "Back to home"
     },
 
     "users": {

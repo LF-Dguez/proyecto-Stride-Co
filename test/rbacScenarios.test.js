@@ -3,8 +3,8 @@
 // fácil verificar que la implementación cubre exactamente lo que pide la rúbrica.
 const request = require('supertest');
 const authorize = require('../middlewares/authorize');
-const productsRouter = require('../routes/products');
-const ordersRouter = require('../routes/orders');
+const productsRouter = require('../routes/api/products');
+const ordersRouter = require('../routes/api/orders');
 const Order = require('../models/mongo/Order');
 const Customer = require('../models/mongo/Customer');
 const { Product } = require('../models/sql');

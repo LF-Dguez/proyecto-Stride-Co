@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/customers');
-const authorize = require('../middlewares/authorize');
-const { customerOwner } = require('../services/ownership');
+const controller = require('../../controllers/api/customers');
+const authorize = require('../../middlewares/authorize');
+const { customerOwner } = require('../../services/ownership');
 
 router.get('/', authorize('customers', 'read', 'own'), controller.getAll);
 router.get('/:id', authorize('customers', 'read', 'own', customerOwner), controller.getById);

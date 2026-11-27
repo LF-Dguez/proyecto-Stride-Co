@@ -8,17 +8,18 @@ const i18n = require('./config/i18n');
 
 
 const authenticate = require('./middlewares/authenticate');
+const flash = require('./middlewares/flash');
 
 const indexRouter = require('./routes/index');
-const authRouter = require('./routes/auth');
-const usersRouter = require('./routes/users');
-const rolesRouter = require('./routes/roles');
-const permissionsRouter = require('./routes/permissions');
-const productsRouter = require('./routes/products');
-const variantsRouter = require('./routes/variants');
-const inventoryRouter = require('./routes/inventory');
-const customersRouter = require('./routes/customers');
-const ordersRouter = require('./routes/orders');
+const authRouter = require('./routes/api/auth');
+const usersRouter = require('./routes/api/users');
+const rolesRouter = require('./routes/api/roles');
+const permissionsRouter = require('./routes/api/permissions');
+const productsRouter = require('./routes/api/products');
+const variantsRouter = require('./routes/api/variants');
+const inventoryRouter = require('./routes/api/inventory');
+const customersRouter = require('./routes/api/customers');
+const ordersRouter = require('./routes/api/orders');
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(i18n.middleware);
+app.use(flash);
 
 
 // /health (en indexRouter) y /api/auth/login son públicos; todo lo demás bajo
@@ -67,10 +69,13 @@ app.use((err, req, res, next) => {
     return res.status(status).json({ message, data: null });
   }
 
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
-  res.render('error');
+  // Vistas web: 403/404 con su propia página; cualquier otro código (incluido 500)
+  // usa errors/500.pug sin mostrar el stack en producción.
+  const status = err.status || 500;
+  if (status >= 500) console.error(err);
+  const template = [403, 404].includes(status) ? `errors/${status}` : 'errors/500';
+  res.status(status);
+  res.render(template);
 });
 
 module.exports = app;

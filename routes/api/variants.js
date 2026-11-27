@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/variants');
-const authorize = require('../middlewares/authorize');
+const controller = require('../../controllers/api/variants');
+const authorize = require('../../middlewares/authorize');
 
 router.get('/', authorize('variants', 'read', 'any'), controller.getAll);
 router.get('/:id', authorize('variants', 'read', 'any'), controller.getById);

@@ -1,6 +1,6 @@
 const createError = require('http-errors');
-const { User, Role } = require('../models/sql');
-const { hashPassword } = require('../services/password');
+const { User, Role } = require('../../models/sql');
+const { hashPassword } = require('../../services/password');
 
 const MIN_PASSWORD_LENGTH = 8;
 const EDITABLE_FIELDS = ['first_name', 'last_name', 'email', 'role_id', 'active'];
