@@ -51,7 +51,7 @@
   function apply(i) {
     var p = products[i];
     linkEl.setAttribute('href', '/products/' + p.id);
-    stageEl.style.viewTransitionName = 'product-visual-' + p.id;
+    stageEl.dataset.vtName = 'product-visual-' + p.id;
     modelEl.setAttribute('variant-name', p.variant);
     categoryEl.textContent = p.category;
     nameEl.textContent = p.name;
