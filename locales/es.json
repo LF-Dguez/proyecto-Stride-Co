@@ -59,6 +59,15 @@
             "allCategories": "Todas las categorías",
             "viewDetail": "Ver detalle",
             "empty": "No se encontraron productos."
+        },
+        "detail": {
+            "backToCatalog": "Volver al catálogo",
+            "chooseVariant": "Elige talla y color",
+            "available": "%d disponibles",
+            "outOfStock": "Agotado",
+            "noVariants": "Sin variantes disponibles por ahora.",
+            "addToBag": "Agregar a la bolsa",
+            "comingSoon": "Próximamente"
         }
     },
 
@@ -90,7 +99,8 @@
             "title": "Algo salió mal",
             "message": "Ocurrió un error inesperado. Intenta de nuevo más tarde."
         },
-        "backHome": "Volver al inicio"
+        "backHome": "Volver al inicio",
+        "productNotFound": "Este producto no existe o ya no está disponible."
     },
 
     "users": {

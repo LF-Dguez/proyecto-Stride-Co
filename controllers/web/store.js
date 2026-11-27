@@ -1,3 +1,4 @@
+const createError = require('http-errors');
 const productService = require('../../services/product.service');
 const { formatPrice } = require('../../utils/format');
 
@@ -60,6 +61,44 @@ exports.catalog = async (req, res, next) => {
           return `/products?${params.toString()}`;
         }
       }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.detail = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const product = Number.isInteger(id) ? await productService.getActiveById(id) : null;
+    if (!product) return next(createError(404, req.__('webErrors.productNotFound')));
+
+    const variants = (product.variants || [])
+      .filter((v) => v.active)
+      .map((v) => {
+        const inv = v.inventory;
+        const available = inv ? Math.max(0, inv.stock - inv.reserved) : 0;
+        const label = [v.color, v.size].filter(Boolean).join(' · ') || v.sku;
+        const status = available > 0
+          ? req.__('store.detail.available', String(available))
+          : req.__('store.detail.outOfStock');
+        return { id: v.id, available, label: `${label} — ${status}` };
+      });
+
+    res.render('store/detail', {
+      title: `${product.name} · Stride-Co`,
+      description: product.description || req.__('store.meta.description'),
+      product: {
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        description: product.description,
+        category: productService.CATEGORY_LABELS[product.category_id] || '',
+        priceLabel: formatPrice(product.price, req.getLocale()),
+        color: SHOE_ART_COLORS[product.id % SHOE_ART_COLORS.length],
+        variant: MODEL_VARIANTS[product.id % MODEL_VARIANTS.length]
+      },
+      variants
     });
   } catch (err) {
     next(err);

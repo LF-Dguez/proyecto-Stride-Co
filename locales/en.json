@@ -59,6 +59,15 @@
             "allCategories": "All categories",
             "viewDetail": "View details",
             "empty": "No products found."
+        },
+        "detail": {
+            "backToCatalog": "Back to catalog",
+            "chooseVariant": "Choose size and color",
+            "available": "%d available",
+            "outOfStock": "Out of stock",
+            "noVariants": "No variants available right now.",
+            "addToBag": "Add to bag",
+            "comingSoon": "Coming soon"
         }
     },
 
@@ -90,7 +99,8 @@
             "title": "Something went wrong",
             "message": "An unexpected error occurred. Please try again later."
         },
-        "backHome": "Back to home"
+        "backHome": "Back to home",
+        "productNotFound": "This product doesn't exist or is no longer available."
     },
 
     "users": {

@@ -17,6 +17,7 @@
   if (!Array.isArray(products) || products.length < 2) return;
 
   var linkEl = document.getElementById('heroProductLink');
+  var stageEl = document.getElementById('heroStage');
   var modelEl = document.getElementById('heroModel');
   var cardEl = heroEl.querySelector('.hero-product-card');
   var categoryEl = document.getElementById('heroCategory');
@@ -50,6 +51,7 @@
   function apply(i) {
     var p = products[i];
     linkEl.setAttribute('href', '/products/' + p.id);
+    stageEl.style.viewTransitionName = 'product-visual-' + p.id;
     modelEl.setAttribute('variant-name', p.variant);
     categoryEl.textContent = p.category;
     nameEl.textContent = p.name;
