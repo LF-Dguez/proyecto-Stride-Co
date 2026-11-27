@@ -13,36 +13,15 @@
     if (stage) stage.style.viewTransitionName = stage.dataset.vtName;
   }, true);
 
-  // Si el navegador vuelve a esta página desde su caché (botón atrás/adelante),
-  // el nombre que se dejó puesto en el clic anterior sigue ahí: dos elementos con
-  // view-transition-name en la misma página cancelan la transición por completo,
-  // no solo la de ese elemento. pageshow se dispara tanto en la carga normal (no
-  // hace nada, no hay nombres puestos) como al restaurar desde caché (limpia lo
-  // que haya quedado).
+  // Al volver con el botón atrás/adelante, Chrome restaura la página desde su
+  // caché e igual intenta la transición nativa sobre ella; en esta combinación
+  // a veces deja el repintado a medias (contenido entero que existe en el HTML
+  // pero no se ve hasta la siguiente interacción) y el modelo 3D del hero puede
+  // quedar con el ángulo que tenía justo antes de salir. En vez de perseguir
+  // cada síntoma, se recarga la página desde el servidor en ese caso puntual:
+  // se pierde el instante de "caché" de esa navegación de regreso, pero siempre
+  // se ve completa y correcta.
   window.addEventListener('pageshow', function (event) {
-    document.querySelectorAll('[data-vt-name]').forEach(function (el) {
-      el.style.viewTransitionName = '';
-    });
-    if (event.persisted) restoreCameras();
+    if (event.persisted) location.reload();
   });
-
-  // El modelo con camera-controls (el destacado del inicio) se puede arrastrar
-  // para girarlo; si el clic para navegar tembló un poco, puede quedar un poco
-  // girado. Si la página vuelve desde la caché del navegador (atrás/adelante) con
-  // ese ángulo movido, aquí se regresa al ángulo con el que cargó la primera vez.
-  var defaultOrbits = new WeakMap();
-  document.querySelectorAll('model-viewer[camera-controls]').forEach(function (mv) {
-    mv.addEventListener('load', function () {
-      if (!defaultOrbits.has(mv)) defaultOrbits.set(mv, mv.getCameraOrbit().toString());
-    });
-  });
-
-  function restoreCameras() {
-    document.querySelectorAll('model-viewer[camera-controls]').forEach(function (mv) {
-      var orbit = defaultOrbits.get(mv);
-      if (!orbit) return;
-      mv.cameraOrbit = orbit;
-      mv.jumpCameraToGoal();
-    });
-  }
 })();
