@@ -51,6 +51,7 @@ function fakeProduct(overrides = {}) {
   return {
     id: 1, name: 'Tenis Runner Pro', brand: 'Stride', category_id: 10, price: '1299.99', active: true,
     update: jest.fn(function update(fields) { Object.assign(this, fields); return Promise.resolve(this); }),
+    destroy: jest.fn().mockResolvedValue(),
     ...overrides
   };
 }
@@ -153,5 +154,35 @@ describe('F8: editar y activar/desactivar', () => {
     const toggle = await agent.post('/admin/products/1/delete');
     expect(edit.statusCode).toBe(403);
     expect(toggle.statusCode).toBe(403);
+  });
+});
+
+describe('F8: borrar producto (botón de bote de basura)', () => {
+  it('POST /admin/products/:id/destroy borra y redirige con confirmación', async () => {
+    const product = fakeProduct();
+    Product.findByPk.mockResolvedValue(product);
+    const agent = await loginAgent('admin');
+    const res = await agent.post('/admin/products/1/destroy');
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe('/admin/products');
+    expect(product.destroy).toHaveBeenCalled();
+  });
+
+  it('si tiene variantes relacionadas, no rompe: redirige con un mensaje en vez de 500', async () => {
+    const fkError = new Error('still referenced from table "product_variants"');
+    fkError.name = 'SequelizeForeignKeyConstraintError';
+    fkError.parent = { detail: 'Key (id)=(1) is still referenced from table "product_variants".' };
+    const product = fakeProduct({ destroy: jest.fn().mockRejectedValue(fkError) });
+    Product.findByPk.mockResolvedValue(product);
+    const agent = await loginAgent('admin');
+    const res = await agent.post('/admin/products/1/destroy');
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe('/admin/products');
+  });
+
+  it('SALES no puede borrar (403)', async () => {
+    const agent = await loginAgent('sales');
+    const res = await agent.post('/admin/products/1/destroy');
+    expect(res.statusCode).toBe(403);
   });
 });

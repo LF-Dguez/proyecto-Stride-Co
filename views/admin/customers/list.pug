@@ -1,0 +1,17 @@
+extends ../../layouts/admin
+include ../../mixins/table
+
+block content
+  .store-panel.reveal.d1
+    +table([__('admin.customers.col.email'), __('admin.customers.col.phone'), __('admin.customers.col.addresses'), ''])
+      if customers.length
+        each customer in customers
+          tr
+            td= customer.email || '—'
+            td= customer.phone || '—'
+            td= customer.addressCount
+            td
+              a.btn.btn-sm.btn-outline-secondary(href=`/admin/customers/${customer.id}`)= __('admin.customers.view')
+      else
+        tr
+          td.text-secondary(colspan='4')= __('admin.customers.empty')

@@ -1,0 +1,34 @@
+extends ../../layouts/admin
+include ../../mixins/table
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-3.reveal.d1
+    div
+    if can('users', 'create', 'any')
+      a.btn.btn-lime(href='/admin/users/new')
+        i.bi.bi-plus-lg.me-1
+        = __('admin.users.new')
+
+  .store-panel.reveal.d2
+    +table([__('admin.users.col.name'), __('admin.users.col.email'), __('admin.users.col.role'), __('admin.users.col.status'), __('admin.users.col.actions')])
+      if users.length
+        each user in users
+          tr
+            td= user.name
+            td= user.email
+            td= user.roleName
+            td
+              span.badge(class=user.active ? 'text-bg-success' : 'text-bg-secondary')
+                = user.active ? __('admin.users.active') : __('admin.users.inactive')
+            td
+              .d-flex.gap-2
+                if can('users', 'update', 'any')
+                  a.btn.btn-sm.btn-outline-secondary(href=`/admin/users/${user.id}/edit`)
+                    i.bi.bi-pencil
+                if can('users', 'delete', 'any')
+                  form(method='post', action=`/admin/users/${user.id}/delete`)
+                    button.btn.btn-sm.btn-outline-secondary(type='submit')
+                      i.bi(class=user.active ? 'bi-eye-slash' : 'bi-eye')
+      else
+        tr
+          td.text-secondary(colspan='5')= __('admin.users.empty')

@@ -1,0 +1,14 @@
+extends ../../layouts/admin
+include ../../mixins/formField
+
+block content
+  .store-panel.reveal.d1(style='max-width:560px')
+    form(method='post', action=isNew ? '/admin/users' : `/admin/users/${userId}`, novalidate=true)
+      +formField({ name: 'first_name', label: __('admin.users.field.firstName'), value: values.first_name, error: errors.first_name, required: true })
+      +formField({ name: 'last_name', label: __('admin.users.field.lastName'), value: values.last_name, error: errors.last_name, required: true })
+      +formField({ name: 'email', label: __('admin.users.field.email'), type: 'email', value: values.email, error: errors.email, required: true })
+      +formField({ name: 'role_id', label: __('admin.users.field.role'), type: 'select', value: values.role_id, error: errors.role_id, options: roleOptions })
+      +formField({ name: 'password', label: isNew ? __('admin.users.field.password') : __('admin.users.field.passwordEdit'), type: 'password', value: '', error: errors.password, required: isNew })
+      .d-flex.gap-2.mt-3
+        button.btn.btn-lime(type='submit')= __('admin.users.save')
+        a.btn.btn-outline-secondary(href='/admin/users')= __('admin.users.cancel')

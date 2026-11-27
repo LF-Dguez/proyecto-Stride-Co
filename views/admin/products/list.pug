@@ -29,8 +29,11 @@ block content
                     i.bi.bi-pencil
                 if can('products', 'delete', 'any')
                   form(method='post', action=`/admin/products/${product.id}/delete`)
-                    button.btn.btn-sm.btn-outline-danger(type='submit')
+                    button.btn.btn-sm.btn-outline-secondary(type='submit')
                       i.bi(class=product.active ? 'bi-eye-slash' : 'bi-eye')
+                  form(method='post', action=`/admin/products/${product.id}/destroy`, onsubmit=`return confirm('${__('admin.products.confirmDelete')}')`)
+                    button.btn.btn-sm.btn-outline-danger(type='submit')
+                      i.bi.bi-trash
       else
         tr
           td.text-secondary(colspan='7')= __('admin.products.empty')

@@ -1,0 +1,32 @@
+extends ../../layouts/admin
+include ../../mixins/table
+include ../../mixins/statusBadge
+
+block content
+  .row.g-4
+    .col-lg-5
+      .store-panel.reveal.d1
+        h5.fw-bold.mb-3= __('admin.customers.info')
+        p.mb-1= customer.email || '—'
+        p.text-secondary.mb-0= customer.phone || '—'
+        if customer.addresses.length
+          hr
+          each address in customer.addresses
+            p.mb-2.text-secondary
+              span.badge.text-bg-light.me-2= address.type
+              = [address.street, address.number, address.city, address.state, address.postalCode, address.country].filter(Boolean).join(', ')
+    .col-lg-7
+      .store-panel.reveal.d2
+        h5.fw-bold.mb-3= __('admin.customers.orders')
+        +table([__('admin.orders.col.status'), __('admin.orders.col.total'), __('admin.orders.col.date'), ''])
+          if orders.length
+            each order in orders
+              tr
+                td: +statusBadge(order.status)
+                td= order.totalLabel
+                td= order.dateLabel
+                td
+                  a.btn.btn-sm.btn-outline-secondary(href=`/admin/orders/${order.id}`)= __('admin.orders.view')
+          else
+            tr
+              td.text-secondary(colspan='4')= __('admin.orders.empty')

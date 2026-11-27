@@ -123,6 +123,8 @@
             "updated": "Product updated",
             "activated": "Product activated",
             "deactivated": "Product deactivated",
+            "deleted": "Product deleted",
+            "confirmDelete": "Delete this product? This action cannot be undone.",
             "col": {
                 "id": "ID",
                 "name": "Name",
@@ -142,6 +144,57 @@
                 "nameRequired": "Name is required",
                 "priceInvalid": "Price must be a number greater than or equal to 0",
                 "categoryInvalid": "Invalid category"
+            }
+        },
+        "variants": {
+            "title": "Variants",
+            "newTitle": "New variant",
+            "editTitle": "Edit variant",
+            "new": "New variant",
+            "save": "Save",
+            "cancel": "Cancel",
+            "empty": "No variants yet.",
+            "notFound": "Variant not found",
+            "created": "Variant created",
+            "updated": "Variant updated",
+            "col": {
+                "sku": "SKU",
+                "product": "Product",
+                "color": "Colorway",
+                "size": "Size",
+                "available": "Available",
+                "actions": "Actions"
+            },
+            "field": {
+                "product": "Product",
+                "sku": "SKU",
+                "color": "Colorway",
+                "size": "Size"
+            },
+            "errors": {
+                "productRequired": "Select a product",
+                "skuRequired": "SKU is required",
+                "colorRequired": "Color is required",
+                "sizeRequired": "Size is required"
+            }
+        },
+        "inventory": {
+            "title": "Inventory",
+            "save": "Save",
+            "empty": "No inventory records yet.",
+            "notFound": "Inventory record not found",
+            "updated": "Inventory updated",
+            "col": {
+                "sku": "SKU",
+                "product": "Product",
+                "variant": "Variant",
+                "stock": "Stock",
+                "reserved": "Reserved",
+                "available": "Available"
+            },
+            "errors": {
+                "invalidNumbers": "Stock and reserved must be whole numbers greater than or equal to 0",
+                "reservedExceedsStock": "Reserved cannot be greater than stock"
             }
         },
         "orders": {
@@ -185,6 +238,72 @@
             },
             "errors": {
                 "statusInvalid": "Invalid status"
+            }
+        },
+        "customers": {
+            "title": "Customers",
+            "detailTitle": "Customer detail",
+            "view": "View",
+            "empty": "No customers yet.",
+            "notFound": "Customer not found",
+            "info": "Contact info",
+            "orders": "Customer orders",
+            "col": {
+                "email": "Email",
+                "phone": "Phone",
+                "addresses": "Addresses"
+            }
+        },
+        "users": {
+            "title": "Users",
+            "newTitle": "New user",
+            "editTitle": "Edit user",
+            "new": "New user",
+            "save": "Save",
+            "cancel": "Cancel",
+            "active": "Active",
+            "inactive": "Inactive",
+            "empty": "No users yet.",
+            "notFound": "User not found",
+            "created": "User created",
+            "updated": "User updated",
+            "activated": "User activated",
+            "deactivated": "User deactivated",
+            "col": {
+                "name": "Name",
+                "email": "Email",
+                "role": "Role",
+                "status": "Status",
+                "actions": "Actions"
+            },
+            "field": {
+                "firstName": "First name",
+                "lastName": "Last name",
+                "email": "Email",
+                "role": "Role",
+                "password": "Password",
+                "passwordEdit": "New password (leave blank to keep it unchanged)"
+            },
+            "errors": {
+                "firstNameRequired": "First name is required",
+                "lastNameRequired": "Last name is required",
+                "emailRequired": "Email is required",
+                "roleRequired": "Select a role",
+                "passwordRequired": "Password is required (minimum %s characters)"
+            }
+        },
+        "roles": {
+            "title": "Roles & permissions",
+            "editTitle": "%s permissions",
+            "edit": "Edit permissions",
+            "save": "Save",
+            "cancel": "Cancel",
+            "notFound": "Role not found",
+            "updated": "Permissions updated",
+            "col": {
+                "name": "Role",
+                "description": "Description",
+                "permissions": "Permissions"
             }
         }
     },

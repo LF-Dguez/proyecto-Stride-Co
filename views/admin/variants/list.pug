@@ -1,0 +1,28 @@
+extends ../../layouts/admin
+include ../../mixins/table
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-3.reveal.d1
+    div
+    if can('variants', 'create', 'any')
+      a.btn.btn-lime(href='/admin/variants/new')
+        i.bi.bi-plus-lg.me-1
+        = __('admin.variants.new')
+
+  .store-panel.reveal.d2
+    +table([__('admin.variants.col.sku'), __('admin.variants.col.product'), __('admin.variants.col.color'), __('admin.variants.col.size'), __('admin.variants.col.available'), __('admin.variants.col.actions')])
+      if variants.length
+        each variant in variants
+          tr
+            td= variant.sku
+            td= variant.productName
+            td= variant.color
+            td= variant.size
+            td= variant.available
+            td
+              if can('variants', 'update', 'any')
+                a.btn.btn-sm.btn-outline-secondary(href=`/admin/variants/${variant.id}/edit`)
+                  i.bi.bi-pencil
+      else
+        tr
+          td.text-secondary(colspan='6')= __('admin.variants.empty')

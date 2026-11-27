@@ -1,0 +1,29 @@
+extends ../../layouts/admin
+include ../../mixins/table
+
+block content
+  .store-panel.reveal.d1
+    +table([__('admin.inventory.col.sku'), __('admin.inventory.col.product'), __('admin.inventory.col.variant'), __('admin.inventory.col.stock'), __('admin.inventory.col.reserved'), __('admin.inventory.col.available'), ''])
+      if rows.length
+        each row in rows
+          tr
+            td= row.sku
+            td= row.productName
+            td= [row.color, row.size].filter(Boolean).join(' · ')
+            if can('inventory', 'update', 'any')
+              td
+                form.d-flex.gap-2.align-items-center(method='post', action=`/admin/inventory/${row.variantId}`, id=`inv-${row.variantId}`)
+                  input.form-control.form-control-sm(style='width:90px', type='number', min='0', name='stock', value=row.stock, form=`inv-${row.variantId}`)
+              td
+                input.form-control.form-control-sm(style='width:90px', type='number', min='0', name='reserved', value=row.reserved, form=`inv-${row.variantId}`)
+              td= row.available
+              td
+                button.btn.btn-sm.btn-lime(type='submit', form=`inv-${row.variantId}`)= __('admin.inventory.save')
+            else
+              td= row.stock
+              td= row.reserved
+              td= row.available
+              td
+      else
+        tr
+          td.text-secondary(colspan='7')= __('admin.inventory.empty')

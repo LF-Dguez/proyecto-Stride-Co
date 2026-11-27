@@ -123,6 +123,8 @@
             "updated": "Producto actualizado",
             "activated": "Producto activado",
             "deactivated": "Producto desactivado",
+            "deleted": "Producto eliminado",
+            "confirmDelete": "¿Eliminar este producto? Esta acción no se puede deshacer.",
             "col": {
                 "id": "ID",
                 "name": "Nombre",
@@ -142,6 +144,57 @@
                 "nameRequired": "El nombre es obligatorio",
                 "priceInvalid": "El precio debe ser un número mayor o igual a 0",
                 "categoryInvalid": "Categoría inválida"
+            }
+        },
+        "variants": {
+            "title": "Variantes",
+            "newTitle": "Nueva variante",
+            "editTitle": "Editar variante",
+            "new": "Nueva variante",
+            "save": "Guardar",
+            "cancel": "Cancelar",
+            "empty": "No hay variantes.",
+            "notFound": "Variante no encontrada",
+            "created": "Variante creada",
+            "updated": "Variante actualizada",
+            "col": {
+                "sku": "SKU",
+                "product": "Producto",
+                "color": "Color",
+                "size": "Talla",
+                "available": "Disponible",
+                "actions": "Acciones"
+            },
+            "field": {
+                "product": "Producto",
+                "sku": "SKU",
+                "color": "Color",
+                "size": "Talla"
+            },
+            "errors": {
+                "productRequired": "Selecciona un producto",
+                "skuRequired": "El SKU es obligatorio",
+                "colorRequired": "El color es obligatorio",
+                "sizeRequired": "La talla es obligatoria"
+            }
+        },
+        "inventory": {
+            "title": "Inventario",
+            "save": "Guardar",
+            "empty": "No hay registros de inventario.",
+            "notFound": "Registro de inventario no encontrado",
+            "updated": "Inventario actualizado",
+            "col": {
+                "sku": "SKU",
+                "product": "Producto",
+                "variant": "Variante",
+                "stock": "Existencias",
+                "reserved": "Reservado",
+                "available": "Disponible"
+            },
+            "errors": {
+                "invalidNumbers": "Existencias y reservado deben ser números enteros mayores o iguales a 0",
+                "reservedExceedsStock": "Lo reservado no puede ser mayor que las existencias"
             }
         },
         "orders": {
@@ -185,6 +238,72 @@
             },
             "errors": {
                 "statusInvalid": "Estado inválido"
+            }
+        },
+        "customers": {
+            "title": "Clientes",
+            "detailTitle": "Detalle del cliente",
+            "view": "Ver",
+            "empty": "No hay clientes.",
+            "notFound": "Cliente no encontrado",
+            "info": "Datos de contacto",
+            "orders": "Pedidos del cliente",
+            "col": {
+                "email": "Correo",
+                "phone": "Teléfono",
+                "addresses": "Direcciones"
+            }
+        },
+        "users": {
+            "title": "Usuarios",
+            "newTitle": "Nuevo usuario",
+            "editTitle": "Editar usuario",
+            "new": "Nuevo usuario",
+            "save": "Guardar",
+            "cancel": "Cancelar",
+            "active": "Activo",
+            "inactive": "Inactivo",
+            "empty": "No hay usuarios.",
+            "notFound": "Usuario no encontrado",
+            "created": "Usuario creado",
+            "updated": "Usuario actualizado",
+            "activated": "Usuario activado",
+            "deactivated": "Usuario desactivado",
+            "col": {
+                "name": "Nombre",
+                "email": "Correo",
+                "role": "Rol",
+                "status": "Estado",
+                "actions": "Acciones"
+            },
+            "field": {
+                "firstName": "Nombre",
+                "lastName": "Apellido",
+                "email": "Correo",
+                "role": "Rol",
+                "password": "Contraseña",
+                "passwordEdit": "Nueva contraseña (dejar en blanco para no cambiarla)"
+            },
+            "errors": {
+                "firstNameRequired": "El nombre es obligatorio",
+                "lastNameRequired": "El apellido es obligatorio",
+                "emailRequired": "El correo es obligatorio",
+                "roleRequired": "Selecciona un rol",
+                "passwordRequired": "La contraseña es obligatoria (mínimo %s caracteres)"
+            }
+        },
+        "roles": {
+            "title": "Roles y permisos",
+            "editTitle": "Permisos de %s",
+            "edit": "Editar permisos",
+            "save": "Guardar",
+            "cancel": "Cancelar",
+            "notFound": "Rol no encontrado",
+            "updated": "Permisos actualizados",
+            "col": {
+                "name": "Rol",
+                "description": "Descripción",
+                "permissions": "Permisos"
             }
         }
     },

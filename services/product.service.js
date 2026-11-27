@@ -40,6 +40,11 @@ function getActiveById(id) {
 
 // A diferencia de listActive/getActiveById (tienda, solo lo que está activo),
 // el panel (F8) necesita ver y editar también los productos desactivados.
+// Para el <select> de producto en formularios del panel (variantes, etc.)
+function listAllForSelect() {
+  return Product.findAll({ attributes: ['id', 'name'], order: [['name', 'ASC']] });
+}
+
 async function listAdmin({ page = 1 } = {}) {
   const pageNum = Math.max(1, Number.parseInt(page, 10) || 1);
   const { rows, count } = await Product.findAndCountAll({
@@ -70,7 +75,16 @@ async function setActive(id, active) {
   return product.update({ active });
 }
 
+// Borrado real (a diferencia de setActive): falla con FK si hay variantes
+// relacionadas, lo que utils/sequelizeHelpers#toHttpError traduce a 409.
+async function deleteProduct(id) {
+  const product = await Product.findByPk(id);
+  if (!product) return null;
+  await product.destroy();
+  return product;
+}
+
 module.exports = {
   CATEGORY_LABELS, listActive, listFeatured, getActiveById,
-  listAdmin, getById, createProduct, updateProduct, setActive
+  listAdmin, getById, createProduct, updateProduct, setActive, deleteProduct, listAllForSelect
 };
