@@ -16,8 +16,8 @@ block content
         button.btn.btn-dark(type='submit')= __('common.search')
     .row.g-4
       if products.length
-        each product in products
-          +productCard(product)
+        each product, i in products
+          +productCard(product, i * 0.08)
       else
         p.text-secondary= __('store.catalog.empty')
     include ../partials/pagination

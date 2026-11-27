@@ -104,6 +104,130 @@ body {
   letter-spacing: -2px;
 }
 
+/* El hero se vuelve de dos columnas cuando trae el producto destacado a un lado. */
+.hero-grid {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding-block: 56px;
+}
+
+.hero-grid > div:first-child {
+  flex: 1 1 420px;
+  min-width: 0;
+}
+
+/* ---------- producto destacado flotando dentro del hero ---------- */
+
+.hero-product {
+  flex: 1 1 360px;
+  max-width: 420px;
+}
+
+.hero-product-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero-product-stage {
+  height: 300px;
+  border-radius: 24px;
+  background: radial-gradient(120% 120% at 32% 22%, #33444f, #141b21 72%);
+  overflow: hidden;
+  position: relative;
+  transition: transform .4s cubic-bezier(.22, 1, .36, 1), box-shadow .4s ease;
+}
+
+.hero-product:hover .hero-product-stage {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 50px -20px #00000070;
+}
+
+.hero-product-stage model-viewer {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  transition: opacity .35s ease;
+}
+
+.hero-product-tip {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #c7ccd0;
+  background: #00000055;
+  padding: 5px 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(3px);
+}
+
+.hero-dots {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.hero-dots:empty {
+  display: none;
+}
+
+.hero-dots button {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: #ffffff3a;
+  transition: background .3s ease, transform .3s ease;
+}
+
+.hero-dots button.active {
+  background: var(--lime);
+  transform: scale(1.3);
+}
+
+.hero-product-card {
+  margin-top: 12px;
+  background: #182028;
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  transition: opacity .35s ease;
+}
+
+.hero-product-card .tag {
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--lime);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.hero-product-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.hero-product-card .price {
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+
 @media (max-width: 850px) {
   .hero {
     min-height: 290px;
@@ -159,12 +283,12 @@ body {
   overflow: hidden;
   background: white;
   height: 100%;
-  transition: transform .15s, box-shadow .15s;
+  transition: transform .4s cubic-bezier(.22, 1, .36, 1), box-shadow .4s cubic-bezier(.22, 1, .36, 1);
 }
 
 .product-tile:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 26px #00000013;
+  transform: translateY(-6px);
+  box-shadow: 0 1px 0 #e7e8ea, 0 26px 40px -20px #10182038;
 }
 
 .shoe-art {
@@ -174,18 +298,43 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-}
-
-.shoe-art .shoe {
-  font-size: 6rem;
-  filter: drop-shadow(0px 12px 7px #0002);
-  transform: rotate(-14deg);
+  overflow: hidden;
 }
 
 .shoe-art .tag {
   position: absolute;
   top: 14px;
   left: 14px;
+  z-index: 2;
+}
+
+.shoe-art .shoe-model {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  pointer-events: none;
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1);
+}
+
+.product-tile:hover .shoe-art .shoe-model {
+  transform: scale(1.06);
+}
+
+/* Botón circular con flecha; se vuelve lima y gira 45° al pasar el mouse. */
+.card-arrow {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #f5f6f7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .3s ease, transform .35s cubic-bezier(.22, 1, .36, 1);
+}
+
+.product-tile:hover .card-arrow {
+  background: var(--lime);
+  transform: rotate(45deg);
 }
 
 @media (max-width: 850px) {

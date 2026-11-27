@@ -699,6 +699,8 @@ Interfaz web (Entregable 3) con renderizado del lado del servidor: Express + Pug
 |---|---|---|---|---|---|
 | F2 | Inicio y catálogo (búsqueda, categoría, paginación) | `GET /`, `GET /products?q=&category=&page=` | Pública | Dfloresv1 | `docs/ssr/f2/` |
 
+El producto destacado del inicio y las tarjetas del catálogo muestran un modelo 3D interactivo (`public/models/shoe.glb`, [`<model-viewer>`](https://modelviewer.dev/)) que gira solo y se puede arrastrar. Es un modelo de muestra, no del producto real: **"Materials Variants Shoe" © 2021 Shopify, licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)**, de los [glTF Sample Assets de Khronos](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/MaterialsVariantsShoe); se reemplaza por un modelo propio cuando el equipo tenga uno.
+
 ## API pública
 
 Datos para probar el despliegue en Render (plan gratuito, desplegado desde `staging`):

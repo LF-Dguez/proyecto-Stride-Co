@@ -5,6 +5,10 @@ const { formatPrice } = require('../../utils/format');
 // para que un producto no cambie de color entre una visita y otra.
 const SHOE_ART_COLORS = ['#e9f1fd', '#f3e9df', '#e6f0e9', '#eae8f6'];
 
+// Variantes del modelo 3D de muestra (ver README, sección de créditos). Un producto
+// siempre usa la misma variante para que no "parpadee" de color entre peticiones.
+const MODEL_VARIANTS = ['midnight', 'street', 'beach'];
+
 function toCardData(product, locale) {
   return {
     id: product.id,
@@ -13,17 +17,19 @@ function toCardData(product, locale) {
     category: productService.CATEGORY_LABELS[product.category_id] || '',
     priceLabel: formatPrice(product.price, locale),
     color: SHOE_ART_COLORS[product.id % SHOE_ART_COLORS.length],
-    emoji: '👟'
+    variant: MODEL_VARIANTS[product.id % MODEL_VARIANTS.length]
   };
 }
 
 exports.home = async (req, res, next) => {
   try {
     const featured = await productService.listFeatured(4);
+    const cards = featured.map((p) => toCardData(p, req.getLocale()));
     res.render('store/home', {
       title: req.__('store.home.titleLine1') + ' ' + req.__('store.home.titleLine2'),
       description: req.__('store.meta.description'),
-      featured: featured.map((p) => toCardData(p, req.getLocale()))
+      featured: cards,
+      featuredJson: JSON.stringify(cards)
     });
   } catch (err) {
     next(err);

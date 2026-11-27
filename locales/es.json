@@ -50,7 +50,8 @@
             "cta": "Explorar colección",
             "curatedLabel": "Seleccionados para ti",
             "featuredTitle": "Destacados",
-            "viewCatalog": "Ver catálogo"
+            "viewCatalog": "Ver catálogo",
+            "dragToRotate": "arrastra para girar"
         },
         "catalog": {
             "title": "Todos los productos",

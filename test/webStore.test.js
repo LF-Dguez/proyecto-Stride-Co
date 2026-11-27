@@ -39,6 +39,30 @@ describe('F2: inicio y catálogo', () => {
     const res = await request(app).get('/');
     expect(res.statusCode).toBe(200);
     expect(res.text).toContain('No se encontraron productos.');
+    expect(res.text).not.toContain('id="heroProduct"');
+  });
+
+  it('GET / incluye los datos de todos los destacados en el HTML (SSR verificable)', async () => {
+    productService.listFeatured.mockResolvedValue([
+      product({ id: 1, name: 'Tenis Runner Pro' }),
+      product({ id: 2, name: 'Tenis Trail X', category_id: 20 })
+    ]);
+    const res = await request(app).get('/');
+    const match = res.text.match(/<script type="application\/json" id="heroData">([^<]*)<\/script>/);
+    expect(match).not.toBeNull();
+    const embedded = JSON.parse(match[1]);
+    expect(embedded.map((p) => p.name)).toEqual(['Tenis Runner Pro', 'Tenis Trail X']);
+  });
+
+  it('GET / con un solo destacado no incluye el script de rotación (nada que rotar)', async () => {
+    const res = await request(app).get('/');
+    expect(res.text).not.toContain('heroRotator.js');
+  });
+
+  it('GET / con varios destacados sí carga el script de rotación', async () => {
+    productService.listFeatured.mockResolvedValue([product({ id: 1 }), product({ id: 2 })]);
+    const res = await request(app).get('/');
+    expect(res.text).toContain('/js/heroRotator.js');
   });
 
   it('GET /products responde 200 con el catálogo', async () => {
