@@ -153,6 +153,27 @@ describe('F1: ruta protegida (/admin) y cierre de sesión', () => {
     expect(again.headers.location).toBe('/login?next=%2Fadmin');
   });
 
+  it('el menú del panel solo muestra lo que el rol puede usar (admin ve Usuarios y Roles, sales no)', async () => {
+    const admin = await seedUser('admin');
+    User.findOne.mockResolvedValue(admin);
+    User.findByPk.mockResolvedValue(admin);
+    const adminAgent = request.agent(app);
+    await adminAgent.post('/login').send({ email: admin.email, password: 'Secret123' });
+    const adminPanel = await adminAgent.get('/admin');
+    expect(adminPanel.text).toContain('Usuarios');
+    expect(adminPanel.text).toContain('Roles y permisos');
+
+    const sales = await seedUser('sales');
+    User.findOne.mockResolvedValue(sales);
+    User.findByPk.mockResolvedValue(sales);
+    const salesAgent = request.agent(app);
+    await salesAgent.post('/login').send({ email: sales.email, password: 'Secret123' });
+    const salesPanel = await salesAgent.get('/admin');
+    expect(salesPanel.text).not.toContain('Usuarios');
+    expect(salesPanel.text).not.toContain('Roles y permisos');
+    expect(salesPanel.text).toContain('Productos');
+  });
+
   it('USER (cliente, sin orders:read:any) recibe 403 en /admin', async () => {
     const user = await seedUser('user');
     User.findOne.mockResolvedValue(user);

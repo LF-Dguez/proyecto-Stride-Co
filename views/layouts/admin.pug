@@ -17,28 +17,36 @@ html(lang=getLocale())
         a.nav-link(class=activeNav === 'dashboard' ? 'active' : '', href='/admin')
           i.bi.bi-grid.me-2
           = __('admin.nav.dashboard')
-        a.nav-link(class=activeNav === 'products' ? 'active' : '', href='/admin/products')
-          i.bi.bi-box-seam.me-2
-          = __('admin.nav.products')
-        a.nav-link(class=activeNav === 'variants' ? 'active' : '', href='/admin/variants')
-          i.bi.bi-tags.me-2
-          = __('admin.nav.variants')
-        a.nav-link(class=activeNav === 'inventory' ? 'active' : '', href='/admin/inventory')
-          i.bi.bi-stack.me-2
-          = __('admin.nav.inventory')
-        a.nav-link(class=activeNav === 'orders' ? 'active' : '', href='/admin/orders')
-          i.bi.bi-receipt.me-2
-          = __('admin.nav.orders')
-        a.nav-link(class=activeNav === 'customers' ? 'active' : '', href='/admin/customers')
-          i.bi.bi-people.me-2
-          = __('admin.nav.customers')
-        hr.border-secondary
-        a.nav-link(class=activeNav === 'users' ? 'active' : '', href='/admin/users')
-          i.bi.bi-person-badge.me-2
-          = __('admin.nav.users')
-        a.nav-link(class=activeNav === 'roles' ? 'active' : '', href='/admin/roles')
-          i.bi.bi-key.me-2
-          = __('admin.nav.roles')
+        if can('products', 'read', 'any')
+          a.nav-link(class=activeNav === 'products' ? 'active' : '', href='/admin/products')
+            i.bi.bi-box-seam.me-2
+            = __('admin.nav.products')
+        if can('variants', 'read', 'any')
+          a.nav-link(class=activeNav === 'variants' ? 'active' : '', href='/admin/variants')
+            i.bi.bi-tags.me-2
+            = __('admin.nav.variants')
+        if can('inventory', 'read', 'any')
+          a.nav-link(class=activeNav === 'inventory' ? 'active' : '', href='/admin/inventory')
+            i.bi.bi-stack.me-2
+            = __('admin.nav.inventory')
+        if can('orders', 'read', 'any')
+          a.nav-link(class=activeNav === 'orders' ? 'active' : '', href='/admin/orders')
+            i.bi.bi-receipt.me-2
+            = __('admin.nav.orders')
+        if can('customers', 'read', 'any')
+          a.nav-link(class=activeNav === 'customers' ? 'active' : '', href='/admin/customers')
+            i.bi.bi-people.me-2
+            = __('admin.nav.customers')
+        if can('users', 'read', 'any') || can('roles', 'read', 'any')
+          hr.border-secondary
+        if can('users', 'read', 'any')
+          a.nav-link(class=activeNav === 'users' ? 'active' : '', href='/admin/users')
+            i.bi.bi-person-badge.me-2
+            = __('admin.nav.users')
+        if can('roles', 'read', 'any')
+          a.nav-link(class=activeNav === 'roles' ? 'active' : '', href='/admin/roles')
+            i.bi.bi-key.me-2
+            = __('admin.nav.roles')
       .mt-4.px-2
         a.btn.btn-outline-light.w-100.btn-sm(href='/')
           i.bi.bi-shop.me-1
