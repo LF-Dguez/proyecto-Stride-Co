@@ -42,6 +42,11 @@
         "meta": {
             "description": "Urban, sport and everyday sneakers from Stride-Co."
         },
+        "portada": {
+            "badge": "2026 Collection",
+            "tagline": "For those who don't stop.",
+            "scrollCue": "Scroll to begin"
+        },
         "home": {
             "badge": "New collection · Stride 2026",
             "titleLine1": "Find your",

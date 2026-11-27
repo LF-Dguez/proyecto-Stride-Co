@@ -83,6 +83,86 @@ body {
   }
 }
 
+/* ---------- tienda: portada ---------- */
+
+/* Envoltura más alta que la pantalla: le da a la portada espacio de scroll
+   para quedarse "clavada" (position: sticky) mientras se aleja y se desvanece
+   y el inicio de siempre entra encima, como una cortina. Sin esto la portada
+   desaparecería de inmediato al primer scroll. */
+.portada-pin {
+  height: 130vh;
+  position: relative;
+  background: linear-gradient(110deg, #121b22, #283c47);
+}
+
+.portada {
+  height: 100vh;
+  height: 100svh;
+  position: sticky;
+  top: 0;
+  background: linear-gradient(110deg, #121b22, #283c47);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  padding: 24px;
+  overflow: hidden;
+}
+
+.portada-badge {
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--lime);
+}
+
+.portada-brand {
+  font-weight: 900;
+  font-size: clamp(3rem, 12vw, 8rem);
+  letter-spacing: -3px;
+  line-height: 1;
+  margin: 0;
+}
+
+.portada-brand span {
+  color: var(--lime);
+}
+
+.portada-tag {
+  font-size: clamp(1rem, 2.4vw, 1.4rem);
+  opacity: .8;
+  margin: 0;
+}
+
+.portada-cue {
+  position: absolute;
+  bottom: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #c7ccd0;
+  animation: stride-cue-bob 1.8s ease-in-out infinite;
+}
+
+@keyframes stride-cue-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portada-cue {
+    animation: none;
+  }
+}
+
 /* ---------- tienda: hero ---------- */
 
 .hero {
@@ -131,6 +211,12 @@ body {
 .hero-grid > div:first-child {
   flex: 1 1 420px;
   min-width: 0;
+}
+
+@media (max-width: 850px) {
+  .hero {
+    min-height: 290px;
+  }
 }
 
 /* ---------- producto destacado flotando dentro del hero ---------- */
@@ -248,9 +334,84 @@ body {
   font-size: 1.15rem;
 }
 
-@media (max-width: 850px) {
-  .hero {
-    min-height: 290px;
+/* ---------- tienda: transición de scroll de la portada (sin JavaScript) ---------- */
+
+/* Mejora progresiva de verdad: si el navegador no soporta animar según el
+   scroll, este bloque entero no aplica y tanto la portada como el inicio de
+   siempre se ven completos y fijos (la portada simplemente desaparece al
+   primer scroll, sin efecto). Donde sí hay soporte (Chrome/Edge recientes), la
+   portada se aleja y se desenfoca a medida que se hace scroll (atado al
+   scroll exacto, no a un tiempo fijo) y el hero de siempre entra en escena por
+   encima, con el mismo truco por tarjeta en "Destacados" más abajo. */
+@supports (animation-timeline: scroll()) {
+  .portada {
+    animation: stride-portada-salida linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 115vh;
+  }
+
+  .hero .reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero-grid {
+    animation: stride-scroll-entra linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 85%;
+  }
+
+  .js-scroll-ready .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .scroll-reveal {
+    animation: stride-scroll-entra linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 85%;
+  }
+}
+
+/* No es un alejamiento, es un "a través de": la marca crece como si la
+   cámara avanzara justo por en medio de las letras, y solo se desvanece ya
+   casi al final, cuando es demasiado grande para seguir leyéndose. */
+@keyframes stride-portada-salida {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.7);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+    filter: blur(16px);
+  }
+}
+
+@keyframes stride-scroll-entra {
+  from {
+    opacity: 0;
+    transform: scale(.93) translateY(55px);
+    filter: blur(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portada,
+  .hero-grid,
+  .scroll-reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 }
 
