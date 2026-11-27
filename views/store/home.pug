@@ -18,8 +18,8 @@ block content
       if featured.length
         .hero-product.reveal.d4#heroProduct
           a.hero-product-link(href=`/products/${featured[0].id}`, id='heroProductLink')
-            .hero-product-stage
-              model-viewer#heroModel(src='/models/shoe.glb', variant-name=featured[0].variant, camera-controls, disable-zoom, auto-rotate, auto-rotate-delay='1200', rotation-per-second='18deg', shadow-intensity='0', interaction-prompt='none')
+            .hero-product-stage#heroStage
+              model-viewer#heroModel(src='/models/shoe.glb', variant-name=featured[0].variant, camera-controls, disable-zoom, auto-rotate, auto-rotate-delay='1200', rotation-per-second='18deg', shadow-intensity='0', interaction-prompt='none', data-vt-name=`product-visual-${featured[0].id}`)
               span.hero-product-tip
                 i.bi.bi-arrows-angle-expand.me-1
                 = __('store.home.dragToRotate')
@@ -36,10 +36,10 @@ block content
         span.text-uppercase.tiny.fw-bold= __('store.home.curatedLabel')
         h2.fw-bold.mb-0= __('store.home.featuredTitle')
       a.btn.btn-outline-dark(href='/products')= __('store.home.viewCatalog')
-    .row.g-4.scroll-reveal
+    .row.g-4
       if featured.length
         each product, i in featured
-          +productCard(product, i * 0.08)
+          +productCard(product, i * 0.08, 'scroll')
       else
         p.text-secondary= __('store.catalog.empty')
 

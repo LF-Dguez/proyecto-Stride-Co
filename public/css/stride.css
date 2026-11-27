@@ -392,6 +392,26 @@ body {
   }
 }
 
+/* ---------- tienda: detalle de producto ---------- */
+
+.detail-stage {
+  height: 440px;
+  border-radius: 20px;
+}
+
+/* .shoe-art .shoe-model deshabilita el mouse para que la tarjeta chiquita navegue
+   en vez de que el modelo 3D se robe el clic; aquí el modelo es grande y es la
+   única forma de verlo, así que si se puede arrastrar para girarlo. */
+.detail-stage .shoe-model {
+  pointer-events: auto;
+}
+
+@media (max-width: 850px) {
+  .detail-stage {
+    height: 300px;
+  }
+}
+
 .store-panel {
   background: #fff;
   border: 1px solid #e8e8e8;
