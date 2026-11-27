@@ -18,8 +18,8 @@ block content
       if featured.length
         .hero-product.reveal.d4#heroProduct
           a.hero-product-link(href=`/products/${featured[0].id}`, id='heroProductLink')
-            .hero-product-stage#heroStage(data-vt-name=`product-visual-${featured[0].id}`)
-              model-viewer#heroModel(src='/models/shoe.glb', variant-name=featured[0].variant, camera-controls, disable-zoom, auto-rotate, auto-rotate-delay='1200', rotation-per-second='18deg', shadow-intensity='0', interaction-prompt='none')
+            .hero-product-stage#heroStage
+              model-viewer#heroModel(src='/models/shoe.glb', variant-name=featured[0].variant, camera-controls, disable-zoom, auto-rotate, auto-rotate-delay='1200', rotation-per-second='18deg', shadow-intensity='0', interaction-prompt='none', data-vt-name=`product-visual-${featured[0].id}`)
               span.hero-product-tip
                 i.bi.bi-arrows-angle-expand.me-1
                 = __('store.home.dragToRotate')

@@ -12,4 +12,16 @@
     var stage = link.querySelector('[data-vt-name]');
     if (stage) stage.style.viewTransitionName = stage.dataset.vtName;
   }, true);
+
+  // Si el navegador vuelve a esta página desde su caché (botón atrás/adelante),
+  // el nombre que se dejó puesto en el clic anterior sigue ahí: dos elementos con
+  // view-transition-name en la misma página cancelan la transición por completo,
+  // no solo la de ese elemento. pageshow se dispara tanto en la carga normal (no
+  // hace nada, no hay nombres puestos) como al restaurar desde caché (limpia lo
+  // que haya quedado).
+  window.addEventListener('pageshow', function () {
+    document.querySelectorAll('[data-vt-name]').forEach(function (el) {
+      el.style.viewTransitionName = '';
+    });
+  });
 })();
