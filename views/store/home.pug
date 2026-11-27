@@ -31,12 +31,12 @@ block content
           .hero-dots#heroDots
 
   .container.py-5
-    .d-flex.justify-content-between.align-items-end.mb-4
+    .d-flex.justify-content-between.align-items-end.mb-4.scroll-reveal
       div
         span.text-uppercase.tiny.fw-bold= __('store.home.curatedLabel')
         h2.fw-bold.mb-0= __('store.home.featuredTitle')
       a.btn.btn-outline-dark(href='/products')= __('store.home.viewCatalog')
-    .row.g-4
+    .row.g-4.scroll-reveal
       if featured.length
         each product, i in featured
           +productCard(product, i * 0.08)

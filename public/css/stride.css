@@ -10,6 +10,14 @@
   --muted: #737b84;
 }
 
+/* Transición nativa del navegador al navegar entre páginas de Stride-Co (Chrome/Edge
+   126+; en el resto simplemente no pasa nada, navegación normal). Cero JavaScript:
+   cumple "funciona con JavaScript deshabilitado". El encabezado se nombra aparte para
+   que no haga crossfade consigo mismo y se sienta continuo entre pantallas. */
+@view-transition {
+  navigation: auto;
+}
+
 body {
   background: #f5f6f7;
   color: var(--ink);
@@ -23,6 +31,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 20;
+  view-transition-name: site-header;
 }
 
 .brand {
@@ -283,6 +292,31 @@ body {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Revelado al hacer scroll: visible por defecto (sin JS, o con JS deshabilitado,
+   el contenido siempre se ve), y solo se anima si scrollReveal.js logra arrancar. */
+.scroll-reveal {
+  opacity: 1;
+}
+
+.js-scroll-ready .scroll-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .6s cubic-bezier(.22, 1, .36, 1), transform .6s cubic-bezier(.22, 1, .36, 1);
+}
+
+.js-scroll-ready .scroll-reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-scroll-ready .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 
