@@ -36,10 +36,10 @@ block content
         span.text-uppercase.tiny.fw-bold= __('store.home.curatedLabel')
         h2.fw-bold.mb-0= __('store.home.featuredTitle')
       a.btn.btn-outline-dark(href='/products')= __('store.home.viewCatalog')
-    .row.g-4.scroll-reveal
+    .row.g-4
       if featured.length
         each product, i in featured
-          +productCard(product, i * 0.08, false)
+          +productCard(product, i * 0.08, false, 'scroll')
       else
         p.text-secondary= __('store.catalog.empty')
 
