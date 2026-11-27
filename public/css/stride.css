@@ -90,7 +90,7 @@ body {
    y el inicio de siempre entra encima, como una cortina. Sin esto la portada
    desaparecería de inmediato al primer scroll. */
 .portada-pin {
-  height: 150vh;
+  height: 130vh;
   position: relative;
   background: linear-gradient(110deg, #121b22, #283c47);
 }
@@ -347,7 +347,7 @@ body {
   .portada {
     animation: stride-portada-salida linear both;
     animation-timeline: scroll(root);
-    animation-range: 0 110vh;
+    animation-range: 0 115vh;
   }
 
   .hero .reveal {
@@ -375,11 +375,24 @@ body {
   }
 }
 
+/* No es un alejamiento, es un "a través de": la marca crece como si la
+   cámara avanzara justo por en medio de las letras, y solo se desvanece ya
+   casi al final, cuando es demasiado grande para seguir leyéndose. */
 @keyframes stride-portada-salida {
-  to {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.7);
+    filter: blur(1px);
+  }
+  100% {
     opacity: 0;
-    transform: scale(.86) translateY(-50px);
-    filter: blur(7px);
+    transform: scale(2.6);
+    filter: blur(16px);
   }
 }
 
