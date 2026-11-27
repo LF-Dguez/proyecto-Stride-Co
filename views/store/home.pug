@@ -2,6 +2,17 @@ extends ../layouts/store
 include ../mixins/productCard
 
 block content
+  .portada-pin
+    .portada
+      span.portada-badge= __('store.portada.badge')
+      p.portada-brand
+        | STRIDE
+        span -CO
+      p.portada-tag= __('store.portada.tagline')
+      .portada-cue
+        i.bi.bi-mouse2
+        span= __('store.portada.scrollCue')
+
   .hero
     .container.hero-grid
       div

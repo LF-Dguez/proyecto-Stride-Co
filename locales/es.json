@@ -42,6 +42,11 @@
         "meta": {
             "description": "Tenis urbanos, deportivos y esenciales de Stride-Co."
         },
+        "portada": {
+            "badge": "Colección 2026",
+            "tagline": "Para los que no se detienen.",
+            "scrollCue": "Desliza para empezar"
+        },
         "home": {
             "badge": "Nueva colección · Stride 2026",
             "titleLine1": "Encuentra tu",
