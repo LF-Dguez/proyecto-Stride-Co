@@ -101,7 +101,91 @@
         "logout": "Log out",
         "dashboard": {
             "welcome": "Hi, %s",
-            "hint": "Use the menu on the left to manage the store."
+            "hint": "Use the menu on the left to manage the store.",
+            "products": "Active products",
+            "variants": "Variants",
+            "stockUnits": "Units in stock",
+            "orders": "Orders",
+            "recentOrders": "Recent orders"
+        },
+        "products": {
+            "title": "Products",
+            "newTitle": "New product",
+            "editTitle": "Edit product",
+            "new": "New product",
+            "save": "Save",
+            "cancel": "Cancel",
+            "active": "Active",
+            "inactive": "Inactive",
+            "empty": "No products yet.",
+            "notFound": "Product not found",
+            "created": "Product created",
+            "updated": "Product updated",
+            "activated": "Product activated",
+            "deactivated": "Product deactivated",
+            "col": {
+                "id": "ID",
+                "name": "Name",
+                "brand": "Brand",
+                "category": "Category",
+                "price": "Price",
+                "status": "Status",
+                "actions": "Actions"
+            },
+            "field": {
+                "name": "Name",
+                "brand": "Brand",
+                "category": "Category",
+                "price": "Price"
+            },
+            "errors": {
+                "nameRequired": "Name is required",
+                "priceInvalid": "Price must be a number greater than or equal to 0",
+                "categoryInvalid": "Invalid category"
+            }
+        },
+        "orders": {
+            "title": "Orders",
+            "detailTitle": "Order detail",
+            "allStatuses": "All statuses",
+            "view": "View",
+            "empty": "No orders yet.",
+            "notFound": "Order not found",
+            "updated": "Order status updated",
+            "customer": "Customer",
+            "items": "Items",
+            "subtotal": "Items subtotal",
+            "shipping": "Shipping",
+            "discount": "Discount",
+            "total": "Grand total",
+            "history": "Status history",
+            "noHistory": "No status changes yet.",
+            "changeStatus": "Change status",
+            "updateStatus": "Update status",
+            "col": {
+                "id": "ID",
+                "customer": "Customer",
+                "status": "Status",
+                "total": "Amount",
+                "date": "Date",
+                "product": "Product",
+                "quantity": "Quantity",
+                "unitPrice": "Unit price"
+            },
+            "field": {
+                "newStatus": "New status",
+                "note": "Note (optional)"
+            },
+            "status": {
+                "PENDING": "Pending",
+                "PAID": "Paid",
+                "SHIPPED": "Shipped",
+                "DELIVERED": "Delivered",
+                "CANCELLED": "Cancelled"
+            },
+            "errors": {
+                "statusInvalid": "Invalid status"
+            }
         }
     },
 

@@ -4,7 +4,18 @@
 const request = require('supertest');
 
 jest.mock('../models/sql', () => ({
-  User: { findOne: jest.fn(), findByPk: jest.fn() }
+  User: { findOne: jest.fn(), findByPk: jest.fn() },
+  Product: { count: jest.fn().mockResolvedValue(0) },
+  ProductVariant: { count: jest.fn().mockResolvedValue(0) },
+  Inventory: { sum: jest.fn().mockResolvedValue(0) }
+}));
+jest.mock('../models/mongo', () => ({
+  Order: { countDocuments: jest.fn().mockResolvedValue(0) },
+  Customer: {}
+}));
+jest.mock('../services/order.service', () => ({
+  STATUSES: ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
+  listRecent: jest.fn().mockResolvedValue([])
 }));
 const { User } = require('../models/sql');
 const { hashPassword } = require('../services/password');

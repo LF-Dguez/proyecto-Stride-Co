@@ -101,7 +101,91 @@
         "logout": "Cerrar sesión",
         "dashboard": {
             "welcome": "Hola, %s",
-            "hint": "Usa el menú de la izquierda para administrar la tienda."
+            "hint": "Usa el menú de la izquierda para administrar la tienda.",
+            "products": "Productos activos",
+            "variants": "Variantes",
+            "stockUnits": "Unidades en stock",
+            "orders": "Pedidos",
+            "recentOrders": "Pedidos recientes"
+        },
+        "products": {
+            "title": "Productos",
+            "newTitle": "Nuevo producto",
+            "editTitle": "Editar producto",
+            "new": "Nuevo producto",
+            "save": "Guardar",
+            "cancel": "Cancelar",
+            "active": "Activo",
+            "inactive": "Inactivo",
+            "empty": "No hay productos.",
+            "notFound": "Producto no encontrado",
+            "created": "Producto creado",
+            "updated": "Producto actualizado",
+            "activated": "Producto activado",
+            "deactivated": "Producto desactivado",
+            "col": {
+                "id": "ID",
+                "name": "Nombre",
+                "brand": "Marca",
+                "category": "Categoría",
+                "price": "Precio",
+                "status": "Estado",
+                "actions": "Acciones"
+            },
+            "field": {
+                "name": "Nombre",
+                "brand": "Marca",
+                "category": "Categoría",
+                "price": "Precio"
+            },
+            "errors": {
+                "nameRequired": "El nombre es obligatorio",
+                "priceInvalid": "El precio debe ser un número mayor o igual a 0",
+                "categoryInvalid": "Categoría inválida"
+            }
+        },
+        "orders": {
+            "title": "Pedidos",
+            "detailTitle": "Detalle del pedido",
+            "allStatuses": "Todos los estados",
+            "view": "Ver",
+            "empty": "No hay pedidos.",
+            "notFound": "Pedido no encontrado",
+            "updated": "Estado del pedido actualizado",
+            "customer": "Cliente",
+            "items": "Artículos",
+            "subtotal": "Subtotal",
+            "shipping": "Envío",
+            "discount": "Descuento",
+            "total": "Total",
+            "history": "Historial de estado",
+            "noHistory": "Sin cambios de estado todavía.",
+            "changeStatus": "Cambiar estado",
+            "updateStatus": "Actualizar estado",
+            "col": {
+                "id": "ID",
+                "customer": "Cliente",
+                "status": "Estado",
+                "total": "Total",
+                "date": "Fecha",
+                "product": "Producto",
+                "quantity": "Cantidad",
+                "unitPrice": "Precio unitario"
+            },
+            "field": {
+                "newStatus": "Nuevo estado",
+                "note": "Nota (opcional)"
+            },
+            "status": {
+                "PENDING": "Pendiente",
+                "PAID": "Pagado",
+                "SHIPPED": "Enviado",
+                "DELIVERED": "Entregado",
+                "CANCELLED": "Cancelado"
+            },
+            "errors": {
+                "statusInvalid": "Estado inválido"
+            }
         }
     },
 

@@ -1,0 +1,37 @@
+extends ../../layouts/admin
+include ../../mixins/table
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-3
+    div
+    if can('products', 'create', 'any')
+      a.btn.btn-lime(href='/admin/products/new')
+        i.bi.bi-plus-lg.me-1
+        = __('admin.products.new')
+
+  +table([__('admin.products.col.id'), __('admin.products.col.name'), __('admin.products.col.brand'), __('admin.products.col.category'), __('admin.products.col.price'), __('admin.products.col.status'), __('admin.products.col.actions')])
+    if products.length
+      each product in products
+        tr
+          td= product.id
+          td= product.name
+          td= product.brand
+          td= product.category
+          td= product.priceLabel
+          td
+            span.badge(class=product.active ? 'text-bg-success' : 'text-bg-secondary')
+              = product.active ? __('admin.products.active') : __('admin.products.inactive')
+          td
+            .d-flex.gap-2
+              if can('products', 'update', 'any')
+                a.btn.btn-sm.btn-outline-secondary(href=`/admin/products/${product.id}/edit`)
+                  i.bi.bi-pencil
+              if can('products', 'delete', 'any')
+                form(method='post', action=`/admin/products/${product.id}/delete`)
+                  button.btn.btn-sm.btn-outline-danger(type='submit')
+                    i.bi(class=product.active ? 'bi-eye-slash' : 'bi-eye')
+    else
+      tr
+        td.text-secondary(colspan='7')= __('admin.products.empty')
+
+  include ../../partials/pagination.pug

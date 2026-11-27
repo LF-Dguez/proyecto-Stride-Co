@@ -1,12 +1,11 @@
-//- Insignia de color según el estado de un pedido (statusHistory.at(-1).status).
+//- Insignia de color según el estado de un pedido (Order.status / Order.ORDER_STATUSES).
 mixin statusBadge(status)
   -
     var badgeClass = {
-      Creado: 'text-bg-light',
-      Confirmado: 'text-bg-info',
-      Preparando: 'text-bg-warning',
-      Enviado: 'text-bg-primary',
-      Entregado: 'text-bg-success',
-      Cancelado: 'text-bg-danger'
+      PENDING: 'text-bg-light',
+      PAID: 'text-bg-info',
+      SHIPPED: 'text-bg-primary',
+      DELIVERED: 'text-bg-success',
+      CANCELLED: 'text-bg-danger'
     }[status] || 'text-bg-secondary';
-  span.badge(class=badgeClass)= status
+  span.badge(class=badgeClass)= __('admin.orders.status.' + status)
