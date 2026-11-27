@@ -17,11 +17,95 @@
         "serverError": "Error interno del servidor",
         "unauthenticated": "No autenticado",
         "unauthorized": "Usuario no autorizado",
-        "forbidden": "Acceso denegado"
+        "forbidden": "Acceso denegado",
+        "pagination": "Paginación",
+        "search": "Buscar"
     },
 
     "home": {
         "welcome": "Bienvenido a %s"
+    },
+
+    "store": {
+        "nav": {
+            "home": "Inicio",
+            "products": "Productos",
+            "orders": "Mis pedidos",
+            "cart": "Bolsa",
+            "login": "Iniciar sesión",
+            "admin": "Administrador"
+        },
+        "footer": {
+            "tagline": "Catálogo · Pedidos · Soporte",
+            "rights": "Todos los derechos reservados."
+        },
+        "meta": {
+            "description": "Tenis urbanos, deportivos y esenciales de Stride-Co."
+        },
+        "portada": {
+            "badge": "Colección 2026",
+            "tagline": "Para los que no se detienen.",
+            "scrollCue": "Desliza para empezar"
+        },
+        "home": {
+            "badge": "Nueva colección · Stride 2026",
+            "titleLine1": "Encuentra tu",
+            "titleLine2": "siguiente paso.",
+            "subtitle": "Tenis urbanos, deportivos y esenciales para moverte a tu ritmo.",
+            "cta": "Explorar colección",
+            "curatedLabel": "Seleccionados para ti",
+            "featuredTitle": "Destacados",
+            "viewCatalog": "Ver catálogo",
+            "dragToRotate": "arrastra para girar"
+        },
+        "catalog": {
+            "title": "Todos los productos",
+            "search": "Buscar producto...",
+            "allCategories": "Todas las categorías",
+            "viewDetail": "Ver detalle",
+            "empty": "No se encontraron productos."
+        },
+        "detail": {
+            "backToCatalog": "Volver al catálogo",
+            "chooseVariant": "Elige talla y color",
+            "available": "%d disponibles",
+            "outOfStock": "Agotado",
+            "noVariants": "Sin variantes disponibles por ahora.",
+            "addToBag": "Agregar a la bolsa",
+            "comingSoon": "Próximamente"
+        }
+    },
+
+    "admin": {
+        "nav": {
+            "dashboard": "Panel",
+            "products": "Productos",
+            "variants": "Variantes",
+            "inventory": "Inventario",
+            "orders": "Pedidos",
+            "customers": "Clientes",
+            "users": "Usuarios",
+            "roles": "Roles y permisos"
+        },
+        "viewStore": "Ver tienda",
+        "logout": "Cerrar sesión"
+    },
+
+    "webErrors": {
+        "404": {
+            "title": "Página no encontrada",
+            "message": "La página que buscas no existe o fue movida."
+        },
+        "403": {
+            "title": "Acceso denegado",
+            "message": "No tienes permiso para ver esta página."
+        },
+        "500": {
+            "title": "Algo salió mal",
+            "message": "Ocurrió un error inesperado. Intenta de nuevo más tarde."
+        },
+        "backHome": "Volver al inicio",
+        "productNotFound": "Este producto no existe o ya no está disponible."
     },
 
     "users": {

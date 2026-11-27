@@ -199,19 +199,28 @@ stride-co/
 ├── models/
 │   ├── sql/             modelos Sequelize (users, roles, permissions, products, variants, inventory)
 │   └── mongo/           modelos Mongoose (customers, orders)
-├── controllers/         lógica de cada recurso
-├── routes/              endpoints de cada recurso
-├── middlewares/         authenticate.js (JWT) y authorize.js (RBAC)
+├── controllers/
+│   └── api/             responden { message, data } (JSON)
+├── routes/
+│   └── api/             endpoints de cada recurso bajo /api
 ├── services/            password.js (bcrypt), token.js (JWT), rbac.js (permisos desde la BD) y ownership.js (dueño real para `own`)
+├── middlewares/         authenticate.js (JWT), authorize.js (RBAC) y flash.js (mensaje de confirmación tras un redirect)
 ├── utils/               sequelizeHelpers.js: validación de IDs y traducción de errores de Sequelize a HTTP
 ├── seeders/             siembra roles, permisos y role_permission (seedRbac.js)
 ├── test/                pruebas automatizadas
-├── public/              archivos estáticos
-├── views/               vistas Pug
-├── app.js               configuración de Express, logging y manejo de errores
+├── public/
+│   └── css/stride.css   estilo visual extraído de stride_co_mockup.html
+├── views/
+│   ├── layouts/         store.pug (tienda) y admin.pug (panel administrativo)
+│   ├── partials/        flash.pug (confirmación PRG) y pagination.pug
+│   ├── mixins/          productCard, table, formField, statusBadge
+│   └── errors/          403.pug, 404.pug y 500.pug
+├── app.js               configuración de Express, i18n, logging y manejo de errores
 ├── eslint.config.js     configuración de ESLint
 └── package.json
 ```
+
+Las vistas SSR (tienda y panel administrativo, Entregable 3) viven aparte, en `routes/web` y `controllers/web`, y reutilizan los mismos `services/`, `middlewares/` y modelos que la API; ver la sección [Funcionalidades SSR](#funcionalidades-ssr).
 
 - **Logging:** todas las solicitudes HTTP se registran con Morgan.
 - **Errores:** bajo `/api` todos los errores responden con el mismo formato que las respuestas correctas, `{ "message": "...", "data": null }`, con el `message` traducido. Un error `500` responde `Error interno del servidor` y no expone el detalle.
@@ -231,12 +240,10 @@ Todos los endpoints responden con `{ "message": "...", "data": ... }` y leen o e
 | Customers | Documental (MongoDB) | `/api/customers` |
 | Orders | Documental (MongoDB) | `/api/orders` |
 
-Tabla de todos los endpoints, con el permiso RBAC que exige cada uno (`recurso:acción:alcance`) y los roles que lo tienen según la [matriz RBAC](#matriz-rbac). Todas las rutas bajo `/api`, salvo el login, pasan primero por `authenticate` (JWT) y después por `authorize` (RBAC). Con alcance `own`, `admin` y `sales` tienen la versión `any`; `user` solo puede ver o cambiar los registros que le pertenecen (el dueño real se comprueba en la base de datos, ver [Ejemplo de permiso `own`](#ejemplo-de-permiso-own)).
+Tabla de todos los endpoints de la API (`/api/...`), con el permiso RBAC que exige cada uno (`recurso:acción:alcance`) y los roles que lo tienen según la [matriz RBAC](#matriz-rbac). Todas las rutas bajo `/api`, salvo el login, pasan primero por `authenticate` (JWT) y después por `authorize` (RBAC). Con alcance `own`, `admin` y `sales` tienen la versión `any`; `user` solo puede ver o cambiar los registros que le pertenecen (el dueño real se comprueba en la base de datos, ver [Ejemplo de permiso `own`](#ejemplo-de-permiso-own)). `GET /`, `GET /health` y las demás rutas sin `/api` son la interfaz web; ver [Funcionalidades SSR](#funcionalidades-ssr).
 
 | Método | Ruta | Permiso RBAC | Roles con acceso | Descripción |
 |---|---|---|---|---|
-| `GET` | `/` | Público | Todos | Página de inicio (vista Pug traducida) |
-| `GET` | `/health` | Público | Todos | Estado del servicio: `{ "status": "UP" }` |
 | `POST` | `/api/auth/login` | Público | Todos | Inicia sesión y devuelve el JWT |
 | `GET` | `/api/auth/me` | Solo `authenticate` | Cualquier usuario autenticado | Datos seguros del usuario del token |
 | `GET` | `/api/users` | `users:read:any` | admin | Lista los usuarios |
@@ -684,13 +691,26 @@ Por último, `test/e2e` corrió contra el servicio público con `E2E_BASE_URL=ht
 
 ![E2E contra producción](docs/img/e2e-produccion.png)
 
+## Funcionalidades SSR
+
+Interfaz web (Entregable 3) con renderizado del lado del servidor: Express + Pug, reutilizando los modelos, servicios, autenticación, RBAC e i18n del Entregable 2. Ver [Arquitectura](#arquitectura) para la separación `routes/web` + `controllers/web` de la API.
+
+| ID | Funcionalidad | Rutas | Permiso | Responsable | Evidencia |
+|---|---|---|---|---|---|
+| F2 | Inicio y catálogo (búsqueda, categoría, paginación) | `GET /`, `GET /products?q=&category=&page=` | Pública | Dfloresv1 | `docs/ssr/f2/` |
+| F3 | Detalle de producto (variantes y disponibilidad) | `GET /products/:id` | Pública | Dfloresv1 | `docs/ssr/f3/` |
+
+El producto destacado del inicio y las tarjetas del catálogo muestran un modelo 3D interactivo (`public/models/shoe.glb`, [`<model-viewer>`](https://modelviewer.dev/)) que gira solo y se puede arrastrar. Es un modelo de muestra, no del producto real: **"Materials Variants Shoe" © 2021 Shopify, licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)**, de los [glTF Sample Assets de Khronos](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/MaterialsVariantsShoe); se reemplaza por un modelo propio cuando el equipo tenga uno.
+
+Al pasar del catálogo (o del destacado del inicio) al detalle de un producto, el navegador anima el escenario del tenis como un solo elemento continuo (`view-transition-name` compartido entre ambas páginas, vía la regla `@view-transition` de `stride.css`): cero JavaScript, se degrada a una navegación normal en navegadores sin soporte.
+
 ## API pública
 
 Datos para probar el despliegue en Render (plan gratuito, desplegado desde `staging`):
 
 | Dato | Contenido |
 |---|---|
-| URL pública | `https://proyecto-stride-co-dylo.onrender.com` |
+| URL pública | `https://proyecto-stride-co-dylo.onrender.com` (tienda en `/`, catálogo en `/products`, panel administrativo en `/admin`) |
 | Health Check | `GET https://proyecto-stride-co-dylo.onrender.com/health` → `200 { "status": "UP" }` (también configurado como *Health Check Path* en Render) |
 | Usuarios de demostración | Ver la tabla de abajo (datos ficticios, exclusivos de estas cuentas) |
 | Ejemplo de uso | Ver los comandos de abajo |

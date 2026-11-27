@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../app');
-const customersRouter = require('../routes/customers');
+const customersRouter = require('../routes/api/customers');
 const Customer = require('../models/mongo/Customer');
 const { buildApp, users } = require('./helpers/rbacApp');
 

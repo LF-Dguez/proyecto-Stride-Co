@@ -1,0 +1,9 @@
+extends ../layouts/store
+
+block content
+  .container.py-5.text-center
+    .store-panel.mx-auto(style='max-width:560px')
+      h1.fw-bold.display-4.mb-0 404
+      h2.fw-bold.mt-2= __('webErrors.404.title')
+      p.text-secondary= __('webErrors.404.message')
+      a.btn.btn-dark(href='/')= __('webErrors.backHome')

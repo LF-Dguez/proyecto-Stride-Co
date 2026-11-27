@@ -8,7 +8,7 @@ const { Role, Permission, User } = require('../models/sql');
 const rbac = require('../services/rbac');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
 const app = require('../app');
-const rolesRouter = require('../routes/roles');
+const rolesRouter = require('../routes/api/roles');
 const { buildApp, users } = require('./helpers/rbacApp');
 
 // Roles está protegido con RBAC: solo admin tiene roles:*:any.

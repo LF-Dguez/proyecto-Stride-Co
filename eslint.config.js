@@ -14,4 +14,12 @@ module.exports = [
       'no-unused-vars': ['error', { argsIgnorePattern: 'next|^_' }],
     },
   },
+  {
+    // Mejoras progresivas del lado del cliente (public/js/): corren en el
+    // navegador, no en Node.
+    files: ['public/js/**/*.js'],
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+  },
 ];

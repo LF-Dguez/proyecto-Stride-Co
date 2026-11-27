@@ -1,7 +1,7 @@
 const request = require('supertest');
 const { buildApp, users } = require('./helpers/rbacApp');
 
-jest.mock('../controllers/variants', () => ({
+jest.mock('../controllers/api/variants', () => ({
   getAll: (req, res) => res.status(200).json({ message: 'ok' }),
   getById: (req, res) => res.status(200).json({ message: 'ok' }),
   create: (req, res) => res.status(201).json({ message: 'ok' }),
@@ -9,7 +9,7 @@ jest.mock('../controllers/variants', () => ({
   delete: (req, res) => res.status(200).json({ message: 'ok' })
 }));
 
-const variantsRouter = require('../routes/variants');
+const variantsRouter = require('../routes/api/variants');
 
 const app = buildApp((a) => a.use('/api/variants', variantsRouter));
 

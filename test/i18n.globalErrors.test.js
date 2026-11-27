@@ -97,11 +97,12 @@ describe('i18n en errores globales (issue #100)', () => {
     expect(JSON.stringify(es.body)).not.toContain('conexión perdida');
   });
 
-  it('GET / (vista Pug): el saludo sale traducido, en es y en', async () => {
+  it('GET / (vista Pug): la página de inicio sale traducida, en es y en', async () => {
+    Product.findAll.mockResolvedValue([]);
     const es = await request(app).get('/').set('Accept-Language', 'es');
     const en = await request(app).get('/?lang=en');
 
-    expect(es.text).toContain('Bienvenido a Express');
-    expect(en.text).toContain('Welcome to Express');
+    expect(es.text).toContain('Tenis urbanos, deportivos y esenciales para moverte a tu ritmo.');
+    expect(en.text).toContain('Urban, sport and everyday sneakers to move at your own pace.');
   });
 });

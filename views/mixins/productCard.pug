@@ -1,0 +1,28 @@
+//- Tarjeta de producto de la tienda, fiel al prototipo (shoe-art con color de fondo),
+//- con la entrada escalonada y el hover de la referencia aprobada.
+//- product = { id, name, brand, category, priceLabel, color, variant }
+//- delay = retraso opcional (segundos) para la animación de entrada, por índice
+//- mode = 'scroll' para revelar la tarjeta al hacer scroll hasta ella (secciones
+//- debajo del pliegue, como "Destacados" en inicio), cada una con su propio
+//- retraso; por defecto entra ya al cargar la página, como en el catálogo
+//-
+//- data-vt-name identifica el "escenario" del tenis para el zoom hacia el
+//- detalle; no se asigna como view-transition-name aquí porque el mismo
+//- producto puede repetirse en la página (destacado del inicio + grilla) y ese
+//- nombre debe ser único. cardTransition.js lo activa solo en el que el usuario
+//- realmente toca, justo antes de navegar.
+mixin productCard(product, delay, mode)
+  .col-sm-6.col-lg-3(class=mode === 'scroll' ? 'scroll-reveal' : 'reveal', style=delay ? `animation-delay:${delay}s;transition-delay:${delay}s` : '')
+    a.text-decoration-none.text-reset(href=`/products/${product.id}`)
+      .product-tile
+        .shoe-art(style=`background:${product.color || '#edf0f1'}`, data-vt-name=`product-visual-${product.id}`)
+          span.tag.badge.text-bg-light= product.category
+          model-viewer.shoe-model(src='/models/shoe.glb', variant-name=product.variant, auto-rotate, rotation-per-second='26deg', disable-zoom, camera-controls=false, shadow-intensity='0', interaction-prompt='none')
+        .p-3
+          .tiny= product.brand
+          h5.fw-bold.my-1= product.name
+          .d-flex.justify-content-between.align-items-center
+            strong= product.priceLabel
+            span.card-arrow
+              i.bi.bi-arrow-up-right(aria-hidden='true')
+              span.visually-hidden= __('store.catalog.viewDetail')

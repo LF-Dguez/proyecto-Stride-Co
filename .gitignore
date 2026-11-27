@@ -70,3 +70,6 @@ typings/
 # Las plantillas *.example.json sí van en git.
 config/local*.json
 !config/local*.example.json
+
+# Configuración local de herramientas de desarrollo (no es del proyecto)
+.claude/

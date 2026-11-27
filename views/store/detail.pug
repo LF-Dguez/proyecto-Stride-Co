@@ -1,0 +1,34 @@
+extends ../layouts/store
+
+block content
+  .container.py-5
+    a.btn.btn-outline-dark.btn-sm.mb-4(href='/products')
+      i.bi.bi-arrow-left.me-1
+      = __('store.detail.backToCatalog')
+
+    .row.g-5
+      .col-lg-6
+        .shoe-art.detail-stage(style=`background:${product.color || '#edf0f1'};view-transition-name:product-visual-${product.id}`)
+          span.tag.badge.text-bg-light= product.category
+          model-viewer.shoe-model(src='/models/shoe.glb', variant-name=product.variant, camera-controls, auto-rotate, auto-rotate-delay='1000', rotation-per-second='20deg', shadow-intensity='0', interaction-prompt='none')
+
+      .col-lg-6
+        .store-panel
+          .tiny= product.brand
+          h1.fw-bold.mt-1.mb-2= product.name
+          p.fs-3.fw-bold.mb-3= product.priceLabel
+
+          if product.description
+            p.text-secondary.mb-4= product.description
+
+          if variants.length
+            label.form-label.fw-bold(for='variantSelect')= __('store.detail.chooseVariant')
+            select#variantSelect.form-select.form-select-lg.mb-4
+              each v in variants
+                option(value=v.id, disabled=v.available <= 0)= v.label
+          else
+            p.text-secondary.mb-4= __('store.detail.noVariants')
+
+          button.btn.btn-lime.btn-lg.w-100(type='button', disabled, title=__('store.detail.comingSoon'))
+            i.bi.bi-bag-plus.me-2
+            = __('store.detail.addToBag')

@@ -1,8 +1,8 @@
 // Issue #99: customers, orders y los mensajes de propiedad (services/ownership.js)
 // responden en es y en, por ?lang= y por Accept-Language, con la misma petición.
 const request = require('supertest');
-const customersRouter = require('../routes/customers');
-const ordersRouter = require('../routes/orders');
+const customersRouter = require('../routes/api/customers');
+const ordersRouter = require('../routes/api/orders');
 const Customer = require('../models/mongo/Customer');
 const Order = require('../models/mongo/Order');
 const { buildApp, users } = require('./helpers/rbacApp');
