@@ -18,7 +18,8 @@
         "unauthenticated": "No autenticado",
         "unauthorized": "Usuario no autorizado",
         "forbidden": "Acceso denegado",
-        "pagination": "Paginación"
+        "pagination": "Paginación",
+        "search": "Buscar"
     },
 
     "home": {
@@ -41,7 +42,20 @@
         "meta": {
             "description": "Tenis urbanos, deportivos y esenciales de Stride-Co."
         },
+        "home": {
+            "badge": "Nueva colección · Stride 2026",
+            "titleLine1": "Encuentra tu",
+            "titleLine2": "siguiente paso.",
+            "subtitle": "Tenis urbanos, deportivos y esenciales para moverte a tu ritmo.",
+            "cta": "Explorar colección",
+            "curatedLabel": "Seleccionados para ti",
+            "featuredTitle": "Destacados",
+            "viewCatalog": "Ver catálogo"
+        },
         "catalog": {
+            "title": "Todos los productos",
+            "search": "Buscar producto...",
+            "allCategories": "Todas las categorías",
             "viewDetail": "Ver detalle",
             "empty": "No se encontraron productos."
         }

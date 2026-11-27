@@ -1,6 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const request = require('supertest');
+
+// GET / (home de la tienda) ya consulta productos reales; esta suite audita la API,
+// no la tienda, así que basta con simular una lista vacía.
+jest.mock('../models/sql', () => ({ Product: { findAll: jest.fn().mockResolvedValue([]) } }));
+
 const app = require('../app');
 const authenticate = require('../middlewares/authenticate');
 const { RESOURCES, ACTIONS, ROLE_PERMISSIONS } = require('../seeders/rbacMatrix');
@@ -8,8 +13,9 @@ const { matrixMarkdown } = require('../seeders/matrixTable');
 
 const ACTION_BY_METHOD = { get: 'read', post: 'create', put: 'update', patch: 'update', delete: 'delete' };
 
-// Excepciones de la sección 4.3 del Entregable 2
-const PUBLIC = ['GET /', 'GET /health', 'POST /api/auth/login'];
+// Excepciones de la sección 4.3 del Entregable 2. Esta auditoría se limita a /api:
+// las rutas web (/, /products, ...) tienen su propia suite por funcionalidad SSR.
+const PUBLIC = ['POST /api/auth/login'];
 const AUTHENTICATE_ONLY = ['GET /api/auth/me'];
 
 // '^\/api\/users\/?(?=\/|$)' -> '/api/users'
@@ -20,13 +26,14 @@ function mountPath(layer) {
     .replace(/\\\//g, '/');
 }
 
-// Recorre app._router y devuelve cada endpoint con sus middlewares
+// Recorre app._router y devuelve cada endpoint de la API (routes/api) con sus middlewares
 function listEndpoints() {
   const endpoints = [];
   app._router.stack
     .filter((layer) => layer.name === 'router')
     .forEach((layer) => {
       const mount = mountPath(layer);
+      if (!mount.startsWith('/api')) return;
       layer.handle.stack.filter((l) => l.route).forEach((l) => {
         Object.keys(l.route.methods).forEach((method) => {
           endpoints.push({
@@ -113,10 +120,13 @@ describe('auditoría de rutas: autenticación y RBAC en todas', () => {
     expect(response.statusCode).toBe(401);
   });
 
-  it('las rutas públicas responden sin token', async () => {
+  it('las rutas públicas de la API responden sin token', async () => {
+    expect((await request(app).post('/api/auth/login').send({})).statusCode).toBe(400);
+  });
+
+  it('/health y / (fuera de /api) también son públicas', async () => {
     expect((await request(app).get('/health')).statusCode).toBe(200);
     expect((await request(app).get('/')).statusCode).toBe(200);
-    expect((await request(app).post('/api/auth/login').send({})).statusCode).toBe(400);
   });
 });
 

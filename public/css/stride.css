@@ -115,12 +115,40 @@ body {
   border-color: var(--lime);
   color: #171e15;
   font-weight: 700;
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), background .2s ease, box-shadow .3s ease;
 }
 
 .btn-lime:hover {
   background: #c9f044;
   border-color: #c9f044;
   color: #171e15;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px -10px #dfff6555;
+}
+
+/* Entrada escalonada del hero; pura CSS, sigue funcionando con JavaScript
+   deshabilitado (y respeta a quien prefiere menos movimiento). */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: riseIn .6s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.d1 { animation-delay: .05s; }
+.d2 { animation-delay: .15s; }
+.d3 { animation-delay: .25s; }
+.d4 { animation-delay: .35s; }
+
+@keyframes riseIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ---------- tienda: producto ---------- */

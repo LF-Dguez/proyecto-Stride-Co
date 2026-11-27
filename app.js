@@ -11,6 +11,7 @@ const authenticate = require('./middlewares/authenticate');
 const flash = require('./middlewares/flash');
 
 const indexRouter = require('./routes/index');
+const storeRouter = require('./routes/web/store');
 const authRouter = require('./routes/api/auth');
 const usersRouter = require('./routes/api/users');
 const rolesRouter = require('./routes/api/roles');
@@ -35,9 +36,10 @@ app.use(i18n.middleware);
 app.use(flash);
 
 
-// /health (en indexRouter) y /api/auth/login son públicos; todo lo demás bajo
-// /api exige un Bearer token válido antes de pasar por authorize() en cada router.
+// /health (en indexRouter), / y /products (tienda, públicas) y /api/auth/login son
+// públicos; todo lo demás bajo /api exige un Bearer token antes de authorize().
 app.use('/', indexRouter);
+app.use('/', storeRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', authenticate, usersRouter);
 app.use('/api/roles', authenticate, rolesRouter);

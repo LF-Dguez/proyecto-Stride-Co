@@ -240,12 +240,10 @@ Todos los endpoints responden con `{ "message": "...", "data": ... }` y leen o e
 | Customers | Documental (MongoDB) | `/api/customers` |
 | Orders | Documental (MongoDB) | `/api/orders` |
 
-Tabla de todos los endpoints, con el permiso RBAC que exige cada uno (`recurso:acción:alcance`) y los roles que lo tienen según la [matriz RBAC](#matriz-rbac). Todas las rutas bajo `/api`, salvo el login, pasan primero por `authenticate` (JWT) y después por `authorize` (RBAC). Con alcance `own`, `admin` y `sales` tienen la versión `any`; `user` solo puede ver o cambiar los registros que le pertenecen (el dueño real se comprueba en la base de datos, ver [Ejemplo de permiso `own`](#ejemplo-de-permiso-own)).
+Tabla de todos los endpoints de la API (`/api/...`), con el permiso RBAC que exige cada uno (`recurso:acción:alcance`) y los roles que lo tienen según la [matriz RBAC](#matriz-rbac). Todas las rutas bajo `/api`, salvo el login, pasan primero por `authenticate` (JWT) y después por `authorize` (RBAC). Con alcance `own`, `admin` y `sales` tienen la versión `any`; `user` solo puede ver o cambiar los registros que le pertenecen (el dueño real se comprueba en la base de datos, ver [Ejemplo de permiso `own`](#ejemplo-de-permiso-own)). `GET /`, `GET /health` y las demás rutas sin `/api` son la interfaz web; ver [Funcionalidades SSR](#funcionalidades-ssr).
 
 | Método | Ruta | Permiso RBAC | Roles con acceso | Descripción |
 |---|---|---|---|---|
-| `GET` | `/` | Público | Todos | Página de inicio (vista Pug traducida) |
-| `GET` | `/health` | Público | Todos | Estado del servicio: `{ "status": "UP" }` |
 | `POST` | `/api/auth/login` | Público | Todos | Inicia sesión y devuelve el JWT |
 | `GET` | `/api/auth/me` | Solo `authenticate` | Cualquier usuario autenticado | Datos seguros del usuario del token |
 | `GET` | `/api/users` | `users:read:any` | admin | Lista los usuarios |
@@ -693,13 +691,21 @@ Por último, `test/e2e` corrió contra el servicio público con `E2E_BASE_URL=ht
 
 ![E2E contra producción](docs/img/e2e-produccion.png)
 
+## Funcionalidades SSR
+
+Interfaz web (Entregable 3) con renderizado del lado del servidor: Express + Pug, reutilizando los modelos, servicios, autenticación, RBAC e i18n del Entregable 2. Ver [Arquitectura](#arquitectura) para la separación `routes/web` + `controllers/web` de la API.
+
+| ID | Funcionalidad | Rutas | Permiso | Responsable | Evidencia |
+|---|---|---|---|---|---|
+| F2 | Inicio y catálogo (búsqueda, categoría, paginación) | `GET /`, `GET /products?q=&category=&page=` | Pública | Dfloresv1 | `docs/ssr/f2/` |
+
 ## API pública
 
 Datos para probar el despliegue en Render (plan gratuito, desplegado desde `staging`):
 
 | Dato | Contenido |
 |---|---|
-| URL pública | `https://proyecto-stride-co-dylo.onrender.com` |
+| URL pública | `https://proyecto-stride-co-dylo.onrender.com` (tienda en `/`, catálogo en `/products`, panel administrativo en `/admin`) |
 | Health Check | `GET https://proyecto-stride-co-dylo.onrender.com/health` → `200 { "status": "UP" }` (también configurado como *Health Check Path* en Render) |
 | Usuarios de demostración | Ver la tabla de abajo (datos ficticios, exclusivos de estas cuentas) |
 | Ejemplo de uso | Ver los comandos de abajo |

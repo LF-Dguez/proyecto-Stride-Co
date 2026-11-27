@@ -18,7 +18,8 @@
         "unauthenticated": "Not authenticated",
         "unauthorized": "Unauthorized user",
         "forbidden": "Access denied",
-        "pagination": "Pagination"
+        "pagination": "Pagination",
+        "search": "Search"
     },
 
     "home": {
@@ -41,7 +42,20 @@
         "meta": {
             "description": "Urban, sport and everyday sneakers from Stride-Co."
         },
+        "home": {
+            "badge": "New collection · Stride 2026",
+            "titleLine1": "Find your",
+            "titleLine2": "next step.",
+            "subtitle": "Urban, sport and everyday sneakers to move at your own pace.",
+            "cta": "Explore collection",
+            "curatedLabel": "Picked for you",
+            "featuredTitle": "Featured",
+            "viewCatalog": "View catalog"
+        },
         "catalog": {
+            "title": "All products",
+            "search": "Search for a product...",
+            "allCategories": "All categories",
             "viewDetail": "View details",
             "empty": "No products found."
         }
