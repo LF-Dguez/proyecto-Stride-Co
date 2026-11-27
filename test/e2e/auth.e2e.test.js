@@ -21,8 +21,8 @@ describe('Autenticación (E2E)', () => {
       });
 
     expect(response.statusCode).toBe(200);
-    expect(typeof response.body.token).toBe('string');
-    expect(response.body.token.split('.')).toHaveLength(3);
+    expect(typeof response.body.data.token).toBe('string');
+    expect(response.body.data.token.split('.')).toHaveLength(3);
   });
 
   it('credenciales incorrectas responden 401', async () => {
@@ -114,10 +114,9 @@ describe('Autenticación (E2E)', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.statusCode).toBe(200);
-    expect(response.body.password_hash).toBeUndefined();
-    expect(response.body.salt_key).toBeUndefined();
-    expect(response.body).not.toHaveProperty('password_hash');
-    expect(response.body).not.toHaveProperty('salt_key');
+    expect(response.body.data.email).toBe(DEMO_USERS.admin);
+    expect(response.body.data).not.toHaveProperty('password_hash');
+    expect(response.body.data).not.toHaveProperty('salt_key');
   });
 
   it('GET /api/auth/me sin token responde 401', async () => {

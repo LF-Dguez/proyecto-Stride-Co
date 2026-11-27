@@ -1,0 +1,21 @@
+//- Campo de formulario con validación del lado del servidor: conserva el valor
+//- capturado y muestra el error traducido junto al campo (sección 4.8 del PDF).
+//- field = { name, label, type, value, error, placeholder, required, rows, options }
+mixin formField(field)
+  .mb-3
+    if field.type === 'checkbox'
+      .form-check
+        input.form-check-input(type='checkbox', id=field.name, name=field.name, checked=field.value)
+        label.form-check-label(for=field.name)= field.label
+    else
+      label.form-label(for=field.name)= field.label
+      if field.type === 'select'
+        select.form-select(class=field.error && 'is-invalid', id=field.name, name=field.name, required=field.required)
+          each opt in field.options
+            option(value=opt.value, selected=opt.value == field.value)= opt.label
+      else if field.type === 'textarea'
+        textarea.form-control(class=field.error && 'is-invalid', id=field.name, name=field.name, rows=field.rows || 3, placeholder=field.placeholder, required=field.required)= field.value
+      else
+        input.form-control(class=field.error && 'is-invalid', type=field.type || 'text', id=field.name, name=field.name, value=field.value, placeholder=field.placeholder, required=field.required)
+    if field.error
+      .field-error= field.error

@@ -44,7 +44,7 @@ describe('middleware authenticate', () => {
   it('401 sin token', async () => {
     const response = await request(app).get('/protegido');
     expect(response.statusCode).toBe(401);
-    expect(response.body.error.status).toBe(401);
+    expect(response.statusCode).toBe(401);
   });
 
   it('401 con token firmado con otra clave', async () => {

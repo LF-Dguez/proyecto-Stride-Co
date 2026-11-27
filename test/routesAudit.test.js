@@ -1,6 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const request = require('supertest');
+
+// GET / (home de la tienda) ya consulta productos reales; esta suite audita la API,
+// no la tienda, así que basta con simular una lista vacía.
+jest.mock('../models/sql', () => ({ Product: { findAll: jest.fn().mockResolvedValue([]) } }));
+
 const app = require('../app');
 const authenticate = require('../middlewares/authenticate');
 const { RESOURCES, ACTIONS, ROLE_PERMISSIONS } = require('../seeders/rbacMatrix');
@@ -8,8 +13,9 @@ const { matrixMarkdown } = require('../seeders/matrixTable');
 
 const ACTION_BY_METHOD = { get: 'read', post: 'create', put: 'update', patch: 'update', delete: 'delete' };
 
-// Excepciones de la sección 4.3 del Entregable 2
-const PUBLIC = ['GET /', 'GET /health', 'POST /api/auth/login'];
+// Excepciones de la sección 4.3 del Entregable 2. Esta auditoría se limita a /api:
+// las rutas web (/, /products, ...) tienen su propia suite por funcionalidad SSR.
+const PUBLIC = ['POST /api/auth/login'];
 const AUTHENTICATE_ONLY = ['GET /api/auth/me'];
 
 // '^\/api\/users\/?(?=\/|$)' -> '/api/users'
@@ -20,13 +26,14 @@ function mountPath(layer) {
     .replace(/\\\//g, '/');
 }
 
-// Recorre app._router y devuelve cada endpoint con sus middlewares
+// Recorre app._router y devuelve cada endpoint de la API (routes/api) con sus middlewares
 function listEndpoints() {
   const endpoints = [];
   app._router.stack
     .filter((layer) => layer.name === 'router')
     .forEach((layer) => {
       const mount = mountPath(layer);
+      if (!mount.startsWith('/api')) return;
       layer.handle.stack.filter((l) => l.route).forEach((l) => {
         Object.keys(l.route.methods).forEach((method) => {
           endpoints.push({
@@ -113,10 +120,13 @@ describe('auditoría de rutas: autenticación y RBAC en todas', () => {
     expect(response.statusCode).toBe(401);
   });
 
-  it('las rutas públicas responden sin token', async () => {
+  it('las rutas públicas de la API responden sin token', async () => {
+    expect((await request(app).post('/api/auth/login').send({})).statusCode).toBe(400);
+  });
+
+  it('/health y / (fuera de /api) también son públicas', async () => {
     expect((await request(app).get('/health')).statusCode).toBe(200);
     expect((await request(app).get('/')).statusCode).toBe(200);
-    expect((await request(app).post('/api/auth/login').send({})).statusCode).toBe(400);
   });
 });
 
@@ -147,15 +157,39 @@ describe('matriz RBAC: seed, README y reglas de código', () => {
     expect(readme).toContain(matrixMarkdown());
   });
 
+  it('la tabla de endpoints del README tiene todos los endpoints con su permiso real', () => {
+    const readme = fs.readFileSync(path.join(__dirname, '..', 'README.md'), 'utf8').replace(/\r\n/g, '\n');
+    // Filas como: | `GET` | `/api/products/:id` | `products:read:any` | ... |
+    const documented = [...readme.matchAll(/^\| `([A-Z]+)` \| `([^`]+)` \| ([^|]+?) \|/gm)]
+      .map(([, method, route, permission]) => `${method} ${route} ${permission.trim()}`);
+    const expected = endpoints.map((e) => {
+      const rbac = rbacOf(e);
+      let permission = 'Público';
+      if (rbac) permission = `\`${rbac.resource}:${rbac.action}:${rbac.possession}\``;
+      else if (AUTHENTICATE_ONLY.includes(label(e))) permission = 'Solo `authenticate`';
+      return `${e.method.toUpperCase()} ${e.path} ${permission}`;
+    });
+
+    expect(documented.sort()).toEqual(expected.sort());
+  });
+
+  // Recorre routes/ y controllers/ a cualquier profundidad (incluye api/ y web/)
+  function listJsFilesRecursive(absDir, relDir) {
+    return fs.readdirSync(absDir, { withFileTypes: true }).flatMap((entry) => {
+      const rel = `${relDir}/${entry.name}`;
+      if (entry.isDirectory()) return listJsFilesRecursive(path.join(absDir, entry.name), rel);
+      return entry.name.endsWith('.js') ? [rel] : [];
+    });
+  }
+
   it('ni los controllers ni las rutas comparan nombres de rol para autorizar', () => {
     const dirs = ['controllers', 'routes'];
-    const offenders = dirs.flatMap((dir) => fs.readdirSync(path.join(__dirname, '..', dir))
-      .filter((file) => file.endsWith('.js'))
-      .filter((file) => {
-        const code = fs.readFileSync(path.join(__dirname, '..', dir, file), 'utf8');
+    const offenders = dirs
+      .flatMap((dir) => listJsFilesRecursive(path.join(__dirname, '..', dir), dir))
+      .filter((relFile) => {
+        const code = fs.readFileSync(path.join(__dirname, '..', relFile), 'utf8');
         return /\.role\s*[!=]==|role_id\s*[!=]==|[!=]==\s*['"](admin|sales|user)['"]/.test(code);
-      })
-      .map((file) => `${dir}/${file}`));
+      });
     expect(offenders).toEqual([]);
   });
 });

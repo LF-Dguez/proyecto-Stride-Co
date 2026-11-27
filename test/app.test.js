@@ -5,7 +5,7 @@ describe('Manejo de rutas inexistentes', () => {
   it('GET a una ruta inexistente debe responder 404', async () => {
     const response = await request(app).get('/api/ruta');
     expect(response.statusCode).toBe(404);
-    expect(response.body).toHaveProperty('error');
+    expect(response.body).toHaveProperty('message');
   });
 });
 
@@ -17,3 +17,22 @@ describe('GET /health', () => {
   });
 });
 
+
+describe('Formato uniforme de los errores', () => {
+  it('un error bajo /api responde { message, data } con el mensaje traducido', async () => {
+    const es = await request(app).get('/api/no-existe?lang=es');
+    const en = await request(app).get('/api/no-existe?lang=en');
+
+    expect(es.statusCode).toBe(404);
+    expect(es.body).toEqual({ message: 'Ruta no encontrada', data: null });
+    expect(en.body).toEqual({ message: 'Route not found', data: null });
+  });
+
+  it('el 401 de express-jwt usa el mismo formato', async () => {
+    const response = await request(app).get('/api/products').set('Authorization', 'Bearer abc.def.ghi');
+
+    expect(response.statusCode).toBe(401);
+    expect(Object.keys(response.body).sort()).toEqual(['data', 'message']);
+    expect(response.body.data).toBeNull();
+  });
+});

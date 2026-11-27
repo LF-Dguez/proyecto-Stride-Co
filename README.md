@@ -84,6 +84,30 @@ Con esa contraseña, la URI queda `postgres://postgres:CAMBIAR@localhost:5432/st
 
 **MongoDB:** `mongo.uri`. En desarrollo puede apuntar a una instalación local (`mongodb://localhost:27017/stride_co`) o, si no quieres instalar MongoDB en tu máquina, a un cluster gratuito de [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (`mongodb+srv://usuario:CAMBIAR@cluster.mongodb.net/stride_co`). Cualquiera de las dos opciones va en el mismo campo `mongo.uri` de `config/local-development.json`.
 
+#### Render PostgreSQL (producción)
+
+La base relacional de producción es una instancia **Free** de Render PostgreSQL:
+
+| Dato | Valor |
+|---|---|
+| Proveedor / región | Render, Oregon (US West) |
+| Plan | Free, sin tarjeta |
+| Creada | 11 de noviembre de 2026 |
+| **Caduca** | **11 de diciembre de 2026** (30 días desde su creación; 14 días de gracia y después se borra con sus datos) |
+
+Render da dos cadenas de conexión distintas:
+
+| URL | Uso |
+|---|---|
+| **Internal Database URL** | La usa el Web Service de Render, porque está en la misma región (más rápida, no sale a internet) |
+| **External Database URL** | Para conectarte desde una computadora local (por ejemplo, para correr el seed o probar la conexión). Requiere SSL: `postgres.ssl` es `true` en `config/production.json` |
+
+La que corresponda va en `postgres.uri` de `config/local-production.json`. Para comprobar la conexión desde una computadora local (con la External Database URL):
+
+```bash
+NODE_ENV=production node -e "require('./config/sequelize').authenticate().then(() => console.log('OK')).catch((e) => console.error(e.message))"
+```
+
 #### MongoDB Atlas (producción)
 
 La base documental de producción es un cluster **M0 (gratuito)** de MongoDB Atlas:
@@ -156,6 +180,8 @@ E2E_BASE_URL=https://<servicio>.onrender.com npm run test:e2e
 
 Antes de empezar, las pruebas esperan hasta 90 segundos a que `GET /health` responda (el plan gratuito de Render tarda cerca de un minuto en despertar). `test/e2e/helpers.js` ofrece `login(rol)` (JWT de los usuarios de demostración), `authHeader(rol)` y `createCleanup()`, que elimina al terminar los datos que cada prueba creó para poder repetir la suite.
 
+Hay una suite por recurso (`users`, `roles`, `permissions`, `products`, `variants`, `inventory`, `customers`, `orders`) más `health`, `auth`, `rbac` (los cinco escenarios mínimos de la Tarea 6) e `i18n`. Cómo se generó su código con Antigravity, los prompts usados, qué corrigió el equipo y qué suites se escribieron sin Antigravity está en [docs/e2e-antigravity.md](docs/e2e-antigravity.md).
+
 ## Arquitectura
 
 El flujo de cada solicitud es:
@@ -173,22 +199,31 @@ stride-co/
 ├── models/
 │   ├── sql/             modelos Sequelize (users, roles, permissions, products, variants, inventory)
 │   └── mongo/           modelos Mongoose (customers, orders)
-├── controllers/         lógica de cada recurso
-├── routes/              endpoints de cada recurso
-├── middlewares/         authenticate.js (JWT) y authorize.js (RBAC)
+├── controllers/
+│   └── api/             responden { message, data } (JSON)
+├── routes/
+│   └── api/             endpoints de cada recurso bajo /api
 ├── services/            password.js (bcrypt), token.js (JWT), rbac.js (permisos desde la BD) y ownership.js (dueño real para `own`)
+├── middlewares/         authenticate.js (JWT), authorize.js (RBAC) y flash.js (mensaje de confirmación tras un redirect)
 ├── utils/               sequelizeHelpers.js: validación de IDs y traducción de errores de Sequelize a HTTP
 ├── seeders/             siembra roles, permisos y role_permission (seedRbac.js)
 ├── test/                pruebas automatizadas
-├── public/              archivos estáticos
-├── views/               vistas Pug
-├── app.js               configuración de Express, logging y manejo de errores
+├── public/
+│   └── css/stride.css   estilo visual extraído de stride_co_mockup.html
+├── views/
+│   ├── layouts/         store.pug (tienda) y admin.pug (panel administrativo)
+│   ├── partials/        flash.pug (confirmación PRG) y pagination.pug
+│   ├── mixins/          productCard, table, formField, statusBadge
+│   └── errors/          403.pug, 404.pug y 500.pug
+├── app.js               configuración de Express, i18n, logging y manejo de errores
 ├── eslint.config.js     configuración de ESLint
 └── package.json
 ```
 
+Las vistas SSR (tienda y panel administrativo, Entregable 3) viven aparte, en `routes/web` y `controllers/web`, y reutilizan los mismos `services/`, `middlewares/` y modelos que la API; ver la sección [Funcionalidades SSR](#funcionalidades-ssr).
+
 - **Logging:** todas las solicitudes HTTP se registran con Morgan.
-- **Errores:** bajo `/api` todos los errores responden JSON con la forma `{ "error": { "message": "...", "status": 404 } }`. Un error `500` responde `Error interno del servidor` y no expone el detalle.
+- **Errores:** bajo `/api` todos los errores responden con el mismo formato que las respuestas correctas, `{ "message": "...", "data": null }`, con el `message` traducido. Un error `500` responde `Error interno del servidor` y no expone el detalle.
 
 ## API
 
@@ -205,15 +240,54 @@ Todos los endpoints responden con `{ "message": "...", "data": ... }` y leen o e
 | Customers | Documental (MongoDB) | `/api/customers` |
 | Orders | Documental (MongoDB) | `/api/orders` |
 
-Operaciones disponibles en cada recurso:
+Tabla de todos los endpoints de la API (`/api/...`), con el permiso RBAC que exige cada uno (`recurso:acción:alcance`) y los roles que lo tienen según la [matriz RBAC](#matriz-rbac). Todas las rutas bajo `/api`, salvo el login, pasan primero por `authenticate` (JWT) y después por `authorize` (RBAC). Con alcance `own`, `admin` y `sales` tienen la versión `any`; `user` solo puede ver o cambiar los registros que le pertenecen (el dueño real se comprueba en la base de datos, ver [Ejemplo de permiso `own`](#ejemplo-de-permiso-own)). `GET /`, `GET /health` y las demás rutas sin `/api` son la interfaz web; ver [Funcionalidades SSR](#funcionalidades-ssr).
 
-| Método | Ruta | Descripción | Código |
-|--------|------|-------------|--------|
-| `GET` | `/api/<recurso>` | Lista los registros | 200 |
-| `GET` | `/api/<recurso>/:id` | Obtiene un registro | 200 |
-| `POST` | `/api/<recurso>` | Crea un registro | 201 |
-| `PUT` | `/api/<recurso>/:id` | Actualiza un registro | 200 |
-| `DELETE` | `/api/<recurso>/:id` | Elimina un registro | 200 |
+| Método | Ruta | Permiso RBAC | Roles con acceso | Descripción |
+|---|---|---|---|---|
+| `POST` | `/api/auth/login` | Público | Todos | Inicia sesión y devuelve el JWT |
+| `GET` | `/api/auth/me` | Solo `authenticate` | Cualquier usuario autenticado | Datos seguros del usuario del token |
+| `GET` | `/api/users` | `users:read:any` | admin | Lista los usuarios |
+| `GET` | `/api/users/:id` | `users:read:any` | admin | Obtiene un usuario |
+| `POST` | `/api/users` | `users:create:any` | admin | Crea un usuario |
+| `PUT` | `/api/users/:id` | `users:update:any` | admin | Actualiza un usuario |
+| `DELETE` | `/api/users/:id` | `users:delete:any` | admin | Elimina un usuario |
+| `GET` | `/api/roles` | `roles:read:any` | admin | Lista los roles con sus permisos |
+| `GET` | `/api/roles/:id` | `roles:read:any` | admin | Obtiene un rol con sus permisos |
+| `POST` | `/api/roles` | `roles:create:any` | admin | Crea un rol (acepta permission_ids) |
+| `PUT` | `/api/roles/:id` | `roles:update:any` | admin | Actualiza un rol (acepta permission_ids) |
+| `DELETE` | `/api/roles/:id` | `roles:delete:any` | admin | Elimina un rol |
+| `GET` | `/api/permissions` | `permissions:read:any` | admin | Lista los permisos |
+| `GET` | `/api/permissions/:id` | `permissions:read:any` | admin | Obtiene un permiso |
+| `POST` | `/api/permissions` | `permissions:create:any` | admin | Crea un permiso |
+| `PUT` | `/api/permissions/:id` | `permissions:update:any` | admin | Actualiza un permiso |
+| `DELETE` | `/api/permissions/:id` | `permissions:delete:any` | admin | Elimina un permiso |
+| `GET` | `/api/products` | `products:read:any` | admin, sales, user | Lista los productos con sus variantes y su stock |
+| `GET` | `/api/products/:id` | `products:read:any` | admin, sales, user | Obtiene un producto con sus variantes y su stock |
+| `POST` | `/api/products` | `products:create:any` | admin | Crea un producto |
+| `PUT` | `/api/products/:id` | `products:update:any` | admin | Actualiza un producto |
+| `DELETE` | `/api/products/:id` | `products:delete:any` | admin | Elimina un producto |
+| `GET` | `/api/variants` | `variants:read:any` | admin, sales, user | Lista las variantes con su producto e inventario |
+| `GET` | `/api/variants/:id` | `variants:read:any` | admin, sales, user | Obtiene una variante con su producto e inventario |
+| `POST` | `/api/variants` | `variants:create:any` | admin | Crea una variante |
+| `PUT` | `/api/variants/:id` | `variants:update:any` | admin | Actualiza una variante |
+| `DELETE` | `/api/variants/:id` | `variants:delete:any` | admin | Elimina una variante |
+| `GET` | `/api/inventory` | `inventory:read:any` | admin, sales | Lista los registros de inventario |
+| `GET` | `/api/inventory/:id` | `inventory:read:any` | admin, sales | Obtiene un registro de inventario |
+| `POST` | `/api/inventory` | `inventory:create:any` | admin | Crea un registro de inventario |
+| `PUT` | `/api/inventory/:id` | `inventory:update:any` | admin, sales | Actualiza un registro de inventario |
+| `DELETE` | `/api/inventory/:id` | `inventory:delete:any` | admin | Elimina un registro de inventario |
+| `GET` | `/api/customers` | `customers:read:own` | admin, sales, user (solo propios) | Lista los clientes |
+| `GET` | `/api/customers/:id` | `customers:read:own` | admin, sales, user (solo propios) | Obtiene un cliente |
+| `POST` | `/api/customers` | `customers:create:any` | admin, sales | Crea un cliente |
+| `PUT` | `/api/customers/:id` | `customers:update:own` | admin, sales, user (solo propios) | Actualiza un cliente |
+| `DELETE` | `/api/customers/:id` | `customers:delete:any` | admin | Elimina un cliente |
+| `GET` | `/api/orders` | `orders:read:own` | admin, sales, user (solo propios) | Lista las órdenes con los datos de su cliente |
+| `GET` | `/api/orders/:id` | `orders:read:own` | admin, sales, user (solo propios) | Obtiene una orden con los datos de su cliente |
+| `POST` | `/api/orders` | `orders:create:any` | admin, sales, user | Crea una orden |
+| `PUT` | `/api/orders/:id` | `orders:update:own` | admin, sales, user (solo propios) | Actualiza una orden |
+| `DELETE` | `/api/orders/:id` | `orders:delete:any` | admin | Elimina una orden |
+
+Códigos de respuesta correcta: `200` en consultas, actualizaciones y eliminaciones, y `201` al crear.
 
 Códigos de error:
 
@@ -294,15 +368,17 @@ curl -X POST http://localhost:3000/api/auth/login \
 ```json
 {
   "message": "Login exitoso",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": { "id": 1, "first_name": "Admin", "last_name": "Stride", "email": "admin@stride.co", "role_id": 1, "active": true }
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": { "id": 1, "first_name": "Admin", "last_name": "Stride", "email": "admin@stride.co", "role_id": 1, "active": true }
+  }
 }
 ```
 
 Si el email no existe, la contraseña es incorrecta o el usuario está inactivo, la respuesta es siempre la misma, para no revelar qué cuentas existen:
 
 ```json
-{ "message": "Invalid credentials" }
+{ "message": "Credenciales Inválidas", "data": null }
 ```
 
 El token se firma con `jwt.sign()` usando `HS256`, `jwt.secret`, `jwt.expiresIn`, `jwt.issuer` y `jwt.audience`. Su payload lleva **solo** `sub` (el id del usuario), además de los campos estándar `iat`, `exp`, `iss` y `aud`:
@@ -325,10 +401,10 @@ El middleware reutilizable `authenticate` (`middlewares/authenticate.js`) se mon
 2. Busca al usuario con `req.auth.sub`; si ya no existe o está inactivo responde `401`.
 3. Deja al usuario en `req.user`, que después usa el middleware RBAC `authorize`.
 
-Los errores de `express-jwt` (token inexistente, inválido o expirado) los atiende el manejador de errores de `app.js` y responden `401` en JSON:
+Los errores de `express-jwt` (token inexistente, inválido o expirado) los atiende el manejador de errores de `app.js` y responden `401` con el formato de siempre y el mensaje traducido, sin revelar el motivo:
 
 ```json
-{ "error": { "message": "jwt expired", "status": 401 } }
+{ "message": "No autenticado", "data": null }
 ```
 
 ### Usuario autenticado: `GET /api/auth/me`
@@ -340,7 +416,10 @@ curl http://localhost:3000/api/auth/me -H "Authorization: Bearer <token>"
 ```
 
 ```json
-{ "id": 1, "first_name": "Admin", "last_name": "Stride", "email": "admin@stride.co", "role_id": 1, "active": true }
+{
+  "message": "Usuario autenticado",
+  "data": { "id": 1, "first_name": "Admin", "last_name": "Stride", "email": "admin@stride.co", "role_id": 1, "active": true }
+}
 ```
 
 ### Expiración
@@ -451,6 +530,8 @@ Los 40 endpoints de los 8 recursos pasan por `authorize(resource, action, posses
 
 El middleware no compara nombres de rol (`if (user.role === 'admin')`) y los controllers no deciden permisos: solo `authorize()` lo hace, con la instancia de `AccessControl`.
 
+El permiso exacto de cada endpoint está en la [tabla de endpoints](#api). Una prueba (`test/routesAudit.test.js`) comprueba que esa tabla coincide con los `authorize()` reales de las rutas, igual que la matriz con el seed.
+
 ### Ejemplo de permiso `any`
 
 Cualquiera con `products:delete:any` (solo `admin`) puede eliminar cualquier producto:
@@ -462,7 +543,7 @@ router.delete('/:id', authorize('products', 'delete', 'any'), controller.delete)
 Con el rol `sales`, que no tiene ese permiso, la respuesta es:
 
 ```json
-{ "error": { "message": "Acceso denegado", "status": 403 } }
+{ "message": "Acceso denegado", "data": null }
 ```
 
 ### Ejemplo de permiso `own`
@@ -533,7 +614,7 @@ curl -H "Accept-Language: en" https://<url>/api/products/999
 ```
 
 ```json
-{ "error": { "message": "Product not found", "status": 404 } }
+{ "message": "Product not found", "data": null }
 ```
 
 ### Qué está traducido
@@ -556,9 +637,131 @@ Las claves están organizadas por recurso (`users`, `products`, `orders`, `commo
 2. Agregar el código del idioma a `SUPPORTED_LOCALES` en `config/i18n.js`.
 3. Correr `npm test`: `test/locales.test.js` avisa si falta alguna clave.
 
+## Despliegue
+
+### Docker
+
+La imagen (`Dockerfile`) corre con `node:22-alpine`. Los secretos (`config/local-production.json`) **nunca** entran a la imagen: `.dockerignore` los excluye explícitamente. En su lugar, `docker-entrypoint.sh` los recibe en tiempo de ejecución desde `/etc/secrets/local-production.json` (donde Render monta los *Secret Files*), los copia a `config/` y recién entonces arranca el servidor. Si ese archivo no existe, el contenedor **no arranca** y lo dice en los logs.
+
+Para probarlo en local, con un `local-production.json` propio (puede ser de prueba, con URIs y `jwt.secret` reales de un entorno que no sea el de producción):
+
+```bash
+docker build -t stride-co .
+docker run -d --name stride-co -p 3000:3000 \
+  -e PORT=3000 \
+  -v "/ruta/completa/a/config/local-production.json:/etc/secrets/local-production.json:ro" \
+  stride-co
+curl http://localhost:3000/health
+docker logs stride-co
+```
+
+### Cómo se entrega el secret file a Render
+
+1. En el Web Service, ir a **Environment → Secret Files**.
+2. Agregar un archivo con la ruta `/etc/secrets/local-production.json` (el nombre que Render le da en el contenedor) y como contenido el JSON de secretos (`jwt.secret`, `postgres.uri`, `mongo.uri` reales).
+3. Render lo monta ahí automáticamente en cada despliegue; nunca se sube al repositorio.
+
+### Render Web Service (producción)
+
+| Dato | Valor |
+|---|---|
+| Proveedor / región | Render, Oregon (US West) |
+| Plan | Free, sin tarjeta |
+| Runtime | Docker |
+| Rama desplegada | `staging` |
+| Health Check Path | `/health` |
+
+El servicio queda público en `https://proyecto-stride-co-dylo.onrender.com`. Cada push a `staging` dispara un despliegue automático; el plan gratuito duerme tras un rato sin tráfico, por lo que la primera petición después de eso puede tardar hasta 50 segundos.
+
+### Verificación en producción
+
+Con el servicio desplegado, se corrió `npm run seed` contra la PostgreSQL de Render (External Database URL) y el cluster de Atlas:
+
+![Seed en producción](docs/img/seed-produccion.png)
+
+Luego, contra la URL pública, se verificó el flujo completo en **es** y en **en** con el usuario de demostración `user@stride.co`: login, un recurso permitido (`GET /api/products`, 200) y uno denegado por rol (`GET /api/users`, 403).
+
+| | es | en |
+|---|---|---|
+| Login | `Login exitoso` | `Login successful` |
+| `GET /api/products` | 200 | 200 |
+| `GET /api/users` | 403 `Acceso denegado` | 403 `Access denied` |
+
+Por último, `test/e2e` corrió contra el servicio público con `E2E_BASE_URL=https://proyecto-stride-co-dylo.onrender.com npm run test:e2e`:
+
+![E2E contra producción](docs/img/e2e-produccion.png)
+
+## Funcionalidades SSR
+
+Interfaz web (Entregable 3) con renderizado del lado del servidor: Express + Pug, reutilizando los modelos, servicios, autenticación, RBAC e i18n del Entregable 2. Ver [Arquitectura](#arquitectura) para la separación `routes/web` + `controllers/web` de la API.
+
+| ID | Funcionalidad | Rutas | Permiso | Responsable | Evidencia |
+|---|---|---|---|---|---|
+| F2 | Inicio y catálogo (búsqueda, categoría, paginación) | `GET /`, `GET /products?q=&category=&page=` | Pública | Dfloresv1 | `docs/ssr/f2/` |
+
+El producto destacado del inicio y las tarjetas del catálogo muestran un modelo 3D interactivo (`public/models/shoe.glb`, [`<model-viewer>`](https://modelviewer.dev/)) que gira solo y se puede arrastrar. Es un modelo de muestra, no del producto real: **"Materials Variants Shoe" © 2021 Shopify, licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)**, de los [glTF Sample Assets de Khronos](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/MaterialsVariantsShoe); se reemplaza por un modelo propio cuando el equipo tenga uno.
+
+## API pública
+
+Datos para probar el despliegue en Render (plan gratuito, desplegado desde `staging`):
+
+| Dato | Contenido |
+|---|---|
+| URL pública | `https://proyecto-stride-co-dylo.onrender.com` (tienda en `/`, catálogo en `/products`, panel administrativo en `/admin`) |
+| Health Check | `GET https://proyecto-stride-co-dylo.onrender.com/health` → `200 { "status": "UP" }` (también configurado como *Health Check Path* en Render) |
+| Usuarios de demostración | Ver la tabla de abajo (datos ficticios, exclusivos de estas cuentas) |
+| Ejemplo de uso | Ver los comandos de abajo |
+| Render PostgreSQL | Plan Free, Oregon (US West). Creada el 11 de noviembre de 2026; **caduca el 11 de diciembre de 2026** (30 días). Si caduca, se crea otra y se vuelve a correr `npm run seed` (ver [Render PostgreSQL](#render-postgresql-producción)) |
+| MongoDB Atlas | Cluster M0 (gratuito) en AWS, Oregon (us-west-2). Usuario de base de datos exclusivo del proyecto. Network Access `0.0.0.0/0`, porque el plan gratuito de Render no tiene IP fija; por eso la contraseña es robusta y la URI nunca se publica (ver [MongoDB Atlas](#mongodb-atlas-producción)) |
+| Secretos | `config/local-production.json` (`jwt.secret`, `postgres.uri`, `mongo.uri`) se sube a Render como *Secret File* y nunca entra al repositorio ni a la imagen (ver [Cómo se entrega el secret file a Render](#cómo-se-entrega-el-secret-file-a-render)) |
+
+Usuarios de demostración creados por `npm run seed` (las contraseñas están en `seed.demoPasswords` de `config/default.json`; son ficticias y solo sirven para estas cuentas):
+
+| Rol | Email | Contraseña | Puede, por ejemplo |
+|---|---|---|---|
+| `admin` | `admin@stride.co` | `Admin-Demo-2026!` | Todo (`*:*:any`) |
+| `sales` | `sales@stride.co` | `Ventas-Demo-2026!` | Consultar el catálogo, operar clientes y órdenes; **no** puede borrar productos (403) |
+| `user` | `user@stride.co` | `Cliente-Demo-2026!` | Consultar el catálogo y **solo sus propias** órdenes y datos de cliente |
+
+Ejemplo de uso (el plan gratuito duerme sin tráfico: la primera petición puede tardar cerca de un minuto, por eso conviene empezar por `/health`):
+
+```bash
+URL=https://proyecto-stride-co-dylo.onrender.com
+
+# 1. Health check
+curl $URL/health
+
+# 2. Login con un usuario de demostración (el token viene en data.token)
+curl -X POST $URL/api/auth/login -H "Content-Type: application/json" \
+  -d '{"email":"sales@stride.co","password":"Ventas-Demo-2026!"}'
+
+# 3. Recurso permitido, en español y en inglés
+curl $URL/api/products -H "Authorization: Bearer <token>" -H "Accept-Language: es"
+curl "$URL/api/products?lang=en" -H "Authorization: Bearer <token>"
+
+# 4. Recurso denegado: sales no tiene products:delete:any -> 403 traducido
+curl -X DELETE $URL/api/products/1 -H "Authorization: Bearer <token>" -H "Accept-Language: en"
+```
+
+```json
+{ "message": "Access denied", "data": null }
+```
+
 ## Control de cambios
 
 - Los commits siguen la especificación [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `test:`, `chore:`.
-- El trabajo se hace en ramas por funcionalidad (por ejemplo `feat/...`, `test/...`) y se integra a `main` mediante Pull Request con merge commit.
-- Cada actividad conserva su rama en el remoto después del merge: `feat/jwt-authentication` (Actividad 4) y `feat/rbac-authorization` (Tarea 6).
+- La rama de entrega del Entregable 2 es **`staging`** (creada a partir de `main`): es la que se revisa y desde la que despliega Render.
+- Cada bloque se desarrolla en su propia rama y se integra a `staging` mediante merge o Pull Request con merge commit, conservando la rama en el remoto:
+
+| Rama | Bloque |
+|---|---|
+| `feat/orm-odm-routes`, `feat/models-validations`, `feat/associations-queries`, `feat/seed-sql-sample-data`, `feat/seed-mongo-data` | Rutas con Sequelize / Mongoose, validaciones, asociaciones y seed |
+| `feat/route-protection` | `authenticate` + `authorize` en todas las rutas |
+| `feat/i18n`, `feat/i18n-*` | Internacionalización |
+| `feat/config` | Configuración por entornos y secretos |
+| `chore/render-deploy`, `chore-docker-secret-file`, `docs-render-postgres`, `docs-mongo-atlas`, `docs/render-web-service` | Despliegue en Render, Render PostgreSQL y MongoDB Atlas |
+| `test/e2e`, `test/e2e-*` | Pruebas E2E con Jest + Supertest (generadas con Antigravity) |
+| `fix/uniform-response`, `docs/readme-endpoints` | Respuesta uniforme `{ message, data }` y documentación de endpoints |
+
+- Las ramas de actividades anteriores también se conservan: `feat/jwt-authentication` (Actividad 4) y `feat/rbac-authorization` (Tarea 6).
 - No se suben `node_modules/` ni los archivos `config/local*.json` (secretos); están incluidos en `.gitignore`.

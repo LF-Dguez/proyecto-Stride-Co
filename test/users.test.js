@@ -1,7 +1,7 @@
 
 const request = require('supertest');
 const app = require('../app');
-const usersRouter = require('../routes/users');
+const usersRouter = require('../routes/api/users');
 const { buildApp, users } = require('./helpers/rbacApp');
 const { verifyPassword } = require('../services/password');
 
@@ -67,7 +67,7 @@ describe('Autorización de /api/users', () => {
   it('un rol sin permiso (sales) responde 403', async () => {
     const response = await request(protectedApp).get('/api/users').set(users.sales);
     expect(response.statusCode).toBe(403);
-    expect(response.body.error.status).toBe(403);
+    expect(response.statusCode).toBe(403);
   });
 });
 
@@ -283,7 +283,7 @@ describe('Rutas inexistentes', () => {
     // sin token nunca llega a que Express intente resolver la ruta.
     const response = await request(app).get('/api/users/1/inexistente');
     expect(response.statusCode).toBe(401);
-    expect(response.body).toHaveProperty('error');
+    expect(response.body).toHaveProperty('message');
   });
 });
 

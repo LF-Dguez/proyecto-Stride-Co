@@ -8,7 +8,7 @@ const { Permission } = require('../models/sql');
 const rbac = require('../services/rbac');
 const { mockInstance, sequelizeError } = require('./helpers/sequelizeMocks');
 const app = require('../app');
-const permissionsRouter = require('../routes/permissions');
+const permissionsRouter = require('../routes/api/permissions');
 const { buildApp, users } = require('./helpers/rbacApp');
 
 // Permissions está protegido con RBAC: solo admin tiene permissions:*:any.
@@ -40,7 +40,7 @@ describe('Autorización de /api/permissions', () => {
   it('GET a una subruta inexistente de /api/permissions, sin token, responde 401', async () => {
     const response = await request(app).get('/api/permissions/1/inexistente');
     expect(response.statusCode).toBe(401);
-    expect(response.body).toHaveProperty('error');
+    expect(response.body).toHaveProperty('message');
   });
 });
 

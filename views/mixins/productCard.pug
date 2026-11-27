@@ -1,0 +1,19 @@
+//- Tarjeta de producto de la tienda, fiel al prototipo (shoe-art con color de fondo),
+//- con la entrada escalonada y el hover de la referencia aprobada.
+//- product = { id, name, brand, category, priceLabel, color, variant }
+//- delay = retraso opcional (segundos) para la animación de entrada, por índice
+mixin productCard(product, delay)
+  .col-sm-6.col-lg-3.reveal(style=delay ? `animation-delay:${delay}s` : '')
+    a.text-decoration-none.text-reset(href=`/products/${product.id}`)
+      .product-tile
+        .shoe-art(style=`background:${product.color || '#edf0f1'}`)
+          span.tag.badge.text-bg-light= product.category
+          model-viewer.shoe-model(src='/models/shoe.glb', variant-name=product.variant, auto-rotate, rotation-per-second='26deg', disable-zoom, camera-controls=false, shadow-intensity='0', interaction-prompt='none')
+        .p-3
+          .tiny= product.brand
+          h5.fw-bold.my-1= product.name
+          .d-flex.justify-content-between.align-items-center
+            strong= product.priceLabel
+            span.card-arrow
+              i.bi.bi-arrow-up-right(aria-hidden='true')
+              span.visually-hidden= __('store.catalog.viewDetail')

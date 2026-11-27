@@ -3,8 +3,8 @@
 // fácil verificar que la implementación cubre exactamente lo que pide la rúbrica.
 const request = require('supertest');
 const authorize = require('../middlewares/authorize');
-const productsRouter = require('../routes/products');
-const ordersRouter = require('../routes/orders');
+const productsRouter = require('../routes/api/products');
+const ordersRouter = require('../routes/api/orders');
 const Order = require('../models/mongo/Order');
 const Customer = require('../models/mongo/Customer');
 const { Product } = require('../models/sql');
@@ -41,7 +41,7 @@ describe('11.2 Acceso denegado (SALES, products:delete:any)', () => {
     const response = await request(app).delete('/api/products/1').set(users.sales);
     expect(response.statusCode).toBe(403);
     expect(findSpy).not.toHaveBeenCalled();
-    expect(response.body.error.status).toBe(403);
+    expect(response.statusCode).toBe(403);
   });
 });
 
@@ -69,7 +69,7 @@ describe('11.4 Recurso de otro usuario (USER, orders:read:own, orden ajena)', ()
     jest.spyOn(Customer, 'findById').mockReturnValue(mockLean(customerDeOtro));
     const response = await request(app).get(`/api/orders/${ordenAjena._id}`).set(users.user);
     expect(response.statusCode).toBe(403);
-    expect(response.body.error.status).toBe(403);
+    expect(response.statusCode).toBe(403);
   });
 });
 

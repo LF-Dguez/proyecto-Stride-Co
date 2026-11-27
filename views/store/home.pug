@@ -1,0 +1,48 @@
+extends ../layouts/store
+include ../mixins/productCard
+
+block content
+  .hero
+    .container.hero-grid
+      div
+        span.badge.text-bg-light.mb-3.reveal.d1= __('store.home.badge')
+        h1.reveal.d2
+          | #{__('store.home.titleLine1')}
+          br
+          span(style='color:var(--lime)')= __('store.home.titleLine2')
+        p.fs-5.opacity-75.reveal.d3= __('store.home.subtitle')
+        a.btn.btn-lime.btn-lg.reveal.d4(href='/products')
+          = __('store.home.cta')
+          i.bi.bi-arrow-right.ms-2
+
+      if featured.length
+        .hero-product.reveal.d4#heroProduct
+          a.hero-product-link(href=`/products/${featured[0].id}`, id='heroProductLink')
+            .hero-product-stage
+              model-viewer#heroModel(src='/models/shoe.glb', variant-name=featured[0].variant, camera-controls, disable-zoom, auto-rotate, auto-rotate-delay='1200', rotation-per-second='18deg', shadow-intensity='0', interaction-prompt='none')
+              span.hero-product-tip
+                i.bi.bi-arrows-angle-expand.me-1
+                = __('store.home.dragToRotate')
+            .hero-product-card
+              div
+                span.tag#heroCategory= featured[0].category
+                h3#heroName= featured[0].name
+              span.price#heroPrice= featured[0].priceLabel
+          .hero-dots#heroDots
+
+  .container.py-5
+    .d-flex.justify-content-between.align-items-end.mb-4.scroll-reveal
+      div
+        span.text-uppercase.tiny.fw-bold= __('store.home.curatedLabel')
+        h2.fw-bold.mb-0= __('store.home.featuredTitle')
+      a.btn.btn-outline-dark(href='/products')= __('store.home.viewCatalog')
+    .row.g-4.scroll-reveal
+      if featured.length
+        each product, i in featured
+          +productCard(product, i * 0.08)
+      else
+        p.text-secondary= __('store.catalog.empty')
+
+  if featured.length > 1
+    script(type='application/json', id='heroData')!= featuredJson
+    script(src='/js/heroRotator.js')

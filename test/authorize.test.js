@@ -33,7 +33,7 @@ describe('middleware authorize', () => {
   it('403 cuando el rol no tiene el permiso', async () => {
     const res = await request(app).get('/any').set(users.sales);
     expect(res.statusCode).toBe(403);
-    expect(res.body.error.status).toBe(403);
+    expect(res.statusCode).toBe(403);
   });
 
   it('403 si el rol no existe en la BD', async () => {

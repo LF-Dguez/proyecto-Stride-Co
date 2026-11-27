@@ -1,0 +1,43 @@
+// Acceso a datos de Product compartido entre la API y las vistas SSR (sección 4.4 del PDF).
+// Aún no existe un modelo Category (ver models/sql/Product.js); category_id se usa
+// directamente como filtro y esta tabla solo le pone una etiqueta para mostrarlo.
+const { Op } = require('sequelize');
+const { Product, ProductVariant, Inventory } = require('../models/sql');
+
+const CATEGORY_LABELS = { 10: 'Running', 20: 'Urbano', 30: 'Outdoor' };
+
+const PAGE_SIZE = 8;
+
+const VARIANT_INVENTORY_INCLUDE = [{
+  model: ProductVariant,
+  as: 'variants',
+  include: [{ model: Inventory, as: 'inventory' }]
+}];
+
+async function listActive({ q = '', category = '', page = 1 } = {}) {
+  const pageNum = Math.max(1, Number.parseInt(page, 10) || 1);
+  const where = { active: true };
+  if (q) where.name = { [Op.iLike]: `%${q}%` };
+  if (category) where.category_id = Number(category);
+
+  const { rows, count } = await Product.findAndCountAll({
+    where,
+    order: [['id', 'ASC']],
+    limit: PAGE_SIZE,
+    offset: (pageNum - 1) * PAGE_SIZE
+  });
+
+  return { products: rows, page: pageNum, pages: Math.max(1, Math.ceil(count / PAGE_SIZE)) };
+}
+
+function listFeatured(limit = 4) {
+  return Product.findAll({ where: { active: true }, order: [['id', 'ASC']], limit });
+}
+
+function getActiveById(id) {
+  return Product.findOne({ where: { id, active: true }, include: VARIANT_INVENTORY_INCLUDE });
+}
+
+module.exports = {
+  CATEGORY_LABELS, listActive, listFeatured, getActiveById
+};

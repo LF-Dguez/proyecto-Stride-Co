@@ -1,0 +1,526 @@
+/*
+ * Estilo visual de Stride-Co, extraído de stride_co_mockup.html y conservado tal
+ * cual (colores, tipografía, tarjetas, sidebar) para las vistas SSR del Entregable 3.
+ * Carga junto con Bootstrap 5 + Bootstrap Icons (ver views/layouts/).
+ */
+
+:root {
+  --ink: #101820;
+  --lime: #dfff65;
+  --muted: #737b84;
+}
+
+/* Transición nativa del navegador al navegar entre páginas de Stride-Co (Chrome/Edge
+   126+; en el resto simplemente no pasa nada, navegación normal). Cero JavaScript:
+   cumple "funciona con JavaScript deshabilitado". El encabezado se nombra aparte para
+   que no haga crossfade consigo mismo y se sienta continuo entre pantallas. */
+@view-transition {
+  navigation: auto;
+}
+
+body {
+  background: #f5f6f7;
+  color: var(--ink);
+}
+
+/* ---------- tienda: encabezado ---------- */
+
+.store-header {
+  background: #fff;
+  border-bottom: 1px solid #e7e7e7;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  view-transition-name: site-header;
+}
+
+.brand {
+  font-weight: 900;
+  font-size: 1.55rem;
+  letter-spacing: -1.3px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand span {
+  color: #719400;
+}
+
+.store-nav a,
+.store-nav button {
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: #444;
+  padding: .65rem .85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color .2s ease, border-color .2s ease;
+}
+
+.store-nav a:hover {
+  color: #719400;
+}
+
+.store-nav a.active {
+  border-bottom-color: #171717;
+  color: #000;
+}
+
+@media (max-width: 540px) {
+  .store-nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .store-header .container {
+    flex-wrap: wrap;
+  }
+
+  .store-nav a {
+    font-size: .8rem;
+  }
+}
+
+/* ---------- tienda: hero ---------- */
+
+.hero {
+  min-height: 360px;
+  background: linear-gradient(110deg, #121b22, #283c47);
+  color: white;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero::after {
+  content: 'S';
+  font-weight: 900;
+  font-style: italic;
+  position: absolute;
+  right: 8%;
+  top: -110px;
+  font-size: 490px;
+  line-height: 1;
+  color: #ffffff0e;
+  pointer-events: none;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+}
+
+/* El hero se vuelve de dos columnas cuando trae el producto destacado a un lado. */
+.hero-grid {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding-block: 56px;
+}
+
+.hero-grid > div:first-child {
+  flex: 1 1 420px;
+  min-width: 0;
+}
+
+/* ---------- producto destacado flotando dentro del hero ---------- */
+
+.hero-product {
+  flex: 1 1 360px;
+  max-width: 420px;
+}
+
+.hero-product-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero-product-stage {
+  height: 300px;
+  border-radius: 24px;
+  background: radial-gradient(120% 120% at 32% 22%, #33444f, #141b21 72%);
+  overflow: hidden;
+  position: relative;
+  transition: transform .4s cubic-bezier(.22, 1, .36, 1), box-shadow .4s ease;
+}
+
+.hero-product:hover .hero-product-stage {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 50px -20px #00000070, 0 0 0 2px #dfff6555;
+}
+
+.hero-product:hover .hero-product-tip {
+  background: #dfff6525;
+  color: var(--lime);
+}
+
+.hero-product-stage model-viewer {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  transition: opacity .35s ease;
+}
+
+.hero-product-tip {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #c7ccd0;
+  background: #00000055;
+  padding: 5px 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(3px);
+}
+
+.hero-dots {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.hero-dots:empty {
+  display: none;
+}
+
+.hero-dots button {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: #ffffff3a;
+  transition: background .3s ease, transform .3s ease;
+}
+
+.hero-dots button.active {
+  background: var(--lime);
+  transform: scale(1.3);
+}
+
+.hero-product-card {
+  margin-top: 12px;
+  background: #182028;
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  transition: opacity .35s ease;
+}
+
+.hero-product-card .tag {
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--lime);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.hero-product-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.hero-product-card .price {
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+
+@media (max-width: 850px) {
+  .hero {
+    min-height: 290px;
+  }
+}
+
+.btn-lime {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: #171e15;
+  font-weight: 700;
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), background .2s ease, box-shadow .3s ease;
+}
+
+.btn-lime:hover {
+  background: #c9f044;
+  border-color: #c9f044;
+  color: #171e15;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px -10px #dfff6555;
+}
+
+/* Entrada escalonada del hero; pura CSS, sigue funcionando con JavaScript
+   deshabilitado (y respeta a quien prefiere menos movimiento). */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: riseIn .6s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.d1 { animation-delay: .05s; }
+.d2 { animation-delay: .15s; }
+.d3 { animation-delay: .25s; }
+.d4 { animation-delay: .35s; }
+
+@keyframes riseIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Revelado al hacer scroll: visible por defecto (sin JS, o con JS deshabilitado,
+   el contenido siempre se ve), y solo se anima si scrollReveal.js logra arrancar. */
+.scroll-reveal {
+  opacity: 1;
+}
+
+.js-scroll-ready .scroll-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .6s cubic-bezier(.22, 1, .36, 1), transform .6s cubic-bezier(.22, 1, .36, 1);
+}
+
+.js-scroll-ready .scroll-reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-scroll-ready .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---------- tienda: producto ---------- */
+
+.product-tile {
+  border: 1px solid #e7e8ea;
+  border-radius: 13px;
+  overflow: hidden;
+  background: white;
+  height: 100%;
+  transition: transform .4s cubic-bezier(.22, 1, .36, 1), box-shadow .4s cubic-bezier(.22, 1, .36, 1);
+}
+
+.product-tile:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 1px 0 #e7e8ea, 0 26px 40px -20px #10182038;
+}
+
+.shoe-art {
+  height: 210px;
+  background: linear-gradient(140deg, #edf0f1, #dfe4e5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.shoe-art .tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+}
+
+.shoe-art .shoe-model {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  pointer-events: none;
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1);
+}
+
+.product-tile:hover .shoe-art .shoe-model {
+  transform: scale(1.06);
+}
+
+/* Botón circular con flecha; se vuelve lima y gira 45° al pasar el mouse. */
+.card-arrow {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #f5f6f7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .3s ease, transform .35s cubic-bezier(.22, 1, .36, 1);
+}
+
+.product-tile:hover .card-arrow {
+  background: var(--lime);
+  transform: rotate(45deg);
+}
+
+@media (max-width: 850px) {
+  .shoe-art {
+    height: 150px;
+  }
+
+  .shoe-art .shoe {
+    font-size: 4rem;
+  }
+}
+
+.store-panel {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 13px;
+  padding: 22px;
+}
+
+.tiny {
+  font-size: .83rem;
+  color: #67727b;
+}
+
+.pill {
+  font-size: .75rem;
+  background: #edf2f4;
+  border-radius: 30px;
+  padding: 5px 10px;
+}
+
+.shop-footer {
+  background: #111a22;
+  color: #c4cbd0;
+  margin-top: 70px;
+}
+
+/* ---------- panel administrativo ---------- */
+
+.admin-sidebar {
+  background: #111a22;
+  color: #d6dfe3;
+  width: 250px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  padding: 20px 12px;
+  z-index: 30;
+}
+
+.admin-sidebar .nav-link {
+  color: #b8c5c9;
+  padding: 11px 15px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.admin-sidebar .nav-link.active,
+.admin-sidebar .nav-link:hover {
+  color: #fff;
+  background: #334149;
+}
+
+.admin-main {
+  margin-left: 250px;
+  padding: 25px 35px;
+  min-height: 100vh;
+}
+
+.admin-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  background: white;
+  border: 1px solid #e6e9eb;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.stat strong {
+  font-size: 1.65rem;
+}
+
+@media (max-width: 850px) {
+  .admin-sidebar {
+    width: 75px;
+    padding: 12px 5px;
+  }
+
+  .admin-sidebar .nav-link {
+    text-align: center;
+    font-size: 0;
+  }
+
+  .admin-sidebar .nav-link i {
+    font-size: 20px;
+  }
+
+  .admin-sidebar .brand,
+  .admin-sidebar .sidebar-label {
+    display: none;
+  }
+
+  .admin-main {
+    margin-left: 75px;
+    padding: 20px 14px;
+  }
+}
+
+/* ---------- acceso (login) ---------- */
+
+.login-shell {
+  min-height: 100vh;
+  padding: 48px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #111a22, #334350);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  border-radius: 18px;
+}
+
+.login-card .form-control {
+  padding: .7rem .85rem;
+}
+
+/* ---------- formularios SSR: errores por campo, patrón PRG ---------- */
+
+.field-error {
+  color: #b02a37;
+  font-size: .85rem;
+  margin-top: .25rem;
+}
