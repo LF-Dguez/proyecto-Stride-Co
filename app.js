@@ -39,6 +39,7 @@ app.use(flash);
 // /health (en indexRouter), / y /products (tienda, públicas) y /api/auth/login son
 // públicos; todo lo demás bajo /api exige un Bearer token antes de authorize().
 app.use('/', indexRouter);
+app.use((req, res, next) => { res.locals.currentPath = req.path; next(); });
 app.use('/', storeRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', authenticate, usersRouter);

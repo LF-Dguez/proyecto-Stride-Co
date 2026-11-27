@@ -40,15 +40,21 @@ body {
 .store-nav a,
 .store-nav button {
   border: none;
+  border-bottom: 3px solid transparent;
   background: none;
   color: #444;
   padding: .65rem .85rem;
   font-weight: 600;
   text-decoration: none;
+  transition: color .2s ease, border-color .2s ease;
+}
+
+.store-nav a:hover {
+  color: #719400;
 }
 
 .store-nav a.active {
-  border-bottom: 3px solid #171717;
+  border-bottom-color: #171717;
   color: #000;
 }
 
@@ -142,7 +148,12 @@ body {
 
 .hero-product:hover .hero-product-stage {
   transform: translateY(-4px);
-  box-shadow: 0 26px 50px -20px #00000070;
+  box-shadow: 0 26px 50px -20px #00000070, 0 0 0 2px #dfff6555;
+}
+
+.hero-product:hover .hero-product-tip {
+  background: #dfff6525;
+  color: var(--lime);
 }
 
 .hero-product-stage model-viewer {

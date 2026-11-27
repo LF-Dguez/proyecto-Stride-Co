@@ -16,10 +16,10 @@ html(lang=getLocale())
           | STRIDE
           span -CO
         nav.store-nav.d-flex.align-items-center
-          a(href='/') #{__('store.nav.home')}
-          a(href='/products') #{__('store.nav.products')}
-          a(href='/my/orders') #{__('store.nav.orders')}
-          a(href='/cart')
+          a(href='/', class=currentPath === '/' ? 'active' : '') #{__('store.nav.home')}
+          a(href='/products', class=currentPath && currentPath.startsWith('/products') ? 'active' : '') #{__('store.nav.products')}
+          a(href='/my/orders', class=currentPath && currentPath.startsWith('/my/orders') ? 'active' : '') #{__('store.nav.orders')}
+          a(href='/cart', class=currentPath === '/cart' ? 'active' : '')
             i.bi.bi-bag
             = ' ' + __('store.nav.cart')
         div
