@@ -697,8 +697,11 @@ Interfaz web (Entregable 3) con renderizado del lado del servidor: Express + Pug
 
 | ID | Funcionalidad | Rutas | Permiso | Responsable | Evidencia |
 |---|---|---|---|---|---|
+| F1 | Inicio y cierre de sesión | `GET /login`, `POST /login`, `POST /logout` | Pública | Dfloresv1 | `docs/ssr/f1/` |
 | F2 | Inicio y catálogo (búsqueda, categoría, paginación) | `GET /`, `GET /products?q=&category=&page=` | Pública | Dfloresv1 | `docs/ssr/f2/` |
 | F3 | Detalle de producto (variantes y disponibilidad) | `GET /products/:id` | Pública | Dfloresv1 | `docs/ssr/f3/` |
+
+F1 valida las credenciales contra `User` con bcrypt y, al iniciar sesión, guarda el mismo JWT del Entregable 2 en una cookie (`access_token`, `httpOnly`); `middlewares/authenticate.js` la lee igual que el header `Authorization` de la API. Las rutas web protegidas (por ejemplo `GET /admin`) usan `authenticate` + `authorize(recurso, acción, alcance)` con los mismos permisos de la base de datos: sin sesión redirigen (302) a `/login?next=` conservando la página pedida, y sin el permiso responden `errors/403.pug`. `middlewares/currentUser.js` es una variante opcional (nunca bloquea) que identifica a quien ya inició sesión para mostrar su nombre en la barra de la tienda.
 
 El producto destacado del inicio y las tarjetas del catálogo muestran un modelo 3D interactivo (`public/models/shoe.glb`, [`<model-viewer>`](https://modelviewer.dev/)) que gira solo y se puede arrastrar. Es un modelo de muestra, no del producto real: **"Materials Variants Shoe" © 2021 Shopify, licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)**, de los [glTF Sample Assets de Khronos](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/MaterialsVariantsShoe); se reemplaza por un modelo propio cuando el equipo tenga uno.
 

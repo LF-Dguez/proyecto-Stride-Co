@@ -3,7 +3,16 @@
         "invalidCredentials": "Invalid Credentials",
         "missingFields": "email and password are required",
         "loginSuccess": "Login successful",
-        "me": "Authenticated user"
+        "me": "Authenticated user",
+        "login": {
+            "title": "Log in",
+            "heading": "Welcome back",
+            "subheading": "Log in to continue.",
+            "email": "Email",
+            "password": "Password",
+            "submit": "Log in",
+            "backToStore": "Back to the store"
+        }
     },
 
     "common": {
@@ -33,6 +42,7 @@
             "orders": "My orders",
             "cart": "Bag",
             "login": "Log in",
+            "logout": "Log out",
             "admin": "Admin"
         },
         "footer": {
@@ -88,7 +98,11 @@
             "roles": "Roles & permissions"
         },
         "viewStore": "View store",
-        "logout": "Log out"
+        "logout": "Log out",
+        "dashboard": {
+            "welcome": "Hi, %s",
+            "hint": "Use the menu on the left to manage the store."
+        }
     },
 
     "webErrors": {

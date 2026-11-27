@@ -49,8 +49,9 @@ html(lang=getLocale())
           .tiny Stride-Co / #{__('admin.nav.dashboard')}
           h2.fw-bold.mb-0= title
         div
-          a.btn.btn-outline-secondary.btn-sm(href='/logout')
-            = __('admin.logout')
-            i.bi.bi-box-arrow-right.ms-1
+          form(method='post', action='/logout')
+            button.btn.btn-outline-secondary.btn-sm(type='submit')
+              = __('admin.logout')
+              i.bi.bi-box-arrow-right.ms-1
       include ../partials/flash.pug
       block content

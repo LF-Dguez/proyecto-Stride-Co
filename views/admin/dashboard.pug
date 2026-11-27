@@ -1,0 +1,6 @@
+extends ../layouts/admin
+
+block content
+  .store-panel
+    h3.fw-bold= __('admin.dashboard.welcome', user.first_name)
+    p.text-secondary.mb-0= __('admin.dashboard.hint')

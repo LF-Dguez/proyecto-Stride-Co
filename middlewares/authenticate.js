@@ -3,16 +3,19 @@ const config = require('config');
 const createError = require('http-errors');
 const { User } = require('../models/sql');
 
-// Verifica la firma, expiración, issuer y audience del Bearer token; deja el
-// payload decodificado en req.auth (req.auth.sub = id del usuario, ver
-// services/token.js). Si falta, está mal firmado o expiró, llama a next(err)
-// con un UnauthorizedError (status 401) que atrapa el manejador de errores
-// genérico de app.js.
+// Verifica la firma, expiración, issuer y audience del token; deja el payload
+// decodificado en req.auth (req.auth.sub = id del usuario, ver services/token.js).
+// Si falta, está mal firmado o expiró, llama a next(err) con un UnauthorizedError
+// (status 401) que atrapa el manejador de errores genérico de app.js (que en las
+// rutas web redirige a /login, ver sección 4.7 del Entregable 3).
+// El token viaja en el header Authorization (API) o en la cookie access_token
+// (vistas web, que no pueden mandar headers al navegar entre páginas).
 const checkToken = expressjwt({
   secret: config.get('jwt.secret'),
   algorithms: ['HS256'],
   issuer: config.get('jwt.issuer'),
-  audience: config.get('jwt.audience')
+  audience: config.get('jwt.audience'),
+  getToken: (req) => (req.cookies && req.cookies.access_token) || req.headers.authorization?.replace(/^Bearer\s+/, '')
 });
 
 // Carga al usuario real a partir de req.auth.sub y lo deja en req.user con el

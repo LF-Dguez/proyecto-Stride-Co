@@ -3,7 +3,16 @@
         "invalidCredentials": "Credenciales Inválidas",
         "missingFields": "email y password son obligatorios",
         "loginSuccess": "Login exitoso",
-        "me": "Usuario autenticado"
+        "me": "Usuario autenticado",
+        "login": {
+            "title": "Iniciar sesión",
+            "heading": "Bienvenido de vuelta",
+            "subheading": "Inicia sesión para continuar.",
+            "email": "Correo electrónico",
+            "password": "Contraseña",
+            "submit": "Iniciar sesión",
+            "backToStore": "Volver a la tienda"
+        }
     },
 
     "common": {
@@ -33,6 +42,7 @@
             "orders": "Mis pedidos",
             "cart": "Bolsa",
             "login": "Iniciar sesión",
+            "logout": "Cerrar sesión",
             "admin": "Administrador"
         },
         "footer": {
@@ -88,7 +98,11 @@
             "roles": "Roles y permisos"
         },
         "viewStore": "Ver tienda",
-        "logout": "Cerrar sesión"
+        "logout": "Cerrar sesión",
+        "dashboard": {
+            "welcome": "Hola, %s",
+            "hint": "Usa el menú de la izquierda para administrar la tienda."
+        }
     },
 
     "webErrors": {

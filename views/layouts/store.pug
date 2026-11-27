@@ -23,9 +23,16 @@ html(lang=getLocale())
             i.bi.bi-bag
             = ' ' + __('store.nav.cart')
         div
-          a.btn.btn-outline-dark.btn-sm(href='/login')
-            i.bi.bi-shield-lock.me-1
-            = __('store.nav.login')
+          if currentUser
+            form.d-flex.align-items-center.gap-2(method='post', action='/logout')
+              span.tiny #{currentUser.first_name}
+              button.btn.btn-outline-dark.btn-sm(type='submit')
+                i.bi.bi-box-arrow-right.me-1
+                = __('store.nav.logout')
+          else
+            a.btn.btn-outline-dark.btn-sm(href='/login')
+              i.bi.bi-shield-lock.me-1
+              = __('store.nav.login')
     include ../partials/flash.pug
     main
       block content
