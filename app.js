@@ -43,7 +43,17 @@ app.use(flash);
 // /api/auth/login son públicos; todo lo demás bajo /api exige un Bearer token
 // antes de authorize(), y /admin exige la cookie de sesión (ver F1, sección 4.7).
 app.use('/', indexRouter);
-app.use((req, res, next) => { res.locals.currentPath = req.path; next(); });
+app.use((req, res, next) => {
+  res.locals.currentPath = req.path;
+  // Selector de idioma (ES/EN) del layout: conserva la página y el resto del query string,
+  // solo cambia ?lang= (config/i18n.js persiste la elección en una cookie).
+  res.locals.langLink = (locale) => {
+    const params = new URLSearchParams(req.query);
+    params.set('lang', locale);
+    return `${req.path}?${params.toString()}`;
+  };
+  next();
+});
 app.use(currentUser);
 app.use('/', authWebRouter);
 app.use('/', storeRouter);

@@ -56,7 +56,10 @@ html(lang=getLocale())
         div
           .tiny Stride-Co / #{__('admin.nav.dashboard')}
           h2.fw-bold.mb-0= title
-        div
+        div.d-flex.align-items-center.gap-3
+          .lang-switch
+            a(href=langLink('es'), class=getLocale() === 'es' ? 'active' : '') ES
+            a(href=langLink('en'), class=getLocale() === 'en' ? 'active' : '') EN
           form(method='post', action='/logout')
             button.btn.btn-outline-secondary.btn-sm(type='submit')
               = __('admin.logout')
