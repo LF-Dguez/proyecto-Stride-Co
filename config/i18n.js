@@ -22,14 +22,28 @@ function toBaseLocale(value) {
   return String(value).trim().toLowerCase().split(/[-_]/)[0];
 }
 
-// Orden de detección del idioma:  ?lang=es  ->  cabecera Accept-Language  ->  idioma por defecto.
+// Orden de detección del idioma (sección 4.10 del Entregable 3):
+//   ?lang=es  ->  cookie de idioma  ->  cabecera Accept-Language  ->  idioma por defecto.
 // i18n.init ya resuelve la cabecera (variantes regionales incluidas, con el idioma por
-// defecto si ninguno está soportado); aquí se respeta ?lang= y se normalizan sus variantes.
+// defecto si ninguno está soportado); aquí se respeta ?lang= (y se guarda en una cookie
+// para que la elección se conserve al navegar sin repetir el query string en cada enlace)
+// y, si no hay ?lang=, se respeta esa cookie.
+const LANG_COOKIE = 'lang';
+const LANG_COOKIE_MAX_AGE = 365 * 24 * 60 * 60 * 1000;
+
 function selectLocale(req, res, next) {
   const requested = req.query && req.query.lang;
   if (typeof requested === 'string' && requested !== '') {
     const base = toBaseLocale(requested);
-    i18n.setLocale([req, res.locals], SUPPORTED_LOCALES.includes(base) ? base : DEFAULT_LOCALE);
+    const locale = SUPPORTED_LOCALES.includes(base) ? base : DEFAULT_LOCALE;
+    i18n.setLocale([req, res.locals], locale);
+    res.cookie(LANG_COOKIE, locale, { maxAge: LANG_COOKIE_MAX_AGE, sameSite: 'lax' });
+    return next();
+  }
+
+  const fromCookie = req.cookies && req.cookies[LANG_COOKIE];
+  if (typeof fromCookie === 'string' && SUPPORTED_LOCALES.includes(toBaseLocale(fromCookie))) {
+    i18n.setLocale([req, res.locals], toBaseLocale(fromCookie));
   }
   next();
 }

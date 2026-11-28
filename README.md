@@ -605,9 +605,12 @@ La API responde en español (`es`, idioma por defecto) e inglés (`en`), con la 
 
 El idioma se detecta en este orden:
 
-1. **`?lang=es`** o **`?lang=en`** en la URL (tiene prioridad sobre todo lo demás).
-2. Cabecera **`Accept-Language`** de la petición (acepta listas de preferencia y variantes regionales: `es-MX`, `en-US`, etc., que se resuelven a su idioma base).
-3. Si no se reconoce ninguno de los dos (por ejemplo `fr`), se usa el idioma por defecto (`es`).
+1. **`?lang=es`** o **`?lang=en`** en la URL (tiene prioridad sobre todo lo demás); en las vistas web, además, guarda el idioma elegido en una cookie (`lang`, un año) para conservarlo al navegar sin repetir `?lang=` en cada enlace.
+2. Si no viene `?lang=`, la cookie `lang` de la petición (solo aplica a las vistas web; la API no la usa salvo que la mande explícitamente).
+3. Cabecera **`Accept-Language`** de la petición (acepta listas de preferencia y variantes regionales: `es-MX`, `en-US`, etc., que se resuelven a su idioma base).
+4. Si no se reconoce ninguno de los anteriores (por ejemplo `fr`), se usa el idioma por defecto (`es`).
+
+El layout de la tienda y del panel (`views/layouts/store.pug`, `views/layouts/admin.pug`) incluye el selector **ES / EN** (`res.locals.langLink`, definido en `app.js`): conserva la página y el resto del query string, solo cambia `?lang=`.
 
 ```bash
 curl -H "Accept-Language: en" https://<url>/api/products/999
@@ -721,6 +724,18 @@ F8 reutiliza `services/product.service.js` (la misma capa que F2/F3) y agrega cr
 El producto destacado del inicio y las tarjetas del catálogo muestran un modelo 3D interactivo (`public/models/shoe.glb`, [`<model-viewer>`](https://modelviewer.dev/)) que gira solo y se puede arrastrar. Es un modelo de muestra, no del producto real: **"Materials Variants Shoe" © 2021 Shopify, licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)**, de los [glTF Sample Assets de Khronos](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/MaterialsVariantsShoe); se reemplaza por un modelo propio cuando el equipo tenga uno.
 
 Al pasar del catálogo (o del destacado del inicio) al detalle de un producto, el navegador anima el escenario del tenis como un solo elemento continuo (`view-transition-name` compartido entre ambas páginas, vía la regla `@view-transition` de `stride.css`): cero JavaScript, se degrada a una navegación normal en navegadores sin soporte.
+
+### Cómo se guarda la sesión
+
+El login web (`POST /login`) reutiliza `services/token.js` del Entregable 2: firma el mismo JWT y, en vez de devolverlo en el body, lo guarda en una cookie `httpOnly` (`access_token`, `sameSite: 'lax'`, `secure` solo en producción) porque el navegador no manda encabezados `Authorization` al navegar entre páginas. `middlewares/authenticate.js` acepta ese token tanto de la cookie (vistas web) como del header `Bearer` (API), así que las rutas y los servicios no distinguen de dónde vino. `POST /logout` solo borra esa cookie (`res.clearCookie('access_token')`) y redirige a `/`. Sin sesión, las rutas protegidas responden 401 y el manejador de errores de `app.js` lo convierte en `302 → /login?next=<ruta pedida>`; tras iniciar sesión, `POST /login` regresa a ese `next` (validado con `safeNext()` para no permitir una redirección fuera del sitio).
+
+### Cómo agregar una pantalla nueva
+
+1. **Servicio** (`services/<recurso>.service.js`): si ya existe para la API, se reutiliza tal cual; si no, se crea ahí (nunca dentro del controller web) para que ambas capas compartan la misma consulta a Sequelize/Mongoose.
+2. **Ruta** (`routes/web/<área>.js`): `GET` para consultar, `POST` para modificar, con `authenticate` + `authorize(recurso, acción, alcance)` si la pantalla es protegida.
+3. **Controller** (`controllers/web/<área>.js`): llama al servicio y responde con `res.render('<vista>', { ... })` o `res.redirect(...)`; los errores van a `next(err)`, nunca se atrapan en la vista.
+4. **Vista Pug** (`views/<área>/...`): `extends` el layout correspondiente (`store` o `admin`), reutiliza los mixins existentes (`productCard`, `table`, `formField`, `statusBadge`) y solo usa `= __('clave')` para los textos, nunca texto fijo.
+5. **Traducciones**: se agrega la misma clave a `locales/es.json` y `locales/en.json` al mismo tiempo (`npm test` falla si falta en alguno) y, si la ruta modifica datos, los mensajes de error por campo y el de confirmación del patrón PRG también se traducen.
 
 ## API pública
 

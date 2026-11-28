@@ -84,6 +84,32 @@ body {
   }
 }
 
+/* Selector de idioma (ES / EN) del layout: conserva la elección en una cookie
+   (config/i18n.js) para que se mantenga al navegar entre páginas. */
+.lang-switch {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.lang-switch a {
+  color: #999;
+  text-decoration: none;
+  padding: .2rem .35rem;
+  border-radius: .3rem;
+}
+
+.lang-switch a:hover {
+  color: #444;
+}
+
+.lang-switch a.active {
+  color: #171717;
+  background: #eef1ee;
+}
+
 /* ---------- tienda: portada ---------- */
 
 /* Envoltura más alta que la pantalla: le da a la portada espacio de scroll
