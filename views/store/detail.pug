@@ -22,13 +22,14 @@ block content
             p.text-secondary.mb-4= product.description
 
           if variants.length
-            label.form-label.fw-bold(for='variantSelect')= __('store.detail.chooseVariant')
-            select#variantSelect.form-select.form-select-lg.mb-4
-              each v in variants
-                option(value=v.id, disabled=v.available <= 0)= v.label
+            form(method='post', action='/cart/items')
+              input(type='hidden', name='next', value=`/products/${product.id}`)
+              label.form-label.fw-bold(for='variantSelect')= __('store.detail.chooseVariant')
+              select#variantSelect.form-select.form-select-lg.mb-4(name='variantId')
+                each v in variants
+                  option(value=v.id, disabled=v.available <= 0)= v.label
+              button.btn.btn-lime.btn-lg.w-100(type='submit')
+                i.bi.bi-bag-plus.me-2
+                = __('store.detail.addToBag')
           else
             p.text-secondary.mb-4= __('store.detail.noVariants')
-
-          button.btn.btn-lime.btn-lg.w-100(type='button', disabled, title=__('store.detail.comingSoon'))
-            i.bi.bi-bag-plus.me-2
-            = __('store.detail.addToBag')

@@ -81,8 +81,57 @@
             "available": "%d available",
             "outOfStock": "Out of stock",
             "noVariants": "No variants available right now.",
-            "addToBag": "Add to bag",
-            "comingSoon": "Coming soon"
+            "addToBag": "Add to bag"
+        },
+        "cart": {
+            "title": "Your bag",
+            "added": "Added to your bag",
+            "empty": "Your bag is empty.",
+            "unavailable": "This product is no longer available.",
+            "notEnoughStock": "Only %d left in stock",
+            "summary": "Summary",
+            "subtotal": "Items subtotal",
+            "checkout": "Continue to checkout",
+            "continueShopping": "Continue shopping",
+            "updateQuantity": "Update"
+        },
+        "checkout": {
+            "title": "Checkout",
+            "confirmationTitle": "Thank you for your purchase!",
+            "confirmationSubtitle": "Your order #%s was placed.",
+            "summary": "Order summary",
+            "subtotal": "Items subtotal",
+            "shipping": "Shipping",
+            "total": "Grand total",
+            "placeOrder": "Place order",
+            "viewOrder": "View my order",
+            "field": {
+                "street": "Street",
+                "number": "Number",
+                "city": "City",
+                "state": "State",
+                "postalCode": "Postal code",
+                "country": "Country",
+                "paymentMethod": "Payment method"
+            },
+            "payment": {
+                "card": "Card",
+                "cash": "Cash",
+                "transfer": "Bank transfer"
+            },
+            "errors": {
+                "streetRequired": "Street is required",
+                "cityRequired": "City is required",
+                "paymentRequired": "Choose a payment method",
+                "insufficientStock": "Some items in your bag no longer have enough stock"
+            }
+        },
+        "myOrders": {
+            "title": "My orders",
+            "detailTitle": "My order detail",
+            "empty": "You don't have any orders yet.",
+            "notFound": "Order not found",
+            "shippingAddress": "Shipping address"
         }
     },
 

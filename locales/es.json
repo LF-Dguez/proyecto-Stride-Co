@@ -81,8 +81,57 @@
             "available": "%d disponibles",
             "outOfStock": "Agotado",
             "noVariants": "Sin variantes disponibles por ahora.",
-            "addToBag": "Agregar a la bolsa",
-            "comingSoon": "Próximamente"
+            "addToBag": "Agregar a la bolsa"
+        },
+        "cart": {
+            "title": "Tu bolsa",
+            "added": "Se agregó el producto a tu bolsa",
+            "empty": "Tu bolsa está vacía.",
+            "unavailable": "Este producto ya no está disponible.",
+            "notEnoughStock": "Solo quedan %d disponibles",
+            "summary": "Resumen",
+            "subtotal": "Subtotal",
+            "checkout": "Continuar a pagar",
+            "continueShopping": "Seguir comprando",
+            "updateQuantity": "Actualizar"
+        },
+        "checkout": {
+            "title": "Pagar",
+            "confirmationTitle": "¡Gracias por tu compra!",
+            "confirmationSubtitle": "Tu pedido #%s fue registrado.",
+            "summary": "Resumen del pedido",
+            "subtotal": "Subtotal",
+            "shipping": "Envío",
+            "total": "Total",
+            "placeOrder": "Confirmar pedido",
+            "viewOrder": "Ver mi pedido",
+            "field": {
+                "street": "Calle",
+                "number": "Número",
+                "city": "Ciudad",
+                "state": "Estado",
+                "postalCode": "Código postal",
+                "country": "País",
+                "paymentMethod": "Método de pago"
+            },
+            "payment": {
+                "card": "Tarjeta",
+                "cash": "Efectivo",
+                "transfer": "Transferencia"
+            },
+            "errors": {
+                "streetRequired": "La calle es obligatoria",
+                "cityRequired": "La ciudad es obligatoria",
+                "paymentRequired": "Elige un método de pago",
+                "insufficientStock": "Alguno de los productos de tu bolsa ya no tiene existencias suficientes"
+            }
+        },
+        "myOrders": {
+            "title": "Mis pedidos",
+            "detailTitle": "Detalle de mi pedido",
+            "empty": "Todavía no tienes pedidos.",
+            "notFound": "Pedido no encontrado",
+            "shippingAddress": "Dirección de envío"
         }
     },
 

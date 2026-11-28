@@ -1,6 +1,6 @@
 // Acceso a datos de Order/Customer (MongoDB) para el panel administrativo (F11),
 // compartido por los controllers web igual que product.service.js (sección 4.4).
-const { Order } = require('../models/mongo');
+const { Order, Customer } = require('../models/mongo');
 const { Product } = require('../models/sql');
 
 const STATUSES = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
@@ -42,4 +42,11 @@ async function appendStatusChange(id, { status, note, changedById }) {
   return order;
 }
 
-module.exports = { STATUSES, listOrders, listRecent, getOrderDetail, appendStatusChange };
+// F6: solo los pedidos del cliente ligado a este usuario (orders:read:own).
+async function listMine(userId) {
+  const customer = await Customer.findOne({ userId }).lean();
+  if (!customer) return [];
+  return Order.find({ customerId: customer._id }).sort({ createdAt: -1 }).lean();
+}
+
+module.exports = { STATUSES, listOrders, listRecent, getOrderDetail, appendStatusChange, listMine };
