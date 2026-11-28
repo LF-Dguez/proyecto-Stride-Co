@@ -8,10 +8,13 @@ const i18n = require('./config/i18n');
 
 
 const authenticate = require('./middlewares/authenticate');
+const currentUser = require('./middlewares/currentUser');
 const flash = require('./middlewares/flash');
 
 const indexRouter = require('./routes/index');
 const storeRouter = require('./routes/web/store');
+const authWebRouter = require('./routes/web/auth');
+const adminWebRouter = require('./routes/web/admin');
 const authRouter = require('./routes/api/auth');
 const usersRouter = require('./routes/api/users');
 const rolesRouter = require('./routes/api/roles');
@@ -36,11 +39,15 @@ app.use(i18n.middleware);
 app.use(flash);
 
 
-// /health (en indexRouter), / y /products (tienda, públicas) y /api/auth/login son
-// públicos; todo lo demás bajo /api exige un Bearer token antes de authorize().
+// /health (en indexRouter), / y /products (tienda, públicas), /login (F1) y
+// /api/auth/login son públicos; todo lo demás bajo /api exige un Bearer token
+// antes de authorize(), y /admin exige la cookie de sesión (ver F1, sección 4.7).
 app.use('/', indexRouter);
 app.use((req, res, next) => { res.locals.currentPath = req.path; next(); });
+app.use(currentUser);
+app.use('/', authWebRouter);
 app.use('/', storeRouter);
+app.use('/admin', adminWebRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', authenticate, usersRouter);
 app.use('/api/roles', authenticate, rolesRouter);
@@ -72,10 +79,14 @@ app.use((err, req, res, next) => {
     return res.status(status).json({ message, data: null });
   }
 
-  // Vistas web: 403/404 con su propia página; cualquier otro código (incluido 500)
-  // usa errors/500.pug sin mostrar el stack en producción.
+  // Vistas web: sin sesión se vuelve a /login conservando a dónde se iba (F1,
+  // sección 4.7); 403/404 con su propia página; cualquier otro código (incluido
+  // 500) usa errors/500.pug sin mostrar el stack en producción.
   const status = err.status || 500;
   if (status >= 500) console.error(err);
+  if (status === 401) {
+    return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}`);
+  }
   const template = [403, 404].includes(status) ? `errors/${status}` : 'errors/500';
   res.status(status);
   res.render(template);

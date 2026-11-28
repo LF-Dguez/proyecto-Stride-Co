@@ -1,0 +1,19 @@
+extends ../../layouts/admin
+
+block content
+  .store-panel.reveal.d1(style='max-width:760px')
+    h5.fw-bold.mb-1= role.name
+    p.text-secondary.mb-4= role.description
+    form(method='post', action=`/admin/roles/${role.id}`)
+      .row.g-3
+        each perms, resource in groups
+          .col-md-6
+            .border.rounded.p-3.h-100
+              div.fw-bold.text-capitalize.mb-2= resource
+              each perm in perms
+                .form-check
+                  input.form-check-input(type='checkbox', id=`perm-${perm.id}`, name='permission_ids', value=perm.id, checked=perm.checked)
+                  label.form-check-label(for=`perm-${perm.id}`)= perm.key.split(':').slice(1).join(':')
+      .d-flex.gap-2.mt-4
+        button.btn.btn-lime(type='submit')= __('admin.roles.save')
+        a.btn.btn-outline-secondary(href='/admin/roles')= __('admin.roles.cancel')

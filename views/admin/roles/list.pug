@@ -1,0 +1,14 @@
+extends ../../layouts/admin
+include ../../mixins/table
+
+block content
+  .store-panel.reveal.d1
+    +table([__('admin.roles.col.name'), __('admin.roles.col.description'), __('admin.roles.col.permissions'), ''])
+      each role in roles
+        tr
+          td= role.name
+          td= role.description
+          td= role.permissionCount
+          td
+            if can('roles', 'update', 'any')
+              a.btn.btn-sm.btn-outline-secondary(href=`/admin/roles/${role.id}/edit`)= __('admin.roles.edit')
