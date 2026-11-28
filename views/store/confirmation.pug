@@ -1,0 +1,19 @@
+extends ../layouts/store
+
+block content
+  .container.py-5
+    .store-panel.text-center.py-5.reveal.d1(style='max-width:640px;margin:0 auto')
+      i.bi.bi-check-circle-fill.text-success(style='font-size:3rem')
+      h2.fw-bold.mt-3= __('store.checkout.confirmationTitle')
+      p.text-secondary= __('store.checkout.confirmationSubtitle', order.id.slice(-8))
+      ul.list-unstyled.text-start.my-4
+        each item in order.items
+          li.d-flex.justify-content-between.mb-2
+            span= `${item.productName} × ${item.quantity}`
+            span= item.unitPriceLabel
+      .d-flex.justify-content-between.fw-bold.mb-4
+        span= __('store.checkout.total')
+        span= order.totalLabel
+      .d-flex.justify-content-center.gap-2
+        a.btn.btn-lime(href=`/my/orders/${order.id}`)= __('store.checkout.viewOrder')
+        a.btn.btn-outline-dark(href='/products')= __('store.cart.continueShopping')

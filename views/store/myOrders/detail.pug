@@ -1,0 +1,56 @@
+extends ../../layouts/store
+include ../../mixins/table
+include ../../mixins/statusBadge
+
+block content
+  .container.py-5
+    .d-flex.justify-content-between.align-items-center.mb-4.reveal.d1
+      h2.fw-bold.mb-0= __('store.myOrders.detailTitle')
+      +statusBadge(order.status)
+
+    .row.g-4
+      .col-lg-7
+        .store-panel.mb-4.reveal.d2
+          h5.fw-bold.mb-3= __('admin.orders.items')
+          +table([__('admin.orders.col.product'), __('admin.orders.col.quantity'), __('admin.orders.col.unitPrice')])
+            each item in order.items
+              tr
+                td= item.productName
+                td= item.quantity
+                td= item.unitPriceLabel
+          .d-flex.justify-content-end.mt-3
+            table.table.table-sm.w-auto
+              tr
+                td.text-secondary.pe-4= __('admin.orders.subtotal')
+                td.text-end= order.totals.subtotalLabel
+              tr
+                td.text-secondary.pe-4= __('admin.orders.shipping')
+                td.text-end= order.totals.shippingLabel
+              tr
+                td.text-secondary.pe-4= __('admin.orders.discount')
+                td.text-end= order.totals.discountLabel
+              tr
+                td.fw-bold.pe-4= __('admin.orders.total')
+                td.text-end.fw-bold= order.totals.totalLabel
+
+        .store-panel.reveal.d3
+          h5.fw-bold.mb-3= __('admin.orders.history')
+          if order.history.length
+            ul.list-unstyled.mb-0
+              each entry in order.history
+                li.mb-2
+                  +statusBadge(entry.status)
+                  span.ms-2.tiny= entry.dateLabel
+                  if entry.note
+                    div.text-secondary.tiny= entry.note
+          else
+            p.text-secondary.mb-0= __('admin.orders.noHistory')
+
+      .col-lg-5
+        .store-panel.reveal.d2
+          h5.fw-bold.mb-3= __('store.myOrders.shippingAddress')
+          if order.address
+            p.mb-0.text-secondary
+              = [order.address.street, order.address.number, order.address.city, order.address.state, order.address.postalCode, order.address.country].filter(Boolean).join(', ')
+          else
+            p.text-secondary.mb-0 —

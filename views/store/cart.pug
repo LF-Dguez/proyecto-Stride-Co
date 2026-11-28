@@ -1,0 +1,45 @@
+extends ../layouts/store
+
+block content
+  .container.py-5
+    h2.fw-bold.mb-4.reveal.d1= __('store.cart.title')
+    if lines.length
+      .row.g-4
+        .col-lg-8
+          each line, i in lines
+            .store-panel.mb-3.reveal(class=`d${Math.min(i + 1, 4)}`)
+              if line.missing
+                .d-flex.justify-content-between.align-items-center
+                  p.text-secondary.mb-0= __('store.cart.unavailable')
+                  form(method='post', action=`/cart/items/${line.variantId}/delete`)
+                    button.btn.btn-sm.btn-outline-danger(type='submit')
+                      i.bi.bi-trash
+              else
+                .d-flex.justify-content-between.align-items-start.gap-3
+                  div
+                    h6.fw-bold.mb-1= line.productName
+                    p.tiny.text-secondary.mb-1= [line.color, line.size].filter(Boolean).join(' · ')
+                    p.fw-bold.mb-0= line.priceLabel
+                  .text-end
+                    form.d-flex.align-items-center.gap-2.mb-2(method='post', action=`/cart/items/${line.variantId}`)
+                      input.form-control.form-control-sm(style='width:80px', type='number', name='quantity', min='1', value=line.quantity)
+                      button.btn.btn-sm.btn-outline-secondary(type='submit', title=__('store.cart.updateQuantity'))
+                        i.bi.bi-arrow-repeat
+                    form(method='post', action=`/cart/items/${line.variantId}/delete`)
+                      button.btn.btn-sm.btn-outline-danger(type='submit')
+                        i.bi.bi-trash
+                if line.quantity > line.available
+                  p.text-danger.tiny.mt-2.mb-0= __('store.cart.notEnoughStock', String(line.available))
+                p.text-end.fw-bold.mt-2.mb-0= line.lineTotalLabel
+        .col-lg-4
+          .store-panel.reveal.d2
+            h5.fw-bold.mb-3= __('store.cart.summary')
+            .d-flex.justify-content-between.mb-3
+              span.text-secondary= __('store.cart.subtotal')
+              span.fw-bold= subtotalLabel
+            a.btn.btn-lime.w-100(href='/checkout')= __('store.cart.checkout')
+            a.btn.btn-outline-dark.w-100.mt-2(href='/products')= __('store.cart.continueShopping')
+    else
+      .store-panel.text-center.py-5.reveal.d1
+        p.text-secondary.mb-3= __('store.cart.empty')
+        a.btn.btn-lime(href='/products')= __('store.cart.continueShopping')

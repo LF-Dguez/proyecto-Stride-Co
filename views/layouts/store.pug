@@ -22,10 +22,21 @@ html(lang=getLocale())
           a(href='/cart', class=currentPath === '/cart' ? 'active' : '')
             i.bi.bi-bag
             = ' ' + __('store.nav.cart')
-        div
-          a.btn.btn-outline-dark.btn-sm(href='/login')
-            i.bi.bi-shield-lock.me-1
-            = __('store.nav.login')
+        div.d-flex.align-items-center.gap-2
+          if currentUser
+            if can('orders', 'read', 'any')
+              a.btn.btn-outline-dark.btn-sm(href='/admin')
+                i.bi.bi-speedometer2.me-1
+                = __('store.nav.admin')
+            form.d-flex.align-items-center.gap-2(method='post', action='/logout')
+              span.tiny #{currentUser.first_name}
+              button.btn.btn-outline-dark.btn-sm(type='submit')
+                i.bi.bi-box-arrow-right.me-1
+                = __('store.nav.logout')
+          else
+            a.btn.btn-outline-dark.btn-sm(href='/login')
+              i.bi.bi-shield-lock.me-1
+              = __('store.nav.login')
     include ../partials/flash.pug
     main
       block content

@@ -1,0 +1,22 @@
+extends ../../layouts/store
+include ../../mixins/statusBadge
+
+block content
+  .container.py-5
+    h2.fw-bold.mb-4.reveal.d1= __('store.myOrders.title')
+    if orders.length
+      .row.g-3
+        each order, i in orders
+          .col-12
+            a.text-decoration-none.text-dark(href=`/my/orders/${order.id}`)
+              .store-panel.d-flex.justify-content-between.align-items-center.reveal(class=`d${Math.min(i + 1, 4)}`)
+                div
+                  p.fw-bold.mb-1= '#' + order.id.slice(-8)
+                  p.tiny.text-secondary.mb-0= order.dateLabel
+                div.text-end
+                  +statusBadge(order.status)
+                  p.fw-bold.mb-0.mt-1= order.totalLabel
+    else
+      .store-panel.text-center.py-5.reveal.d1
+        p.text-secondary.mb-3= __('store.myOrders.empty')
+        a.btn.btn-lime(href='/products')= __('store.cart.continueShopping')

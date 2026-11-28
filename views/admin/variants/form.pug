@@ -1,0 +1,13 @@
+extends ../../layouts/admin
+include ../../mixins/formField
+
+block content
+  .store-panel.reveal.d1(style='max-width:560px')
+    form(method='post', action=isNew ? '/admin/variants' : `/admin/variants/${variantId}`, novalidate=true)
+      +formField({ name: 'product_id', label: __('admin.variants.field.product'), type: 'select', value: values.product_id, error: errors.product_id, options: productOptions })
+      +formField({ name: 'sku', label: __('admin.variants.field.sku'), value: values.sku, error: errors.sku, required: true })
+      +formField({ name: 'color', label: __('admin.variants.field.color'), value: values.color, error: errors.color, required: true })
+      +formField({ name: 'size', label: __('admin.variants.field.size'), value: values.size, error: errors.size, required: true })
+      .d-flex.gap-2.mt-3
+        button.btn.btn-lime(type='submit')= __('admin.variants.save')
+        a.btn.btn-outline-secondary(href='/admin/variants')= __('admin.variants.cancel')

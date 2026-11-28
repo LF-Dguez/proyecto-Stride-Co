@@ -1,0 +1,13 @@
+extends ../../layouts/admin
+include ../../mixins/formField
+
+block content
+  .store-panel.reveal.d1(style='max-width:560px')
+    form(method='post', action=isNew ? '/admin/products' : `/admin/products/${productId}`, novalidate=true)
+      +formField({ name: 'name', label: __('admin.products.field.name'), value: values.name, error: errors.name, required: true })
+      +formField({ name: 'brand', label: __('admin.products.field.brand'), value: values.brand })
+      +formField({ name: 'category_id', label: __('admin.products.field.category'), type: 'select', value: values.category_id, error: errors.category_id, options: categoryOptions })
+      +formField({ name: 'price', label: __('admin.products.field.price'), type: 'number', value: values.price, error: errors.price, required: true })
+      .d-flex.gap-2.mt-3
+        button.btn.btn-lime(type='submit')= __('admin.products.save')
+        a.btn.btn-outline-secondary(href='/admin/products')= __('admin.products.cancel')

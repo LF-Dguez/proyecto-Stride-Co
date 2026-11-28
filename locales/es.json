@@ -3,7 +3,16 @@
         "invalidCredentials": "Credenciales Inválidas",
         "missingFields": "email y password son obligatorios",
         "loginSuccess": "Login exitoso",
-        "me": "Usuario autenticado"
+        "me": "Usuario autenticado",
+        "login": {
+            "title": "Iniciar sesión",
+            "heading": "Bienvenido de vuelta",
+            "subheading": "Inicia sesión para continuar.",
+            "email": "Correo electrónico",
+            "password": "Contraseña",
+            "submit": "Iniciar sesión",
+            "backToStore": "Volver a la tienda"
+        }
     },
 
     "common": {
@@ -33,6 +42,7 @@
             "orders": "Mis pedidos",
             "cart": "Bolsa",
             "login": "Iniciar sesión",
+            "logout": "Cerrar sesión",
             "admin": "Administrador"
         },
         "footer": {
@@ -71,8 +81,57 @@
             "available": "%d disponibles",
             "outOfStock": "Agotado",
             "noVariants": "Sin variantes disponibles por ahora.",
-            "addToBag": "Agregar a la bolsa",
-            "comingSoon": "Próximamente"
+            "addToBag": "Agregar a la bolsa"
+        },
+        "cart": {
+            "title": "Tu bolsa",
+            "added": "Se agregó el producto a tu bolsa",
+            "empty": "Tu bolsa está vacía.",
+            "unavailable": "Este producto ya no está disponible.",
+            "notEnoughStock": "Solo quedan %d disponibles",
+            "summary": "Resumen",
+            "subtotal": "Subtotal",
+            "checkout": "Continuar a pagar",
+            "continueShopping": "Seguir comprando",
+            "updateQuantity": "Actualizar"
+        },
+        "checkout": {
+            "title": "Pagar",
+            "confirmationTitle": "¡Gracias por tu compra!",
+            "confirmationSubtitle": "Tu pedido #%s fue registrado.",
+            "summary": "Resumen del pedido",
+            "subtotal": "Subtotal",
+            "shipping": "Envío",
+            "total": "Total",
+            "placeOrder": "Confirmar pedido",
+            "viewOrder": "Ver mi pedido",
+            "field": {
+                "street": "Calle",
+                "number": "Número",
+                "city": "Ciudad",
+                "state": "Estado",
+                "postalCode": "Código postal",
+                "country": "País",
+                "paymentMethod": "Método de pago"
+            },
+            "payment": {
+                "card": "Tarjeta",
+                "cash": "Efectivo",
+                "transfer": "Transferencia"
+            },
+            "errors": {
+                "streetRequired": "La calle es obligatoria",
+                "cityRequired": "La ciudad es obligatoria",
+                "paymentRequired": "Elige un método de pago",
+                "insufficientStock": "Alguno de los productos de tu bolsa ya no tiene existencias suficientes"
+            }
+        },
+        "myOrders": {
+            "title": "Mis pedidos",
+            "detailTitle": "Detalle de mi pedido",
+            "empty": "Todavía no tienes pedidos.",
+            "notFound": "Pedido no encontrado",
+            "shippingAddress": "Dirección de envío"
         }
     },
 
@@ -88,7 +147,214 @@
             "roles": "Roles y permisos"
         },
         "viewStore": "Ver tienda",
-        "logout": "Cerrar sesión"
+        "logout": "Cerrar sesión",
+        "dashboard": {
+            "welcome": "Hola, %s",
+            "hint": "Usa el menú de la izquierda para administrar la tienda.",
+            "products": "Productos activos",
+            "variants": "Variantes",
+            "stockUnits": "Unidades en stock",
+            "orders": "Pedidos",
+            "recentOrders": "Pedidos recientes"
+        },
+        "products": {
+            "title": "Productos",
+            "newTitle": "Nuevo producto",
+            "editTitle": "Editar producto",
+            "new": "Nuevo producto",
+            "save": "Guardar",
+            "cancel": "Cancelar",
+            "active": "Activo",
+            "inactive": "Inactivo",
+            "empty": "No hay productos.",
+            "notFound": "Producto no encontrado",
+            "created": "Producto creado",
+            "updated": "Producto actualizado",
+            "activated": "Producto activado",
+            "deactivated": "Producto desactivado",
+            "deleted": "Producto eliminado",
+            "confirmDelete": "¿Eliminar este producto? Esta acción no se puede deshacer.",
+            "col": {
+                "id": "ID",
+                "name": "Nombre",
+                "brand": "Marca",
+                "category": "Categoría",
+                "price": "Precio",
+                "status": "Estado",
+                "actions": "Acciones"
+            },
+            "field": {
+                "name": "Nombre",
+                "brand": "Marca",
+                "category": "Categoría",
+                "price": "Precio"
+            },
+            "errors": {
+                "nameRequired": "El nombre es obligatorio",
+                "priceInvalid": "El precio debe ser un número mayor o igual a 0",
+                "categoryInvalid": "Categoría inválida"
+            }
+        },
+        "variants": {
+            "title": "Variantes",
+            "newTitle": "Nueva variante",
+            "editTitle": "Editar variante",
+            "new": "Nueva variante",
+            "save": "Guardar",
+            "cancel": "Cancelar",
+            "empty": "No hay variantes.",
+            "notFound": "Variante no encontrada",
+            "created": "Variante creada",
+            "updated": "Variante actualizada",
+            "col": {
+                "sku": "SKU",
+                "product": "Producto",
+                "color": "Color",
+                "size": "Talla",
+                "available": "Disponible",
+                "actions": "Acciones"
+            },
+            "field": {
+                "product": "Producto",
+                "sku": "SKU",
+                "color": "Color",
+                "size": "Talla"
+            },
+            "errors": {
+                "productRequired": "Selecciona un producto",
+                "skuRequired": "El SKU es obligatorio",
+                "colorRequired": "El color es obligatorio",
+                "sizeRequired": "La talla es obligatoria"
+            }
+        },
+        "inventory": {
+            "title": "Inventario",
+            "save": "Guardar",
+            "empty": "No hay registros de inventario.",
+            "notFound": "Registro de inventario no encontrado",
+            "updated": "Inventario actualizado",
+            "col": {
+                "sku": "SKU",
+                "product": "Producto",
+                "variant": "Variante",
+                "stock": "Existencias",
+                "reserved": "Reservado",
+                "available": "Disponible"
+            },
+            "errors": {
+                "invalidNumbers": "Existencias y reservado deben ser números enteros mayores o iguales a 0",
+                "reservedExceedsStock": "Lo reservado no puede ser mayor que las existencias"
+            }
+        },
+        "orders": {
+            "title": "Pedidos",
+            "detailTitle": "Detalle del pedido",
+            "allStatuses": "Todos los estados",
+            "view": "Ver",
+            "empty": "No hay pedidos.",
+            "notFound": "Pedido no encontrado",
+            "updated": "Estado del pedido actualizado",
+            "customer": "Cliente",
+            "items": "Artículos",
+            "subtotal": "Subtotal",
+            "shipping": "Envío",
+            "discount": "Descuento",
+            "total": "Total",
+            "history": "Historial de estado",
+            "noHistory": "Sin cambios de estado todavía.",
+            "changeStatus": "Cambiar estado",
+            "updateStatus": "Actualizar estado",
+            "col": {
+                "id": "ID",
+                "customer": "Cliente",
+                "status": "Estado",
+                "total": "Total",
+                "date": "Fecha",
+                "product": "Producto",
+                "quantity": "Cantidad",
+                "unitPrice": "Precio unitario"
+            },
+            "field": {
+                "newStatus": "Nuevo estado",
+                "note": "Nota (opcional)"
+            },
+            "status": {
+                "PENDING": "Pendiente",
+                "PAID": "Pagado",
+                "SHIPPED": "Enviado",
+                "DELIVERED": "Entregado",
+                "CANCELLED": "Cancelado"
+            },
+            "errors": {
+                "statusInvalid": "Estado inválido"
+            }
+        },
+        "customers": {
+            "title": "Clientes",
+            "detailTitle": "Detalle del cliente",
+            "view": "Ver",
+            "empty": "No hay clientes.",
+            "notFound": "Cliente no encontrado",
+            "info": "Datos de contacto",
+            "orders": "Pedidos del cliente",
+            "col": {
+                "email": "Correo",
+                "phone": "Teléfono",
+                "addresses": "Direcciones"
+            }
+        },
+        "users": {
+            "title": "Usuarios",
+            "newTitle": "Nuevo usuario",
+            "editTitle": "Editar usuario",
+            "new": "Nuevo usuario",
+            "save": "Guardar",
+            "cancel": "Cancelar",
+            "active": "Activo",
+            "inactive": "Inactivo",
+            "empty": "No hay usuarios.",
+            "notFound": "Usuario no encontrado",
+            "created": "Usuario creado",
+            "updated": "Usuario actualizado",
+            "activated": "Usuario activado",
+            "deactivated": "Usuario desactivado",
+            "col": {
+                "name": "Nombre",
+                "email": "Correo",
+                "role": "Rol",
+                "status": "Estado",
+                "actions": "Acciones"
+            },
+            "field": {
+                "firstName": "Nombre",
+                "lastName": "Apellido",
+                "email": "Correo",
+                "role": "Rol",
+                "password": "Contraseña",
+                "passwordEdit": "Nueva contraseña (dejar en blanco para no cambiarla)"
+            },
+            "errors": {
+                "firstNameRequired": "El nombre es obligatorio",
+                "lastNameRequired": "El apellido es obligatorio",
+                "emailRequired": "El correo es obligatorio",
+                "roleRequired": "Selecciona un rol",
+                "passwordRequired": "La contraseña es obligatoria (mínimo %s caracteres)"
+            }
+        },
+        "roles": {
+            "title": "Roles y permisos",
+            "editTitle": "Permisos de %s",
+            "edit": "Editar permisos",
+            "save": "Guardar",
+            "cancel": "Cancelar",
+            "notFound": "Rol no encontrado",
+            "updated": "Permisos actualizados",
+            "col": {
+                "name": "Rol",
+                "description": "Descripción",
+                "permissions": "Permisos"
+            }
+        }
     },
 
     "webErrors": {

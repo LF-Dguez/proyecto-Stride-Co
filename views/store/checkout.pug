@@ -1,0 +1,54 @@
+extends ../layouts/store
+include ../mixins/formField
+
+block content
+  .container.py-5
+    h2.fw-bold.mb-4.reveal.d1= __('store.checkout.title')
+    .row.g-4
+      .col-lg-7
+        .store-panel.reveal.d2
+          if errors.cart
+            .alert.alert-danger= errors.cart
+          form(method='post', action='/checkout', novalidate=true)
+            +formField({ name: 'street', label: __('store.checkout.field.street'), value: values.street, error: errors.street, required: true })
+            +formField({ name: 'number', label: __('store.checkout.field.number'), value: values.number })
+            +formField({ name: 'city', label: __('store.checkout.field.city'), value: values.city, error: errors.city, required: true })
+            +formField({ name: 'state', label: __('store.checkout.field.state'), value: values.state })
+            +formField({ name: 'postalCode', label: __('store.checkout.field.postalCode'), value: values.postalCode })
+            +formField({ name: 'country', label: __('store.checkout.field.country'), value: values.country })
+            +formField({
+              name: 'paymentMethod',
+              label: __('store.checkout.field.paymentMethod'),
+              type: 'select',
+              value: values.paymentMethod,
+              error: errors.paymentMethod,
+              options: [
+                { value: 'CARD', label: __('store.checkout.payment.card') },
+                { value: 'CASH', label: __('store.checkout.payment.cash') },
+                { value: 'TRANSFER', label: __('store.checkout.payment.transfer') }
+              ]
+            })
+            button.btn.btn-lime.w-100.mt-2(type='submit')= __('store.checkout.placeOrder')
+
+      .col-lg-5
+        .store-panel.reveal.d3
+          h5.fw-bold.mb-3= __('store.checkout.summary')
+          ul.list-unstyled.mb-3
+            each line in lines
+              if line.missing
+                li.d-flex.justify-content-between.mb-2.text-danger
+                  span= __('store.cart.unavailable')
+              else
+                li.d-flex.justify-content-between.mb-2
+                  span= `${line.productName} × ${line.quantity}`
+                  span= line.lineTotalLabel
+          .d-flex.justify-content-between.mb-1
+            span.text-secondary= __('store.checkout.subtotal')
+            span= subtotalLabel
+          .d-flex.justify-content-between.mb-1
+            span.text-secondary= __('store.checkout.shipping')
+            span= shippingLabel
+          hr
+          .d-flex.justify-content-between.fw-bold
+            span= __('store.checkout.total')
+            span= totalLabel
