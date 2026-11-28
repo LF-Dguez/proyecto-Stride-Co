@@ -23,6 +23,9 @@ html(lang=getLocale())
             i.bi.bi-bag
             = ' ' + __('store.nav.cart')
         div.d-flex.align-items-center.gap-2
+          .lang-switch
+            a(href=langLink('es'), class=getLocale() === 'es' ? 'active' : '') ES
+            a(href=langLink('en'), class=getLocale() === 'en' ? 'active' : '') EN
           if currentUser
             if can('orders', 'read', 'any')
               a.btn.btn-outline-dark.btn-sm(href='/admin')
